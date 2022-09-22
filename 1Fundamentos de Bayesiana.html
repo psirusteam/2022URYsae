@@ -1,0 +1,1888 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.1.165">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Andrés Gutiérrez - Stalyn Guerrero">
+
+<title>Fundamentos de la inferencia Bayesiana en R y STAN</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<script src="1Fundamentos de Bayesiana_files/libs/clipboard/clipboard.min.js"></script>
+<script src="1Fundamentos de Bayesiana_files/libs/quarto-html/quarto.js"></script>
+<script src="1Fundamentos de Bayesiana_files/libs/quarto-html/popper.min.js"></script>
+<script src="1Fundamentos de Bayesiana_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="1Fundamentos de Bayesiana_files/libs/quarto-html/anchor.min.js"></script>
+<link href="1Fundamentos de Bayesiana_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="1Fundamentos de Bayesiana_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="1Fundamentos de Bayesiana_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="1Fundamentos de Bayesiana_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="1Fundamentos de Bayesiana_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+</head>
+
+<body class="fullcontent">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Fundamentos de la inferencia Bayesiana en R y STAN</h1>
+<p class="subtitle lead">CEPAL - División de Estadísticas Sociales</p>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Andrés Gutiérrez - Stalyn Guerrero </p>
+          </div>
+  </div>
+    
+    
+  </div>
+  
+
+</header>
+
+<section id="regla-de-bayes" class="level2">
+<h2 class="anchored" data-anchor-id="regla-de-bayes">Regla de Bayes</h2>
+<p>En términos de inferencia para <span class="math inline">\(\boldsymbol{\theta}\)</span>, es necesario encontrar la distribución de los parámetros condicionada a la observación de los datos. Para este fin, es necesario definir la distribución conjunta de la variable de interés con el vector de parámetros.</p>
+<p><span class="math display">\[
+p(\boldsymbol{\theta},\mathbf{Y})=p(\boldsymbol{\theta})p(\mathbf{Y} \mid \boldsymbol{\theta})
+\]</span></p>
+<ul>
+<li><p>La distribución <span class="math inline">\(p(\boldsymbol{\theta})\)</span> se le conoce con el nombre de distribución previa.</p></li>
+<li><p>El término <span class="math inline">\(p(\mathbf{Y} \mid \boldsymbol{\theta})\)</span> es la distribución de muestreo, verosimilitud o distribución de los datos.</p></li>
+<li><p>La distribución del vector de parámetros condicionada a los datos observados está dada por</p>
+<p><span class="math display">\[
+p(\boldsymbol{\theta} \mid \mathbf{Y})=\frac{p(\boldsymbol{\theta},\mathbf{Y})}{p(\mathbf{Y})}=\frac{p(\boldsymbol{\theta})p(\mathbf{Y} \mid \boldsymbol{\theta})}{p(\mathbf{Y})}
+\]</span></p></li>
+<li><p>A la distribución <span class="math inline">\(p(\boldsymbol{\theta} \mid \mathbf{Y})\)</span> se le conoce con el nombre de distribución <strong><em>posterior</em></strong>. Nótese que el denominador no depende del vector de parámetros y considerando a los datos observados como fijos, corresponde a una constante y puede ser obviada. Por lo tanto, otra representación de la regla de Bayes está dada por</p>
+<p><span class="math display">\[
+p(\boldsymbol{\theta} \mid \mathbf{Y})\propto p(\mathbf{Y} \mid \boldsymbol{\theta})p(\boldsymbol{\theta})
+\]</span></p></li>
+</ul>
+</section>
+<section id="inferencia-bayesiana." class="level2">
+<h2 class="anchored" data-anchor-id="inferencia-bayesiana.">Inferencia Bayesiana.</h2>
+<p>En términos de estimación, inferencia y predicción, el enfoque Bayesiano supone dos momentos o etapas:</p>
+<ol type="1">
+<li><strong>Antes de la recolección de las datos</strong>, en donde el investigador propone, basado en su conocimiento, experiencia o fuentes externas, una distribución de probabilidad previa para el parámetro de interés.</li>
+<li><strong>Después de la recolección de los datos.</strong> Siguiendo el teorema de Bayes, el investigador actualiza su conocimiento acerca del comportamiento probabilístico del parámetro de interés mediante la distribución posterior de este.</li>
+</ol>
+</section>
+<section id="modelos-uniparamétricos" class="level2">
+<h2 class="anchored" data-anchor-id="modelos-uniparamétricos">Modelos uniparamétricos</h2>
+<p>Los modelos que están definidos en términos de un solo parámetro que pertenece al conjunto de los números reales se definen como modelos <em>uniparamétricos</em>.</p>
+</section>
+<section id="modelo-bernoulli" class="level2">
+<h2 class="anchored" data-anchor-id="modelo-bernoulli">Modelo Bernoulli</h2>
+<p>Suponga que <span class="math inline">\(Y\)</span> es una variable aleatoria con distribución Bernoulli dada por:</p>
+<p><span class="math display">\[
+p(Y \mid \theta)=\theta^y(1-\theta)^{1-y}I_{\{0,1\}}(y)
+\]</span></p>
+<p>Como el parámetro <span class="math inline">\(\theta\)</span> está restringido al espacio <span class="math inline">\(\Theta=[0,1]\)</span>, entonces es posible formular varias opciones para la distribución previa del parámetro. En particular, la distribución uniforme restringida al intervalo <span class="math inline">\([0,1]\)</span> o la distribución Beta parecen ser buenas opciones. Puesto que la distribución uniforme es un caso particular de la distribución Beta. Por lo tanto la distribución previa del parámetro <span class="math inline">\(\theta\)</span> estará dada por</p>
+<p><span class="math display">\[
+\begin{equation}
+p(\theta \mid \alpha,\beta)=
+\frac{1}{Beta(\alpha,\beta)}\theta^{\alpha-1}(1-\theta)^{\beta-1}I_{[0,1]}(\theta).
+\end{equation}
+\]</span></p>
+<p>y la distribución posterior del parámetro <span class="math inline">\(\theta\)</span> sigue una distribución</p>
+<p><span class="math display">\[
+\begin{equation*}
+\theta \mid Y \sim Beta(y+\alpha,\beta-y+1)
+\end{equation*}
+\]</span></p>
+<p>Cuando se tiene una muestra aleatoria <span class="math inline">\(Y_1,\ldots,Y_n\)</span> de variables con distribución Bernoulli de parámetro <span class="math inline">\(\theta\)</span>, entonces la distribución posterior del parámetro de interés es</p>
+<p><span class="math display">\[
+\begin{equation*}
+\theta \mid Y_1,\ldots,Y_n \sim Beta\left(\sum_{i=1}^ny_i+\alpha,\beta-\sum_{i=1}^ny_i+n\right)
+\end{equation*}
+\]</span></p>
+<section id="práctica-en-r" class="level3">
+<h3 class="anchored" data-anchor-id="práctica-en-r">Práctica en <strong>R</strong></h3>
+<ul>
+<li>ENCUESTA CONTINUA DE HOGARES (ECH) 2020</li>
+</ul>
+<p>En el contexto de emergencia sanitaria, a partir del mes de abril de 2020 la ECH se comenzó a aplicar mediante la modalidad panel rotativo y pasó a realizarse de forma telefónica desde el hogar de cada entrevistador, con el fin de reducir la movilidad. Se utilizó un formulario reducido con el objetivo de recoger la información necesaria para estimar los principales indicadores de mercado de trabajo e ingresos de los hogares y de las personas</p>
+<div class="cell" data-hash="1Fundamentos-de-Bayesiana_cache/html/unnamed-chunk-1_3b8ced634bbdc92a1bd3218fb9104569">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>encuesta <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"Data/encuestaURY20N.rds"</span>)  </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Sea <span class="math inline">\(Y\)</span> la variable aleatoria</p>
+<p><span class="math display">\[
+Y_{i}=\begin{cases}
+1 &amp; ingreso&lt;lp\\
+0 &amp; ingreso\geq lp
+\end{cases}
+\]</span></p>
+<div class="cell" data-hash="1Fundamentos-de-Bayesiana_cache/html/unnamed-chunk-2_b66288a9ecaf74b6cbf39c7506159e53">
+
+</div>
+<p>El tamaño de la muestra es de 5202 Afrodescendiente.</p>
+<div class="cell" data-hash="1Fundamentos-de-Bayesiana_cache/html/unnamed-chunk-3_3dcb689534543bd870488d68b3f4556b">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>datay <span class="ot">&lt;-</span> encuesta <span class="sc">%&gt;%</span> <span class="fu">filter</span>(etnia_ee <span class="sc">==</span> <span class="dv">2</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">transmute</span>(<span class="at">y =</span> <span class="fu">ifelse</span>(ingcorte <span class="sc">&lt;</span> lp, <span class="dv">1</span>,<span class="dv">0</span>))</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">addmargins</span>(<span class="fu">table</span>(datay<span class="sc">$</span>y))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="table table-sm table-striped">
+<thead>
+<tr class="header">
+<th style="text-align: right;">0</th>
+<th style="text-align: right;">1</th>
+<th style="text-align: right;">Sum</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">4696</td>
+<td style="text-align: right;">506</td>
+<td style="text-align: right;">5202</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="cell" data-hash="1Fundamentos-de-Bayesiana_cache/html/unnamed-chunk-4_ac797497b945fa1fe450775b7d37ffb2">
+
+</div>
+<p>Un grupo de estadístico experto decide utilizar una distribución previa Beta, definiendo los parámetros de la distribución previa como <span class="math inline">\(Beta(\alpha=1, \beta=1)\)</span>. La distribución posterior del parámetro de interés, que representa la probabilidad de estar por debajo de la linea de pobreza, es <span class="math inline">\(Beta(506 + 1, 1 - 506 + 5202)=Beta(507, 4697)\)</span></p>
+<div class="cell" data-hash="1Fundamentos-de-Bayesiana_cache/html/BernoEj1_7ac9da938c7bd334154cef21f61666c7">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="1Fundamentos-de-Bayesiana_files/figure-html/BernoEj1-1.png" class="img-fluid figure-img" width="672"></p>
+<p></p><figcaption class="figure-caption">Distribución previa (línea roja) y distribución posterior (línea negra)</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+<p>La estimación del parámetro estaría dado por:</p>
+<p><span class="math display">\[
+E(X) = \frac{\alpha}{\alpha + \beta} = \frac{507}{507+ 4697} = 0.0974251
+\]</span></p>
+<p>luego, el intervalo de credibilidad para la distribución posterior es.</p>
+<div class="cell" data-hash="1Fundamentos-de-Bayesiana_cache/html/unnamed-chunk-5_50d1ff9b2218fb8bebfd1caecddb748c">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>n <span class="ot">=</span> <span class="fu">length</span>(datay<span class="sc">$</span>y)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>n1 <span class="ot">=</span> <span class="fu">sum</span>(datay<span class="sc">$</span>y)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">qbeta</span>(<span class="fu">c</span>(<span class="fl">0.025</span>, <span class="fl">0.975</span>),</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>      <span class="at">shape1 =</span> <span class="dv">1</span> <span class="sc">+</span> n1,</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>      <span class="at">shape2 =</span> <span class="dv">1</span> <span class="sc">-</span> n1 <span class="sc">+</span> n)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.0895170 0.1056262</code></pre>
+</div>
+</div>
+</section>
+<section id="práctica-en-stan" class="level3">
+<h3 class="anchored" data-anchor-id="práctica-en-stan">Práctica en <strong>STAN</strong></h3>
+<p>En <code>STAN</code> es posible obtener el mismo tipo de inferencia creando cuatro cadenas cuya distribución de probabilidad coincide con la distribución posterior del ejemplo.</p>
+<div class="cell" data-hash="1Fundamentos-de-Bayesiana_cache/html/unnamed-chunk-6_4235944a52a27115ae5f56a0b94ba133">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Definir el modelo</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>data {                         <span class="sc">/</span><span class="er">/</span> Entrada el modelo </span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  int<span class="sc">&lt;</span>lower<span class="ot">=</span><span class="dv">0</span><span class="sc">&gt;</span> n;              <span class="sc">/</span><span class="er">/</span> Numero de observaciones  </span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  int y[n];                    <span class="sc">/</span><span class="er">/</span> Vector de longitud n</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  real a;</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>  real b;</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>parameters {                   <span class="sc">/</span><span class="er">/</span> Definir parámetro</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>  real<span class="sc">&lt;</span>lower<span class="ot">=</span><span class="dv">0</span>, upper<span class="ot">=</span><span class="dv">1</span><span class="sc">&gt;</span> theta;</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>model {                        <span class="sc">/</span><span class="er">/</span> Definir modelo</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>  y <span class="sc">~</span> <span class="fu">bernoulli</span>(theta);</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>  theta <span class="sc">~</span> <span class="fu">beta</span>(a, b);      <span class="sc">/</span><span class="er">/</span> Distribución previa </span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>generated quantities {</span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>    real ypred[n];                    <span class="sc">/</span><span class="er">/</span> vector de longitud n</span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> (ii <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n){</span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>    ypred[ii] <span class="ot">=</span> <span class="fu">bernoulli_rng</span>(theta);</span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Para compilar <em>STAN</em> debemos definir los parámetros de entrada</p>
+<div class="cell" data-hash="1Fundamentos-de-Bayesiana_cache/html/unnamed-chunk-7_ec1f1a4954d747787f0f95ca972b458d">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>    sample_data <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">n =</span> <span class="fu">nrow</span>(datay),</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>                        <span class="at">y =</span> datay<span class="sc">$</span>y,</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>                        <span class="at">a =</span> <span class="dv">1</span>,</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>                        <span class="at">b =</span> <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Para ejecutar <code>STAN</code> en R tenemos la librería <em>cmdstanr</em></p>
+<div class="cell" data-hash="1Fundamentos-de-Bayesiana_cache/html/unnamed-chunk-8_4cfe4abce73b0212a79ae0ef6c28ad33">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(cmdstanr)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>Bernoulli <span class="ot">&lt;-</span> <span class="fu">cmdstan_model</span>(<span class="at">stan_file =</span> <span class="st">"Data/modelosStan/Bernoulli.stan"</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-hash="1Fundamentos-de-Bayesiana_cache/html/unnamed-chunk-9_15d9bdd14a0a9b3cf446bce2d742f857">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>model_Bernoulli <span class="ot">&lt;-</span> Bernoulli<span class="sc">$</span><span class="fu">sample</span>(<span class="at">data =</span> sample_data, </span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>                 <span class="at">chains =</span> <span class="dv">4</span>,</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>                 <span class="at">parallel_chains =</span> <span class="dv">4</span>,</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>                 <span class="at">seed =</span> <span class="dv">1234</span>,</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>                 <span class="at">refresh =</span> <span class="dv">0</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Running MCMC with 4 parallel chains...
+
+Chain 1 finished in 14.8 seconds.
+Chain 2 finished in 14.7 seconds.
+Chain 3 finished in 14.6 seconds.
+Chain 4 finished in 14.1 seconds.
+
+All 4 chains finished successfully.
+Mean chain execution time: 14.5 seconds.
+Total execution time: 15.8 seconds.</code></pre>
+</div>
+</div>
+<p>La estimación del parámetro <span class="math inline">\(\theta\)</span> es:</p>
+<div class="cell" data-hash="1Fundamentos-de-Bayesiana_cache/html/unnamed-chunk-10_7b3c68e1cf350890109303b56e7a3ebd">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>model_Bernoulli<span class="sc">$</span><span class="fu">summary</span>(<span class="at">variables =</span> <span class="st">"theta"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="table table-sm table-striped">
+<colgroup>
+<col style="width: 9%">
+<col style="width: 10%">
+<col style="width: 9%">
+<col style="width: 10%">
+<col style="width: 10%">
+<col style="width: 10%">
+<col style="width: 10%">
+<col style="width: 9%">
+<col style="width: 9%">
+<col style="width: 9%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">variable</th>
+<th style="text-align: right;">mean</th>
+<th style="text-align: right;">median</th>
+<th style="text-align: right;">sd</th>
+<th style="text-align: right;">mad</th>
+<th style="text-align: right;">q5</th>
+<th style="text-align: right;">q95</th>
+<th style="text-align: right;">rhat</th>
+<th style="text-align: right;">ess_bulk</th>
+<th style="text-align: right;">ess_tail</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">theta</td>
+<td style="text-align: right;">0.0972259</td>
+<td style="text-align: right;">0.097179</td>
+<td style="text-align: right;">0.0041696</td>
+<td style="text-align: right;">0.0042803</td>
+<td style="text-align: right;">0.0905589</td>
+<td style="text-align: right;">0.1042521</td>
+<td style="text-align: right;">1.001628</td>
+<td style="text-align: right;">1513.439</td>
+<td style="text-align: right;">1743.771</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Para observar las cadenas compilamos las lineas de código</p>
+<div class="cell" data-hash="1Fundamentos-de-Bayesiana_cache/html/unnamed-chunk-11_ac219db59ad7cc31419b949d673af1f4">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(posterior) </span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>temp <span class="ot">&lt;-</span> <span class="fu">as_draws_df</span>(model_Bernoulli<span class="sc">$</span><span class="fu">draws</span>(<span class="at">variables =</span> <span class="st">"theta"</span>))</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> temp, <span class="fu">aes</span>(<span class="at">x =</span> theta))<span class="sc">+</span> </span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_density</span>(<span class="at">color =</span> <span class="st">"blue"</span>, <span class="at">size =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_function</span>(<span class="at">fun =</span> posterior1,</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>                <span class="at">args =</span> <span class="fu">list</span>(<span class="at">y =</span> datay<span class="sc">$</span>y),</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>                <span class="at">size =</span> <span class="dv">2</span>) <span class="sc">+</span> </span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">20</span>) <span class="sc">+</span> </span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> latex2exp<span class="sc">::</span><span class="fu">TeX</span>(<span class="st">"</span><span class="sc">\\</span><span class="st">theta"</span>),</span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> latex2exp<span class="sc">::</span><span class="fu">TeX</span>(<span class="st">"f(</span><span class="sc">\\</span><span class="st">theta)"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="1Fundamentos-de-Bayesiana_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid figure-img" width="672"></p>
+<p></p><figcaption class="figure-caption">Resultado con STAN (línea azul) y posterior teórica (línea negra)</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Para validar las cadenas</p>
+<div class="cell" data-hash="1Fundamentos-de-Bayesiana_cache/html/unnamed-chunk-12_b79b01418250977b1dfd87c087440971">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(bayesplot)</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>(<span class="fu">mcmc_dens_chains</span>(model_Bernoulli<span class="sc">$</span><span class="fu">draws</span>(<span class="st">"theta"</span>)) <span class="sc">+</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="fu">mcmc_areas</span>(model_Bernoulli<span class="sc">$</span><span class="fu">draws</span>(<span class="st">"theta"</span>)))<span class="sc">/</span> </span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="fu">mcmc_trace</span>(model_Bernoulli<span class="sc">$</span><span class="fu">draws</span>(<span class="st">"theta"</span>)) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="1Fundamentos-de-Bayesiana_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Predicción de <span class="math inline">\(Y\)</span> en cada una de las iteraciones de las cadenas.</p>
+<div class="cell" data-hash="1Fundamentos-de-Bayesiana_cache/html/unnamed-chunk-13_8012537e6c6312899d6062baf53e5ac6">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="fu">nrow</span>(datay)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>temp <span class="ot">&lt;-</span> model_Bernoulli<span class="sc">$</span><span class="fu">draws</span>(<span class="at">variables =</span> <span class="st">"ypred"</span>, <span class="at">format =</span> <span class="st">"df"</span>)</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>temp <span class="ot">&lt;-</span> <span class="fu">apply</span>(temp, <span class="dv">1</span>, </span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>      <span class="cf">function</span>(x){<span class="fu">data.frame</span>(</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>        (</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>          <span class="fu">table</span>(<span class="fu">as.numeric</span>(x[<span class="dv">1</span><span class="sc">:</span>n]))))}) <span class="sc">%&gt;%</span> </span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">bind_rows</span>()</span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> temp, <span class="fu">aes</span>(<span class="at">x =</span> Var1, <span class="at">y =</span> Freq))<span class="sc">+</span> </span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_jitter</span>(<span class="at">color =</span> <span class="st">"blue"</span>, <span class="at">size =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> <span class="fu">data.frame</span>((<span class="fu">table</span>(datay<span class="sc">$</span>y))),</span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>             <span class="at">size =</span> <span class="dv">3</span>, <span class="at">color =</span> <span class="st">"red"</span>)<span class="sc">+</span></span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>(<span class="dv">20</span>) <span class="sc">+</span></span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">y =</span> <span class="st">"Conteos"</span>, <span class="at">x =</span> <span class="st">""</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="1Fundamentos-de-Bayesiana_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid figure-img" width="672"></p>
+<p></p><figcaption class="figure-caption">Resultado de la predicción para cada cadena (Puntos azules) y resultados en la muestra (Punto rojo)</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell" data-hash="1Fundamentos-de-Bayesiana_cache/html/unnamed-chunk-14_7ddec634e51e3dba15249932c304a367">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>y_pred_B <span class="ot">&lt;-</span> model_Bernoulli<span class="sc">$</span><span class="fu">draws</span>(<span class="at">variables =</span> <span class="st">"ypred"</span>, <span class="at">format =</span> <span class="st">"matrix"</span>)</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>rowsrandom <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="fu">nrow</span>(y_pred_B), <span class="dv">100</span>)</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>y_pred2 <span class="ot">&lt;-</span> y_pred_B[rowsrandom, <span class="dv">1</span><span class="sc">:</span>n]</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="fu">ppc_dens_overlay</span>(<span class="at">y =</span> datay<span class="sc">$</span>y, y_pred2) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="1Fundamentos-de-Bayesiana_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+</section>
+<section id="modelo-binomial" class="level2">
+<h2 class="anchored" data-anchor-id="modelo-binomial">Modelo Binomial</h2>
+<p>Cuando se dispone de una muestra aleatoria de variables con distribución Bernoulli <span class="math inline">\(Y_1,\ldots,Y_n\)</span>, la inferencia Bayesiana se puede llevar a cabo usando la distribución Binomial, puesto que es bien sabido que la suma de variables aleatorias Bernoulli</p>
+<p><span class="math display">\[
+\begin{equation*}
+S=\sum_{i=1}^nY_i
+\end{equation*}
+\]</span></p>
+<p>sigue una distribución Binomial. Es decir:</p>
+<p><span class="math display">\[
+\begin{equation}
+p(S \mid \theta)=\binom{n}{s}\theta^s(1-\theta)^{n-s}I_{\{0,1,\ldots,n\}}(s),
+\end{equation}
+\]</span></p>
+<p>Nótese que la distribución Binomial es un caso general para la distribución Bernoulli, cuando <span class="math inline">\(n=1\)</span>. Por lo tanto es natural suponer que distribución previa del parámetro <span class="math inline">\(\theta\)</span> estará dada por</p>
+<p><span class="math display">\[
+\begin{equation}
+p(\theta \mid \alpha,\beta)=
+\frac{1}{Beta(\alpha,\beta)}\theta^{\alpha-1}(1-\theta)^{\beta-1}I_{[0,1]}(\theta).
+\end{equation}
+\]</span></p>
+<p>La distribución posterior del parámetro <span class="math inline">\(\theta\)</span> sigue una distribución</p>
+<p><span class="math display">\[
+\begin{equation*}
+\theta \mid S \sim Beta(s+\alpha,\beta-s+n)
+\end{equation*}
+\]</span></p>
+<section id="práctica-en-stan-1" class="level3">
+<h3 class="anchored" data-anchor-id="práctica-en-stan-1">Práctica en <strong>STAN</strong></h3>
+<p>Sea <span class="math inline">\(S\)</span> el conteo de las personas en condición de pobreza en el país.</p>
+<div class="cell" data-hash="1Fundamentos-de-Bayesiana_cache/html/unnamed-chunk-15_c55f2d0b86ae6d22d03bcb4e7de3f96f">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>(dataS <span class="ot">&lt;-</span> encuesta <span class="sc">%&gt;%</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>   <span class="fu">transmute</span>(<span class="at">y =</span> <span class="fu">ifelse</span>(ingcorte <span class="sc">&lt;</span> lp, <span class="dv">1</span>, <span class="dv">0</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>   <span class="fu">summarise</span>(<span class="at">n =</span> <span class="fu">n</span>(),   <span class="co">#Número de ensayos</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>             <span class="at">S =</span> <span class="fu">sum</span>(y) <span class="co">#Número de éxito </span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>             ))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="table table-sm table-striped">
+<thead>
+<tr class="header">
+<th style="text-align: right;">n</th>
+<th style="text-align: right;">S</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">145166</td>
+<td style="text-align: right;">6029</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Creando código de <code>STAN</code></p>
+<div class="cell" data-hash="1Fundamentos-de-Bayesiana_cache/html/unnamed-chunk-16_4ae195c6691fd82eca9602975f04af33">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>data {</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  int<span class="sc">&lt;</span>lower<span class="ot">=</span><span class="dv">0</span><span class="sc">&gt;</span> n;              <span class="sc">/</span><span class="er">/</span> Número de ensayos </span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>  int<span class="sc">&lt;</span>lower<span class="ot">=</span><span class="dv">0</span><span class="sc">&gt;</span> s;              <span class="sc">/</span><span class="er">/</span> Número de éxitos</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>  real a;</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>  real b;</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>parameters {</span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>  real<span class="sc">&lt;</span>lower<span class="ot">=</span><span class="dv">0</span>, upper<span class="ot">=</span><span class="dv">1</span><span class="sc">&gt;</span> theta;   </span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>model {</span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a>  s <span class="sc">~</span> <span class="fu">binomial</span>(n, theta);</span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a>  theta <span class="sc">~</span> <span class="fu">beta</span>(a, b);</span>
+<span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb16-17"><a href="#cb16-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-18"><a href="#cb16-18" aria-hidden="true" tabindex="-1"></a>generated quantities {</span>
+<span id="cb16-19"><a href="#cb16-19" aria-hidden="true" tabindex="-1"></a>    real spred;                    <span class="sc">/</span><span class="er">/</span> vector de longitud D</span>
+<span id="cb16-20"><a href="#cb16-20" aria-hidden="true" tabindex="-1"></a>    spred <span class="ot">=</span> <span class="fu">binomial_rng</span>(n, theta);</span>
+<span id="cb16-21"><a href="#cb16-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-22"><a href="#cb16-22" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Preparando el código de <code>STAN</code></p>
+<div class="cell" data-hash="1Fundamentos-de-Bayesiana_cache/html/unnamed-chunk-17_3bcbe855494b0b0597658fcb276236e5">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Definir el modelo</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>Binomial <span class="ot">&lt;-</span> <span class="fu">cmdstan_model</span>(<span class="at">stan_file =</span> <span class="st">"Data/modelosStan/Binomial.stan"</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Organizando datos para <code>STAN</code></p>
+<div class="cell" data-hash="1Fundamentos-de-Bayesiana_cache/html/unnamed-chunk-18_28857318497c621707b2cc554df6c426">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>sample_data <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">s =</span> dataS<span class="sc">$</span>S,</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>                    <span class="at">n =</span> dataS<span class="sc">$</span>n, </span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>                    <span class="at">a =</span> <span class="dv">1</span>,</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>                    <span class="at">b =</span> <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Para ejecutar <code>STAN</code> en R tenemos la librería <em>cmdstanr</em></p>
+<div class="cell" data-hash="1Fundamentos-de-Bayesiana_cache/html/unnamed-chunk-19_5c26edfe6f2239c12de0eab9aea1e003">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>model_Binomial <span class="ot">&lt;-</span> Binomial<span class="sc">$</span><span class="fu">sample</span>(<span class="at">data =</span> sample_data, </span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>                 <span class="at">chains =</span> <span class="dv">4</span>,</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>                 <span class="at">parallel_chains =</span> <span class="dv">4</span>,</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>                 <span class="at">seed =</span> <span class="dv">1234</span>,</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>                 <span class="at">refresh =</span> <span class="dv">0</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Running MCMC with 4 parallel chains...
+
+Chain 1 finished in 0.2 seconds.
+Chain 2 finished in 0.1 seconds.
+Chain 3 finished in 0.2 seconds.
+Chain 4 finished in 0.1 seconds.
+
+All 4 chains finished successfully.
+Mean chain execution time: 0.1 seconds.
+Total execution time: 1.0 seconds.</code></pre>
+</div>
+</div>
+<p>La estimación del parámetro <span class="math inline">\(\theta\)</span> es:</p>
+<div class="cell" data-hash="1Fundamentos-de-Bayesiana_cache/html/unnamed-chunk-20_03ce73076811377a9597c3c411fc195e">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>model_Binomial<span class="sc">$</span><span class="fu">summary</span>(<span class="at">variables =</span> <span class="st">"theta"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="table table-sm table-striped">
+<colgroup>
+<col style="width: 9%">
+<col style="width: 10%">
+<col style="width: 10%">
+<col style="width: 10%">
+<col style="width: 9%">
+<col style="width: 10%">
+<col style="width: 9%">
+<col style="width: 9%">
+<col style="width: 9%">
+<col style="width: 9%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">variable</th>
+<th style="text-align: right;">mean</th>
+<th style="text-align: right;">median</th>
+<th style="text-align: right;">sd</th>
+<th style="text-align: right;">mad</th>
+<th style="text-align: right;">q5</th>
+<th style="text-align: right;">q95</th>
+<th style="text-align: right;">rhat</th>
+<th style="text-align: right;">ess_bulk</th>
+<th style="text-align: right;">ess_tail</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">theta</td>
+<td style="text-align: right;">0.0415253</td>
+<td style="text-align: right;">0.0415214</td>
+<td style="text-align: right;">0.0005186</td>
+<td style="text-align: right;">0.000513</td>
+<td style="text-align: right;">0.0406706</td>
+<td style="text-align: right;">0.042383</td>
+<td style="text-align: right;">1.003387</td>
+<td style="text-align: right;">1413.948</td>
+<td style="text-align: right;">2139.082</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Para observar las cadenas compilamos las lineas de código</p>
+<div class="cell" data-hash="1Fundamentos-de-Bayesiana_cache/html/unnamed-chunk-21_abec6bb9fa9614716d2c06e4e7dff273">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>temp <span class="ot">&lt;-</span> model_Binomial<span class="sc">$</span><span class="fu">draws</span>(<span class="at">variables =</span> <span class="st">"theta"</span>, <span class="at">format =</span> <span class="st">"df"</span>)</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> temp, <span class="fu">aes</span>(<span class="at">x =</span> theta))<span class="sc">+</span> </span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_density</span>(<span class="at">color =</span> <span class="st">"blue"</span>, <span class="at">size =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_function</span>(<span class="at">fun =</span> dbeta,</span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>                <span class="at">args =</span> <span class="fu">list</span>(</span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>                   <span class="at">shape1 =</span> <span class="dv">1</span> <span class="sc">+</span> dataS<span class="sc">$</span>S,</span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>                   <span class="at">shape2 =</span> <span class="dv">1</span> <span class="sc">-</span> dataS<span class="sc">$</span>S <span class="sc">+</span> dataS<span class="sc">$</span>n</span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>                ),</span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>                <span class="at">size =</span> <span class="dv">1</span>) <span class="sc">+</span> </span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">20</span>) <span class="sc">+</span></span>
+<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> latex2exp<span class="sc">::</span><span class="fu">TeX</span>(<span class="st">"</span><span class="sc">\\</span><span class="st">theta"</span>),</span>
+<span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> latex2exp<span class="sc">::</span><span class="fu">TeX</span>(<span class="st">"p(</span><span class="sc">\\</span><span class="st">theta)"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="1Fundamentos-de-Bayesiana_files/figure-html/unnamed-chunk-21-1.png" class="img-fluid figure-img" width="672"></p>
+<p></p><figcaption class="figure-caption">Resultado con STAN (línea azul) y distribución previa (línea negra)</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Para validar las cadenas</p>
+<div class="cell" data-hash="1Fundamentos-de-Bayesiana_cache/html/unnamed-chunk-22_879d603c404e753870f4a164fa151cf6">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>(<span class="fu">mcmc_dens_chains</span>(model_Binomial<span class="sc">$</span><span class="fu">draws</span>(<span class="st">"theta"</span>)) <span class="sc">+</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mcmc_areas</span>(model_Binomial<span class="sc">$</span><span class="fu">draws</span>(<span class="st">"theta"</span>)))<span class="sc">/</span> </span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a><span class="fu">mcmc_trace</span>(model_Binomial<span class="sc">$</span><span class="fu">draws</span>(<span class="st">"theta"</span>)) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="1Fundamentos-de-Bayesiana_files/figure-html/unnamed-chunk-22-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell" data-hash="1Fundamentos-de-Bayesiana_cache/html/unnamed-chunk-23_f36381304164b51a44f5105fbf8f0278">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mcmc_trace</span>(model_Binomial<span class="sc">$</span><span class="fu">draws</span>(<span class="st">"spred"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="1Fundamentos-de-Bayesiana_files/figure-html/unnamed-chunk-23-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Cuando se tiene una sucesión de variables aleatorias <span class="math inline">\(S_1,\ldots,S_i, \ldots,S_k\)</span> independientes y con distribución <span class="math inline">\(Binomial(n_i,\theta)\)</span> para <span class="math inline">\(i=1,\ldots,k\)</span>, entonces la distribución posterior del parámetro de interés <span class="math inline">\(\theta\)</span> es</p>
+<p><span class="math display">\[
+\begin{equation*}
+\theta \mid S_1,\ldots,S_k \sim Beta\left(\sum_{i=1}^ks_i+\alpha,\beta+\sum_{i=1}^k n_i-\sum_{i=1}^k s_i\right)
+\end{equation*}
+\]</span></p>
+</section>
+<section id="práctica-en-stan-2" class="level3">
+<h3 class="anchored" data-anchor-id="práctica-en-stan-2">Práctica en <strong>STAN</strong></h3>
+<p>Sea <span class="math inline">\(S_k\)</span> el conteo de personas en condición de pobreza en el <span class="math inline">\(k-ésimo\)</span> departamento en la muestra.</p>
+<div class="cell" data-hash="1Fundamentos-de-Bayesiana_cache/html/unnamed-chunk-24_ccd162d489a4c246eecafc92aadb00c9">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>(dataS <span class="ot">&lt;-</span> encuesta <span class="sc">%&gt;%</span> </span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">transmute</span>(</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a><span class="at">depto =</span> <span class="fu">str_pad</span>(</span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">string =</span> dpto,</span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">pad =</span> <span class="st">"0"</span>,</span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">width =</span> <span class="dv">2</span></span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">y =</span> <span class="fu">ifelse</span>(ingcorte <span class="sc">&lt;</span> lp, <span class="dv">1</span>,<span class="dv">0</span>)</span>
+<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(depto) <span class="sc">%&gt;%</span> </span>
+<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">nd =</span> <span class="fu">n</span>(),   <span class="co">#Número de ensayos </span></span>
+<span id="cb25-11"><a href="#cb25-11" aria-hidden="true" tabindex="-1"></a>            <span class="at">Sd =</span> <span class="fu">sum</span>(y) <span class="co">#Número de éxito </span></span>
+<span id="cb25-12"><a href="#cb25-12" aria-hidden="true" tabindex="-1"></a>            ))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="table table-sm table-striped">
+<thead>
+<tr class="header">
+<th style="text-align: left;">depto</th>
+<th style="text-align: right;">nd</th>
+<th style="text-align: right;">Sd</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">01</td>
+<td style="text-align: right;">53769</td>
+<td style="text-align: right;">1136</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">02</td>
+<td style="text-align: right;">3398</td>
+<td style="text-align: right;">324</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">03</td>
+<td style="text-align: right;">24316</td>
+<td style="text-align: right;">1080</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">04</td>
+<td style="text-align: right;">3972</td>
+<td style="text-align: right;">302</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">05</td>
+<td style="text-align: right;">5740</td>
+<td style="text-align: right;">154</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">06</td>
+<td style="text-align: right;">3171</td>
+<td style="text-align: right;">156</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">07</td>
+<td style="text-align: right;">1357</td>
+<td style="text-align: right;">49</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">08</td>
+<td style="text-align: right;">3271</td>
+<td style="text-align: right;">81</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">09</td>
+<td style="text-align: right;">2717</td>
+<td style="text-align: right;">156</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">10</td>
+<td style="text-align: right;">6389</td>
+<td style="text-align: right;">127</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">11</td>
+<td style="text-align: right;">4589</td>
+<td style="text-align: right;">388</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">12</td>
+<td style="text-align: right;">2609</td>
+<td style="text-align: right;">102</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">13</td>
+<td style="text-align: right;">4696</td>
+<td style="text-align: right;">387</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">14</td>
+<td style="text-align: right;">4472</td>
+<td style="text-align: right;">230</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">15</td>
+<td style="text-align: right;">5866</td>
+<td style="text-align: right;">434</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">16</td>
+<td style="text-align: right;">5511</td>
+<td style="text-align: right;">214</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">17</td>
+<td style="text-align: right;">3846</td>
+<td style="text-align: right;">210</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">18</td>
+<td style="text-align: right;">3164</td>
+<td style="text-align: right;">323</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">19</td>
+<td style="text-align: right;">2313</td>
+<td style="text-align: right;">176</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Creando código de <code>STAN</code></p>
+<div class="cell" data-hash="1Fundamentos-de-Bayesiana_cache/html/unnamed-chunk-25_32129d6fa44902cd2d58a4762566ffbc">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>data {</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>  int<span class="sc">&lt;</span>lower<span class="ot">=</span><span class="dv">0</span><span class="sc">&gt;</span> K;                 <span class="sc">/</span><span class="er">/</span> Número de provincia  </span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>  int<span class="sc">&lt;</span>lower<span class="ot">=</span><span class="dv">0</span><span class="sc">&gt;</span> n[K];              <span class="sc">/</span><span class="er">/</span> Número de ensayos </span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>  int<span class="sc">&lt;</span>lower<span class="ot">=</span><span class="dv">0</span><span class="sc">&gt;</span> s[K];              <span class="sc">/</span><span class="er">/</span> Número de éxitos</span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>  real a;</span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>  real b;</span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a>parameters {</span>
+<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a>  real<span class="sc">&lt;</span>lower<span class="ot">=</span><span class="dv">0</span>, upper<span class="ot">=</span><span class="dv">1</span><span class="sc">&gt;</span> theta[K]; <span class="sc">/</span><span class="er">/</span> theta_d<span class="sc">|</span>sd</span>
+<span id="cb26-10"><a href="#cb26-10" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb26-11"><a href="#cb26-11" aria-hidden="true" tabindex="-1"></a>model {</span>
+<span id="cb26-12"><a href="#cb26-12" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span>(kk <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>K) {</span>
+<span id="cb26-13"><a href="#cb26-13" aria-hidden="true" tabindex="-1"></a>  s[kk] <span class="sc">~</span> <span class="fu">binomial</span>(n[kk], theta[kk]);</span>
+<span id="cb26-14"><a href="#cb26-14" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb26-15"><a href="#cb26-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">to_vector</span>(theta) <span class="sc">~</span> <span class="fu">beta</span>(a, b);</span>
+<span id="cb26-16"><a href="#cb26-16" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb26-17"><a href="#cb26-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-18"><a href="#cb26-18" aria-hidden="true" tabindex="-1"></a>generated quantities {</span>
+<span id="cb26-19"><a href="#cb26-19" aria-hidden="true" tabindex="-1"></a>    real spred[K];                    <span class="sc">/</span><span class="er">/</span> vector de longitud K</span>
+<span id="cb26-20"><a href="#cb26-20" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span>(kk <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>K){</span>
+<span id="cb26-21"><a href="#cb26-21" aria-hidden="true" tabindex="-1"></a>    spred[kk] <span class="ot">=</span> <span class="fu">binomial_rng</span>(n[kk],theta[kk]);</span>
+<span id="cb26-22"><a href="#cb26-22" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb26-23"><a href="#cb26-23" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Preparando el código de <code>STAN</code></p>
+<div class="cell" data-hash="1Fundamentos-de-Bayesiana_cache/html/unnamed-chunk-26_56dfb9e467766c5b849f826e5d3c5665">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Definir el modelo</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>Binomial2 <span class="ot">&lt;-</span> <span class="fu">cmdstan_model</span>(<span class="at">stan_file =</span> <span class="st">"Data/modelosStan/Binomial3.stan"</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Organizando datos para <code>STAN</code></p>
+<div class="cell" data-hash="1Fundamentos-de-Bayesiana_cache/html/unnamed-chunk-27_ee92b77abd716e2170794a93cb0c6d66">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>sample_data <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">K =</span> <span class="fu">nrow</span>(dataS),</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>                    <span class="at">s =</span> dataS<span class="sc">$</span>Sd,</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>                    <span class="at">n =</span> dataS<span class="sc">$</span>nd,</span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>                    <span class="at">a =</span> <span class="dv">1</span>,</span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>                    <span class="at">b =</span> <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Para ejecutar <code>STAN</code> en R tenemos la librería <em>cmdstanr</em></p>
+<div class="cell" data-hash="1Fundamentos-de-Bayesiana_cache/html/unnamed-chunk-28_803a887e6e4e5b5fa2cba59c699c7593">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>model_Binomial2 <span class="ot">&lt;-</span> Binomial2<span class="sc">$</span><span class="fu">sample</span>(<span class="at">data =</span> sample_data, </span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>                 <span class="at">chains =</span> <span class="dv">4</span>,</span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>                 <span class="at">parallel_chains =</span> <span class="dv">4</span>,</span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>                 <span class="at">seed =</span> <span class="dv">1234</span>,</span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>                 <span class="at">refresh =</span> <span class="dv">0</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Running MCMC with 4 parallel chains...
+
+Chain 1 finished in 0.9 seconds.
+Chain 2 finished in 0.8 seconds.
+Chain 3 finished in 0.9 seconds.
+Chain 4 finished in 0.6 seconds.
+
+All 4 chains finished successfully.
+Mean chain execution time: 0.8 seconds.
+Total execution time: 1.7 seconds.</code></pre>
+</div>
+</div>
+<p>La estimación del parámetro <span class="math inline">\(\theta\)</span> es:</p>
+<div class="cell" data-hash="1Fundamentos-de-Bayesiana_cache/html/unnamed-chunk-29_35ebfe9c15b04fabb307bbc37fb24cc2">
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>model_Binomial2<span class="sc">$</span><span class="fu">summary</span>(<span class="at">variables =</span> <span class="st">"theta"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">data.frame</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="table table-sm table-striped">
+<colgroup>
+<col style="width: 10%">
+<col style="width: 10%">
+<col style="width: 10%">
+<col style="width: 10%">
+<col style="width: 10%">
+<col style="width: 10%">
+<col style="width: 10%">
+<col style="width: 10%">
+<col style="width: 10%">
+<col style="width: 9%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">variable</th>
+<th style="text-align: right;">mean</th>
+<th style="text-align: right;">median</th>
+<th style="text-align: right;">sd</th>
+<th style="text-align: right;">mad</th>
+<th style="text-align: right;">q5</th>
+<th style="text-align: right;">q95</th>
+<th style="text-align: right;">rhat</th>
+<th style="text-align: right;">ess_bulk</th>
+<th style="text-align: right;">ess_tail</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">theta[1]</td>
+<td style="text-align: right;">0.0211455</td>
+<td style="text-align: right;">0.0211434</td>
+<td style="text-align: right;">0.0006155</td>
+<td style="text-align: right;">0.0006214</td>
+<td style="text-align: right;">0.0201192</td>
+<td style="text-align: right;">0.0221756</td>
+<td style="text-align: right;">1.0015831</td>
+<td style="text-align: right;">8746.136</td>
+<td style="text-align: right;">3044.111</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">theta[2]</td>
+<td style="text-align: right;">0.0955961</td>
+<td style="text-align: right;">0.0955578</td>
+<td style="text-align: right;">0.0049799</td>
+<td style="text-align: right;">0.0049143</td>
+<td style="text-align: right;">0.0875465</td>
+<td style="text-align: right;">0.1040153</td>
+<td style="text-align: right;">1.0014556</td>
+<td style="text-align: right;">7729.652</td>
+<td style="text-align: right;">2851.398</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">theta[3]</td>
+<td style="text-align: right;">0.0444456</td>
+<td style="text-align: right;">0.0444360</td>
+<td style="text-align: right;">0.0013171</td>
+<td style="text-align: right;">0.0013273</td>
+<td style="text-align: right;">0.0423383</td>
+<td style="text-align: right;">0.0466161</td>
+<td style="text-align: right;">1.0002130</td>
+<td style="text-align: right;">9975.690</td>
+<td style="text-align: right;">2816.718</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">theta[4]</td>
+<td style="text-align: right;">0.0763174</td>
+<td style="text-align: right;">0.0762914</td>
+<td style="text-align: right;">0.0041341</td>
+<td style="text-align: right;">0.0040946</td>
+<td style="text-align: right;">0.0696033</td>
+<td style="text-align: right;">0.0832727</td>
+<td style="text-align: right;">1.0023379</td>
+<td style="text-align: right;">8600.261</td>
+<td style="text-align: right;">2662.682</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">theta[5]</td>
+<td style="text-align: right;">0.0270055</td>
+<td style="text-align: right;">0.0269319</td>
+<td style="text-align: right;">0.0021774</td>
+<td style="text-align: right;">0.0022070</td>
+<td style="text-align: right;">0.0235374</td>
+<td style="text-align: right;">0.0306924</td>
+<td style="text-align: right;">0.9999537</td>
+<td style="text-align: right;">7529.847</td>
+<td style="text-align: right;">3225.074</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">theta[6]</td>
+<td style="text-align: right;">0.0494666</td>
+<td style="text-align: right;">0.0494022</td>
+<td style="text-align: right;">0.0036910</td>
+<td style="text-align: right;">0.0036617</td>
+<td style="text-align: right;">0.0435734</td>
+<td style="text-align: right;">0.0556037</td>
+<td style="text-align: right;">1.0019195</td>
+<td style="text-align: right;">7651.615</td>
+<td style="text-align: right;">3001.774</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">theta[7]</td>
+<td style="text-align: right;">0.0367955</td>
+<td style="text-align: right;">0.0365440</td>
+<td style="text-align: right;">0.0049783</td>
+<td style="text-align: right;">0.0049483</td>
+<td style="text-align: right;">0.0290227</td>
+<td style="text-align: right;">0.0453116</td>
+<td style="text-align: right;">1.0053454</td>
+<td style="text-align: right;">7901.614</td>
+<td style="text-align: right;">3069.292</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">theta[8]</td>
+<td style="text-align: right;">0.0250286</td>
+<td style="text-align: right;">0.0249217</td>
+<td style="text-align: right;">0.0027272</td>
+<td style="text-align: right;">0.0027426</td>
+<td style="text-align: right;">0.0208374</td>
+<td style="text-align: right;">0.0297374</td>
+<td style="text-align: right;">1.0000485</td>
+<td style="text-align: right;">9921.550</td>
+<td style="text-align: right;">3027.367</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">theta[9]</td>
+<td style="text-align: right;">0.0576903</td>
+<td style="text-align: right;">0.0575460</td>
+<td style="text-align: right;">0.0044441</td>
+<td style="text-align: right;">0.0044858</td>
+<td style="text-align: right;">0.0504977</td>
+<td style="text-align: right;">0.0652210</td>
+<td style="text-align: right;">1.0029434</td>
+<td style="text-align: right;">8261.819</td>
+<td style="text-align: right;">2819.402</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">theta[10]</td>
+<td style="text-align: right;">0.0200472</td>
+<td style="text-align: right;">0.0199946</td>
+<td style="text-align: right;">0.0017939</td>
+<td style="text-align: right;">0.0017986</td>
+<td style="text-align: right;">0.0171671</td>
+<td style="text-align: right;">0.0230389</td>
+<td style="text-align: right;">0.9994973</td>
+<td style="text-align: right;">9273.091</td>
+<td style="text-align: right;">2657.825</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">theta[11]</td>
+<td style="text-align: right;">0.0847729</td>
+<td style="text-align: right;">0.0847036</td>
+<td style="text-align: right;">0.0041936</td>
+<td style="text-align: right;">0.0041072</td>
+<td style="text-align: right;">0.0779760</td>
+<td style="text-align: right;">0.0917755</td>
+<td style="text-align: right;">0.9999958</td>
+<td style="text-align: right;">8193.260</td>
+<td style="text-align: right;">2931.342</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">theta[12]</td>
+<td style="text-align: right;">0.0394427</td>
+<td style="text-align: right;">0.0392851</td>
+<td style="text-align: right;">0.0037360</td>
+<td style="text-align: right;">0.0037856</td>
+<td style="text-align: right;">0.0334760</td>
+<td style="text-align: right;">0.0456027</td>
+<td style="text-align: right;">1.0015069</td>
+<td style="text-align: right;">10248.329</td>
+<td style="text-align: right;">3009.382</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">theta[13]</td>
+<td style="text-align: right;">0.0825603</td>
+<td style="text-align: right;">0.0825272</td>
+<td style="text-align: right;">0.0038840</td>
+<td style="text-align: right;">0.0039193</td>
+<td style="text-align: right;">0.0762716</td>
+<td style="text-align: right;">0.0890270</td>
+<td style="text-align: right;">1.0026165</td>
+<td style="text-align: right;">8328.612</td>
+<td style="text-align: right;">2945.011</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">theta[14]</td>
+<td style="text-align: right;">0.0516241</td>
+<td style="text-align: right;">0.0515072</td>
+<td style="text-align: right;">0.0032916</td>
+<td style="text-align: right;">0.0032585</td>
+<td style="text-align: right;">0.0463713</td>
+<td style="text-align: right;">0.0571634</td>
+<td style="text-align: right;">1.0044597</td>
+<td style="text-align: right;">8495.974</td>
+<td style="text-align: right;">3096.710</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">theta[15]</td>
+<td style="text-align: right;">0.0741360</td>
+<td style="text-align: right;">0.0741168</td>
+<td style="text-align: right;">0.0034645</td>
+<td style="text-align: right;">0.0034615</td>
+<td style="text-align: right;">0.0684770</td>
+<td style="text-align: right;">0.0798431</td>
+<td style="text-align: right;">1.0012196</td>
+<td style="text-align: right;">8415.036</td>
+<td style="text-align: right;">2517.078</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">theta[16]</td>
+<td style="text-align: right;">0.0389965</td>
+<td style="text-align: right;">0.0389676</td>
+<td style="text-align: right;">0.0026088</td>
+<td style="text-align: right;">0.0025993</td>
+<td style="text-align: right;">0.0347342</td>
+<td style="text-align: right;">0.0432797</td>
+<td style="text-align: right;">1.0015851</td>
+<td style="text-align: right;">9287.144</td>
+<td style="text-align: right;">3104.419</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">theta[17]</td>
+<td style="text-align: right;">0.0548819</td>
+<td style="text-align: right;">0.0548015</td>
+<td style="text-align: right;">0.0036831</td>
+<td style="text-align: right;">0.0036777</td>
+<td style="text-align: right;">0.0489027</td>
+<td style="text-align: right;">0.0611259</td>
+<td style="text-align: right;">1.0006594</td>
+<td style="text-align: right;">9281.228</td>
+<td style="text-align: right;">2906.093</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">theta[18]</td>
+<td style="text-align: right;">0.1022740</td>
+<td style="text-align: right;">0.1022325</td>
+<td style="text-align: right;">0.0053486</td>
+<td style="text-align: right;">0.0054278</td>
+<td style="text-align: right;">0.0936424</td>
+<td style="text-align: right;">0.1112918</td>
+<td style="text-align: right;">1.0010537</td>
+<td style="text-align: right;">9096.118</td>
+<td style="text-align: right;">3273.432</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">theta[19]</td>
+<td style="text-align: right;">0.0764736</td>
+<td style="text-align: right;">0.0763670</td>
+<td style="text-align: right;">0.0057482</td>
+<td style="text-align: right;">0.0054918</td>
+<td style="text-align: right;">0.0671763</td>
+<td style="text-align: right;">0.0863040</td>
+<td style="text-align: right;">1.0005974</td>
+<td style="text-align: right;">8148.250</td>
+<td style="text-align: right;">2694.069</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Para validar las cadenas</p>
+<div class="cell" data-hash="1Fundamentos-de-Bayesiana_cache/html/unnamed-chunk-30_c75bbf715eece0d028b8cbcde73305aa">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mcmc_areas</span>(model_Binomial2<span class="sc">$</span><span class="fu">draws</span>(<span class="st">"theta"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="1Fundamentos-de-Bayesiana_files/figure-html/unnamed-chunk-30-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell" data-hash="1Fundamentos-de-Bayesiana_cache/html/unnamed-chunk-31_20c18a9faf295d364677c13062182f13">
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mcmc_trace</span>(model_Binomial2<span class="sc">$</span><span class="fu">draws</span>(<span class="st">"theta"</span>)) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="1Fundamentos-de-Bayesiana_files/figure-html/unnamed-chunk-31-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell" data-hash="1Fundamentos-de-Bayesiana_cache/html/unnamed-chunk-32_83bb313c0a0a63fb557ad5d9ca044c32">
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>y_pred_B <span class="ot">&lt;-</span> model_Binomial2<span class="sc">$</span><span class="fu">draws</span>(<span class="at">variables =</span> <span class="st">"spred"</span>, <span class="at">format =</span> <span class="st">"matrix"</span>)</span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>rowsrandom <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="fu">nrow</span>(y_pred_B), <span class="dv">200</span>)</span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>y_pred2 <span class="ot">&lt;-</span> y_pred_B[rowsrandom, ]</span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>g1 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(<span class="at">data =</span> dataS, <span class="fu">aes</span>(<span class="at">x =</span> Sd))<span class="sc">+</span></span>
+<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="fu">aes</span>(<span class="at">y =</span> ..density..)) <span class="sc">+</span></span>
+<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_density</span>() <span class="sc">+</span><span class="fu">theme_bw</span>(<span class="dv">20</span>) </span>
+<span id="cb34-7"><a href="#cb34-7" aria-hidden="true" tabindex="-1"></a>g2 <span class="ot">&lt;-</span> <span class="fu">ppc_dens_overlay</span>(<span class="at">y =</span> dataS<span class="sc">$</span>Sd, y_pred2) </span>
+<span id="cb34-8"><a href="#cb34-8" aria-hidden="true" tabindex="-1"></a>g1<span class="sc">/</span>g2</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="1Fundamentos-de-Bayesiana_files/figure-html/unnamed-chunk-32-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+</section>
+<section id="modelo-normal-con-media-desconocida" class="level2">
+<h2 class="anchored" data-anchor-id="modelo-normal-con-media-desconocida">Modelo Normal con media desconocida</h2>
+<p>Suponga que <span class="math inline">\(Y_1,\cdots,Y_n\)</span> son variables independientes e idénticamente distribuidos con distribución <span class="math inline">\(Normal(\theta,\sigma^2)\)</span> con <span class="math inline">\(\theta\)</span> desconocido pero <span class="math inline">\(\sigma^2\)</span> conocido. De esta forma, la función de verosimilitud de los datos está dada por</p>
+<p><span class="math display">\[
+\begin{align*}
+p(\mathbf{Y} \mid \theta)
+&amp;=\prod_{i=1}^n\frac{1}{\sqrt{2\pi\sigma^2}}\exp\left\{-\frac{1}{2\sigma^2}(y_i-\theta)^2\right\}I_\mathbb{R}(y) \\
+&amp;=(2\pi\sigma^2)^{-n/2}\exp\left\{-\frac{1}{2\sigma^2}\sum_{i=1}^n(y_i-\theta)^2\right\}
+\end{align*}
+\]</span></p>
+<p>Como el parámetro <span class="math inline">\(\theta\)</span> puede tomar cualquier valor en los reales, es posible asignarle una distribución previa <span class="math inline">\(\theta \sim Normal(\mu,\tau^2)\)</span>. Bajo este marco de referencia se tienen los siguientes resultados</p>
+<p>La distribución posterior del parámetro de interés <span class="math inline">\(\theta\)</span> sigue una distribución</p>
+<p><span class="math display">\[
+\begin{equation*}
+\theta|\mathbf{Y} \sim Normal(\mu_n,\tau^2_n)
+\end{equation*}
+\]</span></p>
+<p>En donde</p>
+<p><span class="math display">\[
+\begin{equation}
+\mu_n=\frac{\frac{n}{\sigma^2}\bar{Y}+\frac{1}{\tau^2}\mu}{\frac{n}{\sigma^2}+\frac{1}{\tau^2}}
+\ \ \ \ \ \ \ \text{y} \ \ \ \ \ \ \
+\tau_n^2=\left(\frac{n}{\sigma^2}+\frac{1}{\tau^2}\right)^{-1}
+\end{equation}
+\]</span></p>
+<section id="práctica-en-stan-3" class="level3">
+<h3 class="anchored" data-anchor-id="práctica-en-stan-3">Práctica en <strong>STAN</strong></h3>
+<p>Sea <span class="math inline">\(Y\)</span> el logaritmo del ingreso</p>
+<div class="cell" data-hash="1Fundamentos-de-Bayesiana_cache/html/unnamed-chunk-33_396c9028f25a6cf50a9f051fc5f08ca6">
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>dataNormal <span class="ot">&lt;-</span> encuesta <span class="sc">%&gt;%</span></span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">transmute</span>(</span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>     <span class="at">depto =</span> <span class="fu">str_pad</span>(</span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">string =</span> dpto,</span>
+<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">pad =</span> <span class="st">"0"</span>,</span>
+<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">width =</span> <span class="dv">2</span></span>
+<span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb35-8"><a href="#cb35-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">logIngreso =</span> <span class="fu">log</span>(ingcorte <span class="sc">+</span><span class="dv">1</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb35-9"><a href="#cb35-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(depto <span class="sc">==</span> <span class="st">"02"</span>)</span>
+<span id="cb35-10"><a href="#cb35-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-11"><a href="#cb35-11" aria-hidden="true" tabindex="-1"></a>(media <span class="ot">&lt;-</span> <span class="fu">mean</span>(dataNormal<span class="sc">$</span>logIngreso))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 9.602769</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>(Sd <span class="ot">&lt;-</span> <span class="fu">sd</span>(dataNormal<span class="sc">$</span>logIngreso))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.6685092</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(dataNormal,<span class="fu">aes</span>(<span class="at">x =</span> logIngreso))<span class="sc">+</span> </span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_density</span>(<span class="at">size =</span><span class="dv">2</span>, <span class="at">color =</span> <span class="st">"blue"</span>) <span class="sc">+</span></span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_function</span>(<span class="at">fun =</span>dnorm, </span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>                <span class="at">args =</span> <span class="fu">list</span>(<span class="at">mean =</span> media, <span class="at">sd =</span> Sd),</span>
+<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a>                <span class="at">size =</span><span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">20</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="1Fundamentos-de-Bayesiana_files/figure-html/unnamed-chunk-33-1.png" class="img-fluid figure-img" width="672"></p>
+<p></p><figcaption class="figure-caption">Resultado en la muestra (línea azul) y distribución teórica (línea negra)</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Creando código de <code>STAN</code></p>
+<div class="cell" data-hash="1Fundamentos-de-Bayesiana_cache/html/unnamed-chunk-34_4980ed43d762593a483b9b6956d2a707">
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>data {</span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>  int<span class="sc">&lt;</span>lower<span class="ot">=</span><span class="dv">0</span><span class="sc">&gt;</span> n;     <span class="sc">/</span><span class="er">/</span> Número de observaciones</span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>  real y[n];          <span class="sc">/</span><span class="er">/</span> LogIngreso </span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a>  real <span class="sc">&lt;</span>lower<span class="ot">=</span><span class="dv">0</span><span class="sc">&gt;</span> Sigma;  <span class="sc">/</span><span class="er">/</span> Desviación estándar   </span>
+<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a>parameters {</span>
+<span id="cb40-7"><a href="#cb40-7" aria-hidden="true" tabindex="-1"></a>  real theta;</span>
+<span id="cb40-8"><a href="#cb40-8" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb40-9"><a href="#cb40-9" aria-hidden="true" tabindex="-1"></a>model {</span>
+<span id="cb40-10"><a href="#cb40-10" aria-hidden="true" tabindex="-1"></a>  y <span class="sc">~</span> <span class="fu">normal</span>(theta, Sigma);</span>
+<span id="cb40-11"><a href="#cb40-11" aria-hidden="true" tabindex="-1"></a>  theta <span class="sc">~</span> <span class="fu">normal</span>(<span class="dv">0</span>, <span class="dv">1000</span>); <span class="sc">/</span><span class="er">/</span> distribución previa</span>
+<span id="cb40-12"><a href="#cb40-12" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb40-13"><a href="#cb40-13" aria-hidden="true" tabindex="-1"></a>generated quantities {</span>
+<span id="cb40-14"><a href="#cb40-14" aria-hidden="true" tabindex="-1"></a>    real ypred[n];                    <span class="sc">/</span><span class="er">/</span> vector de longitud D</span>
+<span id="cb40-15"><a href="#cb40-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span>(kk <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n){</span>
+<span id="cb40-16"><a href="#cb40-16" aria-hidden="true" tabindex="-1"></a>    ypred[kk] <span class="ot">=</span> <span class="fu">normal_rng</span>(theta,Sigma);</span>
+<span id="cb40-17"><a href="#cb40-17" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb40-18"><a href="#cb40-18" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Preparando el código de <code>STAN</code></p>
+<div class="cell" data-hash="1Fundamentos-de-Bayesiana_cache/html/unnamed-chunk-35_1c7f49e78e0d47f78e67bc011126aad6">
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>NormalMedia <span class="ot">&lt;-</span> <span class="fu">cmdstan_model</span>(<span class="at">stan_file =</span> <span class="st">"Data/modelosStan/NormalMedia.stan"</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Organizando datos para <code>STAN</code></p>
+<div class="cell" data-hash="1Fundamentos-de-Bayesiana_cache/html/unnamed-chunk-36_a9888fcc945fe70f41ed641b4bd28bda">
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>sample_data <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">n =</span> <span class="fu">nrow</span>(dataNormal),</span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>                    <span class="at">Sigma =</span> <span class="fu">sd</span>(dataNormal<span class="sc">$</span>logIngreso),</span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a>                    <span class="at">y =</span> dataNormal<span class="sc">$</span>logIngreso)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Para ejecutar <code>STAN</code> en R tenemos la librería <em>cmdstanr</em></p>
+<div class="cell" data-hash="1Fundamentos-de-Bayesiana_cache/html/unnamed-chunk-37_992c608833f63b5573ee76882519f1b1">
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>model_NormalMedia <span class="ot">&lt;-</span> NormalMedia<span class="sc">$</span><span class="fu">sample</span>(<span class="at">data =</span> sample_data, </span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>                 <span class="at">chains =</span> <span class="dv">4</span>,</span>
+<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a>                 <span class="at">parallel_chains =</span> <span class="dv">4</span>,</span>
+<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a>                 <span class="at">seed =</span> <span class="dv">1234</span>,</span>
+<span id="cb43-5"><a href="#cb43-5" aria-hidden="true" tabindex="-1"></a>                 <span class="at">refresh =</span> <span class="dv">0</span></span>
+<span id="cb43-6"><a href="#cb43-6" aria-hidden="true" tabindex="-1"></a>                 )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Running MCMC with 4 parallel chains...
+
+Chain 1 finished in 14.8 seconds.
+Chain 2 finished in 14.8 seconds.
+Chain 3 finished in 15.0 seconds.
+Chain 4 finished in 14.6 seconds.
+
+All 4 chains finished successfully.
+Mean chain execution time: 14.8 seconds.
+Total execution time: 15.8 seconds.</code></pre>
+</div>
+</div>
+<p>La estimación del parámetro <span class="math inline">\(\theta\)</span> es:</p>
+<div class="cell" data-hash="1Fundamentos-de-Bayesiana_cache/html/unnamed-chunk-38_5271799128da8de20d7bb2c0177ccd46">
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>model_NormalMedia<span class="sc">$</span><span class="fu">summary</span>(<span class="at">variables =</span> <span class="st">"theta"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="table table-sm table-striped">
+<colgroup>
+<col style="width: 9%">
+<col style="width: 9%">
+<col style="width: 9%">
+<col style="width: 10%">
+<col style="width: 10%">
+<col style="width: 8%">
+<col style="width: 9%">
+<col style="width: 9%">
+<col style="width: 9%">
+<col style="width: 9%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">variable</th>
+<th style="text-align: right;">mean</th>
+<th style="text-align: right;">median</th>
+<th style="text-align: right;">sd</th>
+<th style="text-align: right;">mad</th>
+<th style="text-align: right;">q5</th>
+<th style="text-align: right;">q95</th>
+<th style="text-align: right;">rhat</th>
+<th style="text-align: right;">ess_bulk</th>
+<th style="text-align: right;">ess_tail</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">theta</td>
+<td style="text-align: right;">9.602638</td>
+<td style="text-align: right;">9.602705</td>
+<td style="text-align: right;">0.0113586</td>
+<td style="text-align: right;">0.0115272</td>
+<td style="text-align: right;">9.58438</td>
+<td style="text-align: right;">9.621251</td>
+<td style="text-align: right;">1.002634</td>
+<td style="text-align: right;">1402.407</td>
+<td style="text-align: right;">1639.262</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="cell" data-hash="1Fundamentos-de-Bayesiana_cache/html/unnamed-chunk-39_75032f4c69244ed619d63c9e145ddaa9">
+<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a>(<span class="fu">mcmc_dens_chains</span>(model_NormalMedia<span class="sc">$</span><span class="fu">draws</span>(<span class="st">"theta"</span>)) <span class="sc">+</span></span>
+<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mcmc_areas</span>(model_NormalMedia<span class="sc">$</span><span class="fu">draws</span>(<span class="st">"theta"</span>)))<span class="sc">/</span> </span>
+<span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a><span class="fu">mcmc_trace</span>(model_NormalMedia<span class="sc">$</span><span class="fu">draws</span>(<span class="st">"theta"</span>)) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="1Fundamentos-de-Bayesiana_files/figure-html/unnamed-chunk-39-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell" data-hash="1Fundamentos-de-Bayesiana_cache/html/unnamed-chunk-40_0d12b7709935cfad53f72b177fcb40b7">
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a>y_pred_B <span class="ot">&lt;-</span> model_NormalMedia<span class="sc">$</span><span class="fu">draws</span>(<span class="at">variables =</span> <span class="st">"ypred"</span>, <span class="at">format =</span> <span class="st">"matrix"</span>)</span>
+<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a>rowsrandom <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="fu">nrow</span>(y_pred_B), <span class="dv">100</span>)</span>
+<span id="cb47-3"><a href="#cb47-3" aria-hidden="true" tabindex="-1"></a>y_pred2 <span class="ot">&lt;-</span> y_pred_B[rowsrandom, ]</span>
+<span id="cb47-4"><a href="#cb47-4" aria-hidden="true" tabindex="-1"></a><span class="fu">ppc_dens_overlay</span>(<span class="at">y =</span> <span class="fu">as.numeric</span>(dataNormal<span class="sc">$</span>logIngreso), y_pred2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="1Fundamentos-de-Bayesiana_files/figure-html/unnamed-chunk-40-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+</section>
+<section id="modelos-multiparamétricos" class="level1">
+<h1>Modelos multiparamétricos</h1>
+<ul>
+<li>La distribución normal univariada que tiene dos parámetros: la media <span class="math inline">\(\theta\)</span> y la varianza <span class="math inline">\(\sigma^2\)</span>.</li>
+<li>La distribución multinomial cuyo parámetro es un vector de probabilidades <span class="math inline">\(\boldsymbol{\theta}\)</span>.</li>
+</ul>
+<section id="modelo-normal-con-media-y-varianza-desconocida" class="level2">
+<h2 class="anchored" data-anchor-id="modelo-normal-con-media-y-varianza-desconocida">Modelo Normal con media y varianza desconocida</h2>
+<p>Supongamos que se dispone de realizaciones de un conjunto de variables independientes e idénticamente distribuidas <span class="math inline">\(Y_1,\cdots,Y_n\sim N(\theta,\sigma^2)\)</span>. Cuando se desconoce tanto la media como la varianza de la distribución es necesario plantear diversos enfoques y situarse en el más conveniente, según el contexto del problema. En términos de la asignación de las distribuciones previas para <span class="math inline">\(\theta\)</span> y <span class="math inline">\(\sigma^2\)</span> es posible:</p>
+<ul>
+<li>Suponer que la distribución previa <span class="math inline">\(p(\theta)\)</span> es independiente de la distribución previa <span class="math inline">\(p(\sigma^2)\)</span> y que ambas distribuciones son informativas.</li>
+<li>Suponer que la distribución previa <span class="math inline">\(p(\theta)\)</span> es independiente de la distribución previa <span class="math inline">\(p(\sigma^2)\)</span> y que ambas distribuciones son no informativas.</li>
+<li>Suponer que la distribución previa para <span class="math inline">\(\theta\)</span> depende de <span class="math inline">\(\sigma^2\)</span> y escribirla como <span class="math inline">\(p(\theta \mid \sigma^2)\)</span>, mientras que la distribución previa de <span class="math inline">\(\sigma^2\)</span> no depende de <span class="math inline">\(\theta\)</span> y se puede escribir como <span class="math inline">\(p(\sigma^2)\)</span>.</li>
+</ul>
+</section>
+<section id="parámetros-independientes" class="level2">
+<h2 class="anchored" data-anchor-id="parámetros-independientes">Parámetros independientes</h2>
+<p>La distribución previa para el parámetro <span class="math inline">\(\theta\)</span> será</p>
+<p><span class="math display">\[
+\begin{equation*}
+\theta \sim Normal(\mu,\tau^2)
+\end{equation*}
+\]</span></p>
+<p>Y la distribución previa para el parámetro <span class="math inline">\(\sigma^2\)</span> será</p>
+<p><span class="math display">\[
+\begin{equation*}
+\sigma^2 \sim Inversa-Gamma(n_0/2,n_0\sigma^2_0/2)
+\end{equation*}
+\]</span></p>
+<p>Asumiendo independencia previa, la distribución previa conjunta estará dada por</p>
+<p><span class="math display">\[
+\begin{equation}
+p(\theta,\sigma^2)\propto (\sigma^2)^{-n_0/2-1}\exp\left\{-\dfrac{n_0\sigma^2_0}{2\sigma^2}\right\}
+\exp\left\{-\frac{1}{2\tau^2}(\theta-\mu)^2\right\}
+\end{equation}
+\]</span></p>
+<p>La distribución posterior conjunta de los parámetros de interés está dada por</p>
+<p><span class="math display">\[
+\begin{align}
+p(\theta,\sigma^2 \mid \mathbf{Y})&amp;\propto (\sigma^2)^{-(n+n_0)/2-1} \notag \\
+&amp;\times
+\exp\left\{-\frac{1}{2\sigma^2}\left[n_0\sigma^2_0+(n-1)S^2+n(\bar{y}-\theta)^2\right]-\frac{1}{2\tau^2}(\theta-\mu)^2\right\}
+\end{align}
+\]</span></p>
+<p>La distribución posterior condicional de <span class="math inline">\(\theta\)</span> es</p>
+<p><span class="math display">\[
+\begin{equation}
+\theta  \mid  \sigma^2,\mathbf{Y} \sim Normal(\mu_n,\tau_n^2)
+\end{equation}
+\]</span></p>
+<p>En donde las expresiones para <span class="math inline">\(\mu_n\)</span> y <span class="math inline">\(\tau_n^2\)</span> están dados previamente. Por otro lado, la distribución posterior condicional de <span class="math inline">\(\sigma^2\)</span> es</p>
+<p><span class="math display">\[
+\begin{equation}
+\sigma^2  \mid  \theta,\mathbf{Y} \sim Inversa-Gamma\left(\dfrac{n_0+n}{2},\dfrac{v_0}{2}\right)
+\end{equation}
+\]</span></p>
+<p>con <span class="math inline">\(v_0=n_0\sigma^2_0+(n-1)S^2+n(\bar{y}-\theta)^2\)</span>.</p>
+<section id="práctica-en-stan-4" class="level3">
+<h3 class="anchored" data-anchor-id="práctica-en-stan-4">Práctica en <strong>STAN</strong></h3>
+<p>Sea <span class="math inline">\(Y\)</span> el logaritmo del ingreso</p>
+<div class="cell" data-hash="1Fundamentos-de-Bayesiana_cache/html/unnamed-chunk-41_9f12a0785d797a66f241dc6952a18dc2">
+<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>dataNormal <span class="ot">&lt;-</span> encuesta <span class="sc">%&gt;%</span></span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">transmute</span>(</span>
+<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a><span class="at">depto =</span> <span class="fu">str_pad</span>(</span>
+<span id="cb48-4"><a href="#cb48-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">string =</span> dpto,</span>
+<span id="cb48-5"><a href="#cb48-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">pad =</span> <span class="st">"0"</span>,</span>
+<span id="cb48-6"><a href="#cb48-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">width =</span> <span class="dv">2</span></span>
+<span id="cb48-7"><a href="#cb48-7" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb48-8"><a href="#cb48-8" aria-hidden="true" tabindex="-1"></a>      <span class="at">logIngreso =</span> <span class="fu">log</span>(ingcorte <span class="sc">+</span><span class="dv">1</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb48-9"><a href="#cb48-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(depto <span class="sc">==</span> <span class="st">"02"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Creando código de <code>STAN</code></p>
+<div class="cell" data-hash="1Fundamentos-de-Bayesiana_cache/html/unnamed-chunk-42_ec4aa9d61ab1f0089f4560c6671a79f0">
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a>data {</span>
+<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a>  int<span class="sc">&lt;</span>lower<span class="ot">=</span><span class="dv">0</span><span class="sc">&gt;</span> n;</span>
+<span id="cb49-3"><a href="#cb49-3" aria-hidden="true" tabindex="-1"></a>  real y[n];</span>
+<span id="cb49-4"><a href="#cb49-4" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb49-5"><a href="#cb49-5" aria-hidden="true" tabindex="-1"></a>parameters {</span>
+<span id="cb49-6"><a href="#cb49-6" aria-hidden="true" tabindex="-1"></a>  real sigma;</span>
+<span id="cb49-7"><a href="#cb49-7" aria-hidden="true" tabindex="-1"></a>  real theta;</span>
+<span id="cb49-8"><a href="#cb49-8" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb49-9"><a href="#cb49-9" aria-hidden="true" tabindex="-1"></a>transformed parameters {</span>
+<span id="cb49-10"><a href="#cb49-10" aria-hidden="true" tabindex="-1"></a>  real sigma2;</span>
+<span id="cb49-11"><a href="#cb49-11" aria-hidden="true" tabindex="-1"></a>  sigma2 <span class="ot">=</span> <span class="fu">pow</span>(sigma, <span class="dv">2</span>);</span>
+<span id="cb49-12"><a href="#cb49-12" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb49-13"><a href="#cb49-13" aria-hidden="true" tabindex="-1"></a>model {</span>
+<span id="cb49-14"><a href="#cb49-14" aria-hidden="true" tabindex="-1"></a>  y <span class="sc">~</span> <span class="fu">normal</span>(theta, sigma);</span>
+<span id="cb49-15"><a href="#cb49-15" aria-hidden="true" tabindex="-1"></a>  theta <span class="sc">~</span> <span class="fu">normal</span>(<span class="dv">0</span>, <span class="dv">1000</span>);</span>
+<span id="cb49-16"><a href="#cb49-16" aria-hidden="true" tabindex="-1"></a>  sigma2 <span class="sc">~</span> <span class="fu">inv_gamma</span>(<span class="fl">0.001</span>, <span class="fl">0.001</span>);</span>
+<span id="cb49-17"><a href="#cb49-17" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb49-18"><a href="#cb49-18" aria-hidden="true" tabindex="-1"></a>generated quantities {</span>
+<span id="cb49-19"><a href="#cb49-19" aria-hidden="true" tabindex="-1"></a>    real ypred[n];                    <span class="sc">/</span><span class="er">/</span> vector de longitud n</span>
+<span id="cb49-20"><a href="#cb49-20" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span>(kk <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n){</span>
+<span id="cb49-21"><a href="#cb49-21" aria-hidden="true" tabindex="-1"></a>    ypred[kk] <span class="ot">=</span> <span class="fu">normal_rng</span>(theta,sigma);</span>
+<span id="cb49-22"><a href="#cb49-22" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb49-23"><a href="#cb49-23" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Preparando el código de <code>STAN</code></p>
+<div class="cell" data-hash="1Fundamentos-de-Bayesiana_cache/html/unnamed-chunk-43_9389bc3d4daa12ed95bfd549ca09403c">
+<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>NormalMeanVar  <span class="ot">&lt;-</span> <span class="fu">cmdstan_model</span>(<span class="at">stan_file =</span> <span class="st">"Data/modelosStan/NormalMeanVar.stan"</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Organizando datos para <code>STAN</code></p>
+<div class="cell" data-hash="1Fundamentos-de-Bayesiana_cache/html/unnamed-chunk-44_7fd4b9d8c644cbe492888d3df2c3b112">
+<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a>sample_data <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">n =</span> <span class="fu">nrow</span>(dataNormal),</span>
+<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a>                    <span class="at">y =</span> dataNormal<span class="sc">$</span>logIngreso)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Para ejecutar <code>STAN</code> en R tenemos la librería <em>cmdstanr</em></p>
+<div class="cell" data-hash="1Fundamentos-de-Bayesiana_cache/html/unnamed-chunk-45_3cf1e490042b72cb65f93ebbecf3aa44">
+<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a>model_NormalMedia <span class="ot">&lt;-</span> NormalMeanVar<span class="sc">$</span><span class="fu">sample</span>(<span class="at">data =</span> sample_data, </span>
+<span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a>                 <span class="at">chains =</span> <span class="dv">4</span>,</span>
+<span id="cb52-3"><a href="#cb52-3" aria-hidden="true" tabindex="-1"></a>                 <span class="at">parallel_chains =</span> <span class="dv">4</span>,</span>
+<span id="cb52-4"><a href="#cb52-4" aria-hidden="true" tabindex="-1"></a>                 <span class="at">seed =</span> <span class="dv">1234</span>,</span>
+<span id="cb52-5"><a href="#cb52-5" aria-hidden="true" tabindex="-1"></a>                 <span class="at">refresh =</span> <span class="dv">0</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Running MCMC with 4 parallel chains...
+
+Chain 1 finished in 13.9 seconds.
+Chain 3 finished in 14.0 seconds.
+Chain 2 finished in 14.0 seconds.
+Chain 4 finished in 13.2 seconds.
+
+All 4 chains finished successfully.
+Mean chain execution time: 13.8 seconds.
+Total execution time: 15.3 seconds.</code></pre>
+</div>
+</div>
+<p>La estimación del parámetro <span class="math inline">\(\theta\)</span> es:</p>
+<div class="cell" data-hash="1Fundamentos-de-Bayesiana_cache/html/unnamed-chunk-46_bf0a1ac5cdc8138dbad0e4a6d0a790c8">
+<div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a>model_NormalMedia<span class="sc">$</span><span class="fu">summary</span>(<span class="at">variables =</span> <span class="fu">c</span>(<span class="st">"theta"</span>, <span class="st">"sigma"</span>, <span class="st">"sigma2"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="table table-sm table-striped">
+<colgroup>
+<col style="width: 9%">
+<col style="width: 10%">
+<col style="width: 10%">
+<col style="width: 10%">
+<col style="width: 10%">
+<col style="width: 10%">
+<col style="width: 10%">
+<col style="width: 9%">
+<col style="width: 9%">
+<col style="width: 9%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">variable</th>
+<th style="text-align: right;">mean</th>
+<th style="text-align: right;">median</th>
+<th style="text-align: right;">sd</th>
+<th style="text-align: right;">mad</th>
+<th style="text-align: right;">q5</th>
+<th style="text-align: right;">q95</th>
+<th style="text-align: right;">rhat</th>
+<th style="text-align: right;">ess_bulk</th>
+<th style="text-align: right;">ess_tail</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">theta</td>
+<td style="text-align: right;">9.6026857</td>
+<td style="text-align: right;">9.6026250</td>
+<td style="text-align: right;">0.0114716</td>
+<td style="text-align: right;">0.0114086</td>
+<td style="text-align: right;">9.5842095</td>
+<td style="text-align: right;">9.6220310</td>
+<td style="text-align: right;">1.001454</td>
+<td style="text-align: right;">3549.443</td>
+<td style="text-align: right;">2292.479</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">sigma</td>
+<td style="text-align: right;">0.6684389</td>
+<td style="text-align: right;">0.6682630</td>
+<td style="text-align: right;">0.0079631</td>
+<td style="text-align: right;">0.0079304</td>
+<td style="text-align: right;">0.6554374</td>
+<td style="text-align: right;">0.6815865</td>
+<td style="text-align: right;">1.000603</td>
+<td style="text-align: right;">4119.728</td>
+<td style="text-align: right;">2594.585</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">sigma2</td>
+<td style="text-align: right;">0.4468739</td>
+<td style="text-align: right;">0.4465745</td>
+<td style="text-align: right;">0.0106488</td>
+<td style="text-align: right;">0.0106036</td>
+<td style="text-align: right;">0.4295983</td>
+<td style="text-align: right;">0.4645597</td>
+<td style="text-align: right;">1.000616</td>
+<td style="text-align: right;">4119.779</td>
+<td style="text-align: right;">2594.585</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="cell" data-hash="1Fundamentos-de-Bayesiana_cache/html/unnamed-chunk-47_dd7b152865a7ce1b2b958e4252e6548a">
+<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a>(<span class="fu">mcmc_dens_chains</span>(model_NormalMedia<span class="sc">$</span><span class="fu">draws</span>(<span class="st">"theta"</span>)) <span class="sc">+</span></span>
+<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mcmc_areas</span>(model_NormalMedia<span class="sc">$</span><span class="fu">draws</span>(<span class="st">"theta"</span>)))<span class="sc">/</span> </span>
+<span id="cb55-3"><a href="#cb55-3" aria-hidden="true" tabindex="-1"></a><span class="fu">mcmc_trace</span>(model_NormalMedia<span class="sc">$</span><span class="fu">draws</span>(<span class="st">"theta"</span>)) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="1Fundamentos-de-Bayesiana_files/figure-html/unnamed-chunk-47-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell" data-hash="1Fundamentos-de-Bayesiana_cache/html/unnamed-chunk-48_db39c4ced9ae807780e9b82005a5ba0e">
+<div class="sourceCode cell-code" id="cb56"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a>(<span class="fu">mcmc_dens_chains</span>(model_NormalMedia<span class="sc">$</span><span class="fu">draws</span>(<span class="st">"sigma"</span>)) <span class="sc">+</span></span>
+<span id="cb56-2"><a href="#cb56-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mcmc_areas</span>(model_NormalMedia<span class="sc">$</span><span class="fu">draws</span>(<span class="st">"sigma"</span>)))<span class="sc">/</span> </span>
+<span id="cb56-3"><a href="#cb56-3" aria-hidden="true" tabindex="-1"></a><span class="fu">mcmc_trace</span>(model_NormalMedia<span class="sc">$</span><span class="fu">draws</span>(<span class="st">"sigma"</span>)) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="1Fundamentos-de-Bayesiana_files/figure-html/unnamed-chunk-48-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell" data-hash="1Fundamentos-de-Bayesiana_cache/html/unnamed-chunk-49_7dab8a9bbdbe6dd12c6805f889555f62">
+<div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a>(<span class="fu">mcmc_dens_chains</span>(model_NormalMedia<span class="sc">$</span><span class="fu">draws</span>(<span class="st">"sigma2"</span>)) <span class="sc">+</span></span>
+<span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mcmc_areas</span>(model_NormalMedia<span class="sc">$</span><span class="fu">draws</span>(<span class="st">"sigma2"</span>)))<span class="sc">/</span> </span>
+<span id="cb57-3"><a href="#cb57-3" aria-hidden="true" tabindex="-1"></a><span class="fu">mcmc_trace</span>(model_NormalMedia<span class="sc">$</span><span class="fu">draws</span>(<span class="st">"sigma2"</span>)) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="1Fundamentos-de-Bayesiana_files/figure-html/unnamed-chunk-49-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell" data-hash="1Fundamentos-de-Bayesiana_cache/html/unnamed-chunk-50_e97cda373c922c75e80cb1866b9d3191">
+<div class="sourceCode cell-code" id="cb58"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a>y_pred_B <span class="ot">&lt;-</span> model_NormalMedia<span class="sc">$</span><span class="fu">draws</span>(<span class="at">variables =</span> <span class="st">"ypred"</span>, <span class="at">format =</span> <span class="st">"matrix"</span>)</span>
+<span id="cb58-2"><a href="#cb58-2" aria-hidden="true" tabindex="-1"></a>rowsrandom <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="fu">nrow</span>(y_pred_B), <span class="dv">100</span>)</span>
+<span id="cb58-3"><a href="#cb58-3" aria-hidden="true" tabindex="-1"></a>y_pred2 <span class="ot">&lt;-</span> y_pred_B[rowsrandom, ]</span>
+<span id="cb58-4"><a href="#cb58-4" aria-hidden="true" tabindex="-1"></a><span class="fu">ppc_dens_overlay</span>(<span class="at">y =</span> <span class="fu">as.numeric</span>(dataNormal<span class="sc">$</span>logIngreso), y_pred2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="1Fundamentos-de-Bayesiana_files/figure-html/unnamed-chunk-50-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+</section>
+<section id="modelo-multinomial" class="level2">
+<h2 class="anchored" data-anchor-id="modelo-multinomial">Modelo Multinomial</h2>
+<p>En esta sección discutimos el modelamiento bayesiano de datos provenientes de una distribución multinomial que corresponde a una extensión multivariada de la distribución binomial. Suponga que <span class="math inline">\(\textbf{Y}=(Y_1,\ldots,Y_p)'\)</span> es un vector aleatorio con distribución multinomial, así, su distribución está parametrizada por el vector <span class="math inline">\(\boldsymbol{\theta}=(\theta_1,\ldots,\theta_p)'\)</span> y está dada por la siguiente expresión</p>
+<p><span class="math display">\[
+\begin{equation}
+p(\mathbf{Y} \mid \boldsymbol{\theta})=\binom{n}{y_1,\ldots,y_p}\prod_{i=1}^p\theta_i^{y_i} \ \ \ \ \ \theta_i&gt;0 \texttt{ , }  \sum_{i=1}^py_i=n \texttt{ y } \sum_{i=1}^p\theta_i=1
+\end{equation}
+\]</span> Donde</p>
+<p><span class="math display">\[
+\begin{equation*}
+\binom{n}{y_1,\ldots,y_p}=\frac{n!}{y_1!\cdots y_p!}.
+\end{equation*}
+\]</span></p>
+<p>Como cada parámetro <span class="math inline">\(\theta_i\)</span> está restringido al espacio <span class="math inline">\(\Theta=[0,1]\)</span>, entonces es posible asignar a la distribución de Dirichlet como la distribución previa del vector de parámetros. Por lo tanto la distribución previa del vector de parámetros <span class="math inline">\(\boldsymbol{\theta}\)</span>, parametrizada por el vector de hiperparámetros <span class="math inline">\(\boldsymbol{\alpha}=(\alpha_1,\ldots,\alpha_p)'\)</span>, está dada por</p>
+<p><span class="math display">\[
+\begin{equation}
+p(\boldsymbol{\theta} \mid \boldsymbol{\alpha})=\frac{\Gamma(\alpha_1+\cdots+\alpha_p)}{\Gamma(\alpha_1)\cdots\Gamma(\alpha_p)}
+  \prod_{i=1}^p\theta_i^{\alpha_i-1} \ \ \ \ \ \alpha_i&gt;0 \texttt{ y } \sum_{i=1}^p\theta_i=1
+\end{equation}
+\]</span></p>
+<p>La distribución posterior del parámetro <span class="math inline">\(\boldsymbol{\theta}\)</span> sigue una distribución <span class="math inline">\(Dirichlet(y_1+\alpha_1,\ldots,y_p+\alpha_p)\)</span></p>
+<section id="práctica-en-stan-5" class="level3">
+<h3 class="anchored" data-anchor-id="práctica-en-stan-5">Práctica en <strong>STAN</strong></h3>
+<p>Sea <span class="math inline">\(Y\)</span> Condición de actividad laboral</p>
+<div class="cell" data-hash="1Fundamentos-de-Bayesiana_cache/html/unnamed-chunk-51_912fd0f95a95390d699ff7ed7eabaa8a">
+<div class="sourceCode cell-code" id="cb59"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a>(dataMult <span class="ot">&lt;-</span> encuesta <span class="sc">%&gt;%</span> <span class="fu">filter</span>(condact3<span class="sc">&gt;</span><span class="dv">0</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb59-2"><a href="#cb59-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">transmute</span>(<span class="at">empleo =</span> <span class="fu">as_factor</span>(condact3)) <span class="sc">%&gt;%</span> </span>
+<span id="cb59-3"><a href="#cb59-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(empleo) <span class="sc">%&gt;%</span>  <span class="fu">tally</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="table table-sm table-striped">
+<thead>
+<tr class="header">
+<th style="text-align: left;">empleo</th>
+<th style="text-align: right;">n</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Ocupado</td>
+<td style="text-align: right;">63750</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Desocupado</td>
+<td style="text-align: right;">6651</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Inactivo</td>
+<td style="text-align: right;">52292</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Creando código de <code>STAN</code></p>
+<div class="cell" data-hash="1Fundamentos-de-Bayesiana_cache/html/unnamed-chunk-52_d7ad8c9a4f9feff1411b65ab57008473">
+<div class="sourceCode cell-code" id="cb60"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a>data {</span>
+<span id="cb60-2"><a href="#cb60-2" aria-hidden="true" tabindex="-1"></a>  int<span class="sc">&lt;</span>lower<span class="ot">=</span><span class="dv">0</span><span class="sc">&gt;</span> k;  <span class="sc">/</span><span class="er">/</span> Número de cátegoria </span>
+<span id="cb60-3"><a href="#cb60-3" aria-hidden="true" tabindex="-1"></a>  int y[k];        <span class="sc">/</span><span class="er">/</span> Número de exitos </span>
+<span id="cb60-4"><a href="#cb60-4" aria-hidden="true" tabindex="-1"></a>  vector[k] alpha; <span class="sc">/</span><span class="er">/</span> Parámetro de las distribción previa </span>
+<span id="cb60-5"><a href="#cb60-5" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb60-6"><a href="#cb60-6" aria-hidden="true" tabindex="-1"></a>parameters {</span>
+<span id="cb60-7"><a href="#cb60-7" aria-hidden="true" tabindex="-1"></a>  simplex[k] theta;</span>
+<span id="cb60-8"><a href="#cb60-8" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb60-9"><a href="#cb60-9" aria-hidden="true" tabindex="-1"></a>transformed parameters {</span>
+<span id="cb60-10"><a href="#cb60-10" aria-hidden="true" tabindex="-1"></a>  real delta;</span>
+<span id="cb60-11"><a href="#cb60-11" aria-hidden="true" tabindex="-1"></a>  delta <span class="ot">=</span> theta[<span class="dv">1</span>] <span class="sc">+</span> theta[<span class="dv">2</span>];</span>
+<span id="cb60-12"><a href="#cb60-12" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb60-13"><a href="#cb60-13" aria-hidden="true" tabindex="-1"></a>model {</span>
+<span id="cb60-14"><a href="#cb60-14" aria-hidden="true" tabindex="-1"></a>  y <span class="sc">~</span> <span class="fu">multinomial</span>(theta);</span>
+<span id="cb60-15"><a href="#cb60-15" aria-hidden="true" tabindex="-1"></a>  theta <span class="sc">~</span> <span class="fu">dirichlet</span>(alpha);</span>
+<span id="cb60-16"><a href="#cb60-16" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb60-17"><a href="#cb60-17" aria-hidden="true" tabindex="-1"></a>generated quantities {</span>
+<span id="cb60-18"><a href="#cb60-18" aria-hidden="true" tabindex="-1"></a>  int ypred[k];</span>
+<span id="cb60-19"><a href="#cb60-19" aria-hidden="true" tabindex="-1"></a>  ypred <span class="ot">=</span> <span class="fu">multinomial_rng</span>(theta, <span class="dv">100</span>);</span>
+<span id="cb60-20"><a href="#cb60-20" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Preparando el código de <code>STAN</code></p>
+<div class="cell" data-hash="1Fundamentos-de-Bayesiana_cache/html/unnamed-chunk-53_7e44d36585d2e1bdc189aa7cc5a1e431">
+<div class="sourceCode cell-code" id="cb61"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a>Multinom  <span class="ot">&lt;-</span> <span class="fu">cmdstan_model</span>(<span class="at">stan_file =</span> <span class="st">"Data/modelosStan/Multinom.stan"</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Organizando datos para <code>STAN</code></p>
+<div class="cell" data-hash="1Fundamentos-de-Bayesiana_cache/html/unnamed-chunk-54_5ed1bf348c8f1ad46ac3d03144244f87">
+<div class="sourceCode cell-code" id="cb62"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a>sample_data <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">k =</span> <span class="fu">nrow</span>(dataMult),</span>
+<span id="cb62-2"><a href="#cb62-2" aria-hidden="true" tabindex="-1"></a>                    <span class="at">y =</span> dataMult<span class="sc">$</span>n,</span>
+<span id="cb62-3"><a href="#cb62-3" aria-hidden="true" tabindex="-1"></a>                    <span class="at">alpha =</span> <span class="fu">c</span>(<span class="fl">0.5</span>, <span class="fl">0.5</span>, <span class="fl">0.5</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Para ejecutar <code>STAN</code> en R tenemos la librería <em>cmdstanr</em></p>
+<div class="cell" data-hash="1Fundamentos-de-Bayesiana_cache/html/unnamed-chunk-55_c1c2501aaba4520c71f4413cdb55a5c5">
+<div class="sourceCode cell-code" id="cb63"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a>model_Multinom <span class="ot">&lt;-</span> Multinom<span class="sc">$</span><span class="fu">sample</span>(<span class="at">data =</span> sample_data, </span>
+<span id="cb63-2"><a href="#cb63-2" aria-hidden="true" tabindex="-1"></a>                 <span class="at">chains =</span> <span class="dv">4</span>,</span>
+<span id="cb63-3"><a href="#cb63-3" aria-hidden="true" tabindex="-1"></a>                 <span class="at">parallel_chains =</span> <span class="dv">4</span>,</span>
+<span id="cb63-4"><a href="#cb63-4" aria-hidden="true" tabindex="-1"></a>                 <span class="at">seed =</span> <span class="dv">1234</span>,</span>
+<span id="cb63-5"><a href="#cb63-5" aria-hidden="true" tabindex="-1"></a>                 <span class="at">refresh =</span> <span class="dv">1000</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Running MCMC with 4 parallel chains...
+
+Chain 1 Iteration:    1 / 2000 [  0%]  (Warmup) 
+Chain 1 Iteration: 1000 / 2000 [ 50%]  (Warmup) 
+Chain 1 Iteration: 1001 / 2000 [ 50%]  (Sampling) 
+Chain 1 Iteration: 2000 / 2000 [100%]  (Sampling) 
+Chain 2 Iteration:    1 / 2000 [  0%]  (Warmup) 
+Chain 2 Iteration: 1000 / 2000 [ 50%]  (Warmup) 
+Chain 2 Iteration: 1001 / 2000 [ 50%]  (Sampling) 
+Chain 2 Iteration: 2000 / 2000 [100%]  (Sampling) 
+Chain 3 Iteration:    1 / 2000 [  0%]  (Warmup) 
+Chain 3 Iteration: 1000 / 2000 [ 50%]  (Warmup) 
+Chain 3 Iteration: 1001 / 2000 [ 50%]  (Sampling) 
+Chain 3 Iteration: 2000 / 2000 [100%]  (Sampling) 
+Chain 1 finished in 0.1 seconds.
+Chain 2 finished in 0.1 seconds.
+Chain 3 finished in 0.1 seconds.
+Chain 4 Iteration:    1 / 2000 [  0%]  (Warmup) 
+Chain 4 Iteration: 1000 / 2000 [ 50%]  (Warmup) 
+Chain 4 Iteration: 1001 / 2000 [ 50%]  (Sampling) 
+Chain 4 Iteration: 2000 / 2000 [100%]  (Sampling) 
+Chain 4 finished in 0.1 seconds.
+
+All 4 chains finished successfully.
+Mean chain execution time: 0.1 seconds.
+Total execution time: 1.0 seconds.</code></pre>
+</div>
+</div>
+<p>La estimación del parámetro <span class="math inline">\(\theta\)</span> es:</p>
+<div class="cell" data-hash="1Fundamentos-de-Bayesiana_cache/html/unnamed-chunk-56_1ab48839956a84ec54605c799b843f3c">
+<div class="sourceCode cell-code" id="cb65"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a>model_Multinom<span class="sc">$</span><span class="fu">summary</span>(<span class="at">variables =</span> <span class="fu">c</span>(<span class="st">"delta"</span>, <span class="st">"theta"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="table table-sm table-striped">
+<colgroup>
+<col style="width: 9%">
+<col style="width: 10%">
+<col style="width: 10%">
+<col style="width: 10%">
+<col style="width: 10%">
+<col style="width: 10%">
+<col style="width: 10%">
+<col style="width: 9%">
+<col style="width: 9%">
+<col style="width: 9%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">variable</th>
+<th style="text-align: right;">mean</th>
+<th style="text-align: right;">median</th>
+<th style="text-align: right;">sd</th>
+<th style="text-align: right;">mad</th>
+<th style="text-align: right;">q5</th>
+<th style="text-align: right;">q95</th>
+<th style="text-align: right;">rhat</th>
+<th style="text-align: right;">ess_bulk</th>
+<th style="text-align: right;">ess_tail</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">delta</td>
+<td style="text-align: right;">0.5737999</td>
+<td style="text-align: right;">0.5738015</td>
+<td style="text-align: right;">0.0014250</td>
+<td style="text-align: right;">0.0014226</td>
+<td style="text-align: right;">0.5715070</td>
+<td style="text-align: right;">0.5761050</td>
+<td style="text-align: right;">1.000441</td>
+<td style="text-align: right;">3870.517</td>
+<td style="text-align: right;">2496.617</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">theta[1]</td>
+<td style="text-align: right;">0.5195947</td>
+<td style="text-align: right;">0.5195725</td>
+<td style="text-align: right;">0.0014301</td>
+<td style="text-align: right;">0.0014300</td>
+<td style="text-align: right;">0.5172728</td>
+<td style="text-align: right;">0.5219343</td>
+<td style="text-align: right;">1.002805</td>
+<td style="text-align: right;">3936.722</td>
+<td style="text-align: right;">2594.305</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">theta[2]</td>
+<td style="text-align: right;">0.0542053</td>
+<td style="text-align: right;">0.0542061</td>
+<td style="text-align: right;">0.0006465</td>
+<td style="text-align: right;">0.0006288</td>
+<td style="text-align: right;">0.0531388</td>
+<td style="text-align: right;">0.0552837</td>
+<td style="text-align: right;">1.001399</td>
+<td style="text-align: right;">3671.948</td>
+<td style="text-align: right;">2408.734</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">theta[3]</td>
+<td style="text-align: right;">0.4262001</td>
+<td style="text-align: right;">0.4261985</td>
+<td style="text-align: right;">0.0014250</td>
+<td style="text-align: right;">0.0014226</td>
+<td style="text-align: right;">0.4238950</td>
+<td style="text-align: right;">0.4284930</td>
+<td style="text-align: right;">1.000442</td>
+<td style="text-align: right;">3870.517</td>
+<td style="text-align: right;">2496.617</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="cell" data-hash="1Fundamentos-de-Bayesiana_cache/html/unnamed-chunk-57_15c2c426af2a4dd8ef30985ea1d64c48">
+<div class="sourceCode cell-code" id="cb66"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb66-1"><a href="#cb66-1" aria-hidden="true" tabindex="-1"></a>(<span class="fu">mcmc_dens_chains</span>(model_Multinom<span class="sc">$</span><span class="fu">draws</span>(<span class="st">"theta[1]"</span>)) <span class="sc">+</span></span>
+<span id="cb66-2"><a href="#cb66-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mcmc_areas</span>(model_Multinom<span class="sc">$</span><span class="fu">draws</span>(<span class="st">"theta[1]"</span>)))<span class="sc">/</span> </span>
+<span id="cb66-3"><a href="#cb66-3" aria-hidden="true" tabindex="-1"></a><span class="fu">mcmc_trace</span>(model_Multinom<span class="sc">$</span><span class="fu">draws</span>(<span class="st">"theta[1]"</span>)) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="1Fundamentos-de-Bayesiana_files/figure-html/unnamed-chunk-57-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell" data-hash="1Fundamentos-de-Bayesiana_cache/html/unnamed-chunk-58_3064a10d2bff029a55f5dbcaf8553a1e">
+<div class="sourceCode cell-code" id="cb67"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb67-1"><a href="#cb67-1" aria-hidden="true" tabindex="-1"></a>(<span class="fu">mcmc_dens_chains</span>(model_Multinom<span class="sc">$</span><span class="fu">draws</span>(<span class="st">"theta[2]"</span>)) <span class="sc">+</span></span>
+<span id="cb67-2"><a href="#cb67-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mcmc_areas</span>(model_Multinom<span class="sc">$</span><span class="fu">draws</span>(<span class="st">"theta[2]"</span>)))<span class="sc">/</span> </span>
+<span id="cb67-3"><a href="#cb67-3" aria-hidden="true" tabindex="-1"></a><span class="fu">mcmc_trace</span>(model_Multinom<span class="sc">$</span><span class="fu">draws</span>(<span class="st">"theta[2]"</span>)) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="1Fundamentos-de-Bayesiana_files/figure-html/unnamed-chunk-58-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell" data-hash="1Fundamentos-de-Bayesiana_cache/html/unnamed-chunk-59_34cb0f8893eba39aa932914c3c86bbe1">
+<div class="sourceCode cell-code" id="cb68"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb68-1"><a href="#cb68-1" aria-hidden="true" tabindex="-1"></a>(<span class="fu">mcmc_dens_chains</span>(model_Multinom<span class="sc">$</span><span class="fu">draws</span>(<span class="st">"theta[3]"</span>)) <span class="sc">+</span></span>
+<span id="cb68-2"><a href="#cb68-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mcmc_areas</span>(model_Multinom<span class="sc">$</span><span class="fu">draws</span>(<span class="st">"theta[3]"</span>)))<span class="sc">/</span> </span>
+<span id="cb68-3"><a href="#cb68-3" aria-hidden="true" tabindex="-1"></a><span class="fu">mcmc_trace</span>(model_Multinom<span class="sc">$</span><span class="fu">draws</span>(<span class="st">"theta[3]"</span>)) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="1Fundamentos-de-Bayesiana_files/figure-html/unnamed-chunk-59-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell" data-hash="1Fundamentos-de-Bayesiana_cache/html/unnamed-chunk-60_d0f23cdb5091ffdc5743a8d0d6d66cc0">
+<div class="sourceCode cell-code" id="cb69"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb69-1"><a href="#cb69-1" aria-hidden="true" tabindex="-1"></a>(<span class="fu">mcmc_dens_chains</span>(model_Multinom<span class="sc">$</span><span class="fu">draws</span>(<span class="st">"delta"</span>)) <span class="sc">+</span></span>
+<span id="cb69-2"><a href="#cb69-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mcmc_areas</span>(model_Multinom<span class="sc">$</span><span class="fu">draws</span>(<span class="st">"delta"</span>)))<span class="sc">/</span> </span>
+<span id="cb69-3"><a href="#cb69-3" aria-hidden="true" tabindex="-1"></a><span class="fu">mcmc_trace</span>(model_Multinom<span class="sc">$</span><span class="fu">draws</span>(<span class="st">"delta"</span>)) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="1Fundamentos-de-Bayesiana_files/figure-html/unnamed-chunk-60-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell" data-hash="1Fundamentos-de-Bayesiana_cache/html/unnamed-chunk-61_d1e22a785be6ca1f0b76d0197729bbdf">
+<div class="sourceCode cell-code" id="cb70"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb70-1"><a href="#cb70-1" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="fu">nrow</span>(dataMult)</span>
+<span id="cb70-2"><a href="#cb70-2" aria-hidden="true" tabindex="-1"></a>y_pred_B <span class="ot">&lt;-</span> model_Multinom<span class="sc">$</span><span class="fu">draws</span>(<span class="at">variables =</span> <span class="st">"ypred"</span>, <span class="at">format =</span> <span class="st">"matrix"</span>)</span>
+<span id="cb70-3"><a href="#cb70-3" aria-hidden="true" tabindex="-1"></a>rowsrandom <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="fu">nrow</span>(y_pred_B), <span class="dv">100</span>)</span>
+<span id="cb70-4"><a href="#cb70-4" aria-hidden="true" tabindex="-1"></a>y_pred2 <span class="ot">&lt;-</span> y_pred_B[, <span class="dv">1</span><span class="sc">:</span>n]</span>
+<span id="cb70-5"><a href="#cb70-5" aria-hidden="true" tabindex="-1"></a><span class="fu">ppc_dens_overlay</span>(<span class="at">y =</span> <span class="fu">as.numeric</span>(dataMult<span class="sc">$</span>n), y_pred2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="1Fundamentos-de-Bayesiana_files/figure-html/unnamed-chunk-61-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+</section>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    setTimeout(function() {
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const cites = ref.parentNode.getAttribute('data-cites').split(' ');
+    tippyHover(ref, function() {
+      var popup = window.document.createElement('div');
+      cites.forEach(function(cite) {
+        var citeDiv = window.document.createElement('div');
+        citeDiv.classList.add('hanging-indent');
+        citeDiv.classList.add('csl-entry');
+        var biblioDiv = window.document.getElementById('ref-' + cite);
+        if (biblioDiv) {
+          citeDiv.innerHTML = biblioDiv.innerHTML;
+        }
+        popup.appendChild(citeDiv);
+      });
+      return popup.innerHTML;
+    });
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

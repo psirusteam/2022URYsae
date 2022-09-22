@@ -1,0 +1,63 @@
+---
+title: "Fundamentos de la inferencia Bayesiana en R y STAN"
+subtitle: "CEPAL - División de Estadísticas Sociales"
+author: "Andrés Gutiérrez - Stalyn Guerrero"
+format: html
+editor: visual
+project:
+  type: website
+  output-dir: docs
+server: shiny
+---
+
+```{r setup, include=FALSE, message=FALSE, error=FALSE, warning=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, cache = TRUE)
+library(printr)
+library(shiny)
+library(ggplot2)
+```
+
+
+```{r, eval=TRUE, echo=FALSE}
+numericInput(inputId = "n",
+             label =  "Observaciones:", 
+             value = 100, min = 10)
+numericInput(inputId = "n1",
+             label =  "Número de éxitos", 
+             value = 50, min = 10)
+sliderInput(inputId = "shape1",
+             label =  "shape1", 
+             value = 1, min = 0,max = 1000)
+sliderInput(inputId = "shape2",
+             label =  "shape2", 
+             value = 1, min = 0,max = 1000)
+
+```
+
+```{r, echo=FALSE}
+#| panel: fill
+plotOutput('p1')
+```
+
+
+```{r, echo=FALSE}
+#| context: server
+output$p1 <- renderPlot({
+ggplot(data = data.frame(x = 0),
+             mapping = aes(x = x)) + ylab("f(x)") +
+  stat_function(fun = dbeta,
+                args = list(shape1 = input$shape1,
+                            shape2 = input$shape2),
+                color = "red", size = 1.5)+
+  stat_function(fun = dbeta,
+                size = 1.5, 
+                args = list(shape1 = input$shape1 + input$n1, 
+                            shape2 = input$shape2 - input$n1 + input$n)) +
+  theme(legend.position = "none") + 
+  xlim(0,0.5) + theme_bw(20) + 
+  labs(x = latex2exp::TeX("\\theta")) + 
+  geom_vline(xintercept = input$n1 / input$n,
+             color = "green")
+})
+```
+
