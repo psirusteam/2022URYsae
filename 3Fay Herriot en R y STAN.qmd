@@ -11,6 +11,7 @@ project:
 ```{r setup, include=FALSE, message=FALSE, error=FALSE, warning=FALSE}
 knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, cache = TRUE)
 library(printr)
+library(kableExtra)
 ```
 
 # Modelo Fay-Herriot
@@ -78,12 +79,12 @@ $$
      con 
 $$ con
 
-\$\$\begin{eqnarray*} g_{1d}\left(\hat{\sigma}_{u}^{2}\right) & = & \gamma_{d}\psi_{d}\\
-
+$$
+\begin{eqnarray*} g_{1d}\left(\hat{\sigma}_{u}^{2}\right) & = & \gamma_{d}\psi_{d}\\
 g_{2d}\left(\hat{\sigma}_{u}^{2}\right) & = & \left(1-\gamma_{d}\right)^{2}\boldsymbol{x}^{T}\left(\sum_{d=1}^{D}\left(\sigma_{u}^{2}+\psi_{d}\right)\boldsymbol{x}_{d}\boldsymbol{x}_{d}^{T}\right)^{-1}\boldsymbol{x}_{d},\\
-
 g_{3d}\left(\hat{\sigma}_{u}^{2}\right) & = & \left(1-\gamma_{d}\right)^{2}\left(\sigma_{u}^{2}+\psi_{d}\right)^{-1}\overline{var}\left(\hat{\sigma}_{u}^{2}\right),
-\end{eqnarray*}\$\$
+\end{eqnarray*}
+$$
 
 donde $$
 \begin{eqnarray*}
@@ -118,15 +119,28 @@ encuesta <- readRDS("Data/encuestaURY20N_Montevideo.rds") %>%
   ),
   
   segm = paste0(mpio,segm),
-  ingreso = ingcorte,lp,li,
-  pobreza = ifelse(ingreso<lp,1,0),
-  area = case_when(areageo2 == 1 ~ "1", TRUE ~ "0"),
-    estrato = paste0(mpio, areageo2),
+  lp,li,
+  pobreza = ifelse(ingcorte<lp,1,0),
+  estrato = paste0(mpio, areageo2),
     fep = `_fep`
-    ) 
-head(encuesta)
+    )
 ```
 
+-   *depto*: Corresponde al código asignado a la segunda división administrativa del país.
+
+-   *mpio*: Corresponde al código asignado a la tercera división administrativa del país.
+
+-   *lp* y *li* lineas de pobreza y pobreza extrema definidas por CEPAL. 
+
+-   Factor de expansión por persona (*fep*)
+
+
+```{r, echo=FALSE}
+kable(encuesta %>% head(10),
+      format = "html", digits =  4,
+      caption = "Encuesta") %>% 
+    kable_classic()
+```
 Definir el diseño muestral
 
 ```{r}
@@ -150,7 +164,8 @@ Para la estimación directa de la proporción se emplea la función `survey_mean
 ```{r,echo=FALSE}
 Estimacion_dir <- diseno %>% group_by(mpio) %>%
   summarise(nd = unweighted(n()),
-            thetahat = survey_mean(pobreza, vartype = c("se"), deff = TRUE)) %>%
+            thetahat = survey_mean(pobreza, vartype = c("se"),
+                                   deff = TRUE)) %>%
   full_join(tasa_desocupacion)
 
 Estimacion_dir %<>%
@@ -165,9 +180,16 @@ Estimacion_dir %<>%
     
   ) %>% filter(!is.na(tasa_desocupacion)) %>% 
   arrange(desc(nd),desc(thetahat_se))
-
-Estimacion_dir
 ```
+
+
+```{r,echo=FALSE}
+kable(Estimacion_dir,
+      format = "html", digits =  4,
+      caption = "Estimación directa") %>% 
+    kable_classic()
+```
+
 
 Dividiendo los datos en observados y NO observados.
 
@@ -211,7 +233,7 @@ $$
 \end{eqnarray*}
 $$
 
-El modelo propuesto se escibre en `STAN` de la siguiente forma.
+El modelo propuesto se escribe en `STAN` de la siguiente forma.
 
 ```{r, eval=FALSE}
 data {
@@ -269,13 +291,13 @@ Definiendo la matriz de datos para `STAN`
 ## Dominios observados
 Xdat <-
   model.matrix(
-    thetahat ~ tasa_desocupacion,
+    thetahat ~ mpio + tasa_desocupacion,
     data = data_dir
   )
 ## Dominios no observados
 Xs <-
   model.matrix(
-    thetahat ~ tasa_desocupacion ,
+    thetahat ~ mpio + tasa_desocupacion ,
     data = data_syn
   )
 ```
@@ -611,7 +633,15 @@ Predicción en los dominios **NO** observados
 theta_FH_pred <-
   model_FH_arcsin_Nornal$summary(variables =  "theta_pred")
 data_syn %<>% mutate(pred_arcsin = theta_FH_pred$mean)
-data_syn %>% select(mpio:thetahat_se,pred_arcsin)
+```
+
+
+```{r,echo=FALSE}
+kable(data_syn %>% select(mpio:thetahat_se,pred_arcsin) %>% 
+  head(10),
+      format = "html", digits =  4,
+      caption = "Estimación arcsin") %>% 
+    kable_classic()
 ```
 
 Resultados de la estimación de $\sigma^2_v$

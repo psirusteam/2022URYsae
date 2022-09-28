@@ -12,22 +12,38 @@ project:
 knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
 ```
 
-Uno de los primeros problemas a los que debemos enfrentarnos es la estimación del ingreso medio, la cual en una variable no simétrica que toma valores en los positivos.
+Uno de los primeros problemas a los que debemos enfrentarnos es la estimación del ingreso medio, la cual en una variable no simétrica que toma valores en los positivos. Sin embargo, empleando los métodos Bayesiano es posible obtener estimaciones de esta sin realizar una transformación 
+
+```{r, echo=FALSE, fig.cap="Distribución del ingreso medio por segmento en Montevideo"}
+library(ggplot2)
+library(dplyr)
+encuesta_mrp <- readRDS("Data/encuesta_Montevideo.rds") %>% 
+  group_by(segm) %>% summarise(ingreso = mean(ingreso))
+ggplot(data = encuesta_mrp, aes(x = ingreso)) +
+  geom_density() + labs(y = "") +
+  theme_bw(base_size = 20) +
+  scale_x_continuous(labels = scales::dollar_format(),
+                     limits = c(0, 150000)) +
+  theme(axis.text.y = element_blank(),
+        axis.ticks = element_blank())
+
+```
 
 ## Modelo bayesiano.
 
-Para la predicción de esta variable es posible implementar el siguiente modelo.
+Para realizar la predicción del ingreso medio en segmento no observados se asume que: 
 
 $$
 \begin{eqnarray*}
 Y_{di} &\sim & N\left(\mu_{di},\sigma_y^{2}\right)\\
-
 \mu_{di}&=&\boldsymbol{X}_{di}^{T}\boldsymbol{\beta}+u_{d}+e_{di} 
 \end{eqnarray*}
 $$
 
 
-Donde $Y_{di}$ representa el ingreso percapital de la $i-ésima$ persona en el $d-ésimo$ domino, $\boldsymbol{X}$ es la información disponible para la $i-ésima$ persona del $d-ésimo$ domino, $\boldsymbol{\beta}$ es el vector de parámetros $u_d$ es el efecto introducido por el $d-ésimo$ dominio y $e_{di}$ es el error de estimación para la $i-ésima$ personas del $d-ésimo$ dominio.
+
+
+Donde $Y_{di}$ representa el ingreso medio de la $i-ésima$ persona en el $d-ésimo$ domino, $\boldsymbol{X}$ es la información disponible para la $i-ésima$ persona del $d-ésimo$ domino, $\boldsymbol{\beta}$ es el vector de parámetros $u_d$ es el efecto introducido por el $d-ésimo$ dominio y $e_{di}$ es el error de estimación para la $i-ésima$ personas del $d-ésimo$ dominio.
 
 Note, que $u_{d}\sim N\left(0,\sigma_{u}\right)$ y $e_{di}\sim N\left(0,\sigma_{e}^{2}\right)$.
 
@@ -42,30 +58,28 @@ $$ las cuales se toman no informativas.
 
 A continuación se muestra el proceso realizado para la obtención de la predicción del ingreso medio en dominios no observados.
 
-### Cargando las librerías requeridas.
+## Proceso de estimación en `R`
 
-Las librerías utilizada para desarrollar la metodología son las siguientes.
+Para desarrollar la metodología se hace uso de las siguientes librerías.
 
 ```{r}
 rm(list =ls())
+# Interprete de STAN en R
 library(rstan)
 library(rstanarm)
+# Manejo de bases de datos.
 library(tidyverse)
-library(stringr)
-library(scales)
+# Gráficas de los modelos. 
 library(bayesplot)
-library(gridExtra)
-library(gridExtra)
-library(scales)
-library(kableExtra)
-library(formatR)
 library(patchwork)
+# Organizar la presentación de las tablas
+library(kableExtra)
+library(printr)
 ```
 
-Un conjunto de funciones desarrolladas para realizar de forma eficiente los procesos están consignadas en la siguiente rutina.
+Un conjunto de funciones desarrolladas para realizar de forma simplificada los procesos están consignadas en la siguiente rutina.
 
 ```{r}
-library(printr)
 source("0Funciones/funciones_mrp.R")
 ```
 
@@ -77,9 +91,9 @@ Entre las funciones incluidas en el archivo encuentra
 
 -   *Aux_Agregado*: Esta es función permite obtener estimaciones a diferentes niveles de agregación, toma mucha relevancia cuando se realiza un proceso repetitivo.
 
-**Las funciones se puedes ejecutar dado que el proceso esta estandarizado**
+**Las funciones están diseñada específicamente  para este  proceso**
 
-### Importando datos
+### Encuesta de hogares
 
 Los datos empleados en esta ocasión corresponden a la ultima encuesta de hogares, la cual ha sido estandarizada por *CEPAL* y se encuentra disponible en *BADEHOG*
 
@@ -87,50 +101,72 @@ Los datos empleados en esta ocasión corresponden a la ultima encuesta de hogare
 encuesta_mrp <- readRDS("Data/encuesta_Montevideo.rds")
 ```
 
+La base de datos de la encuesta tiene la siguientes columnas: 
+
+-   *depto*: Corresponde al código asignado a la segunda división administrativa del país.
+
+-   *mpio*: Corresponde al código asignado a la tercera división administrativa del país.
+
+-     *lp* y *li* lineas de pobreza y pobreza extrema definidas por CEPAL. 
+
+-     *área* división geográfica (Urbano y Rural). 
+
+-     *sexo* Hombre y Mujer. 
+
+-     *etnia* En estas variable se definen tres grupos:  afrodescendientes, indígenas y Otros. 
+
+-     Años de escolaridad (*anoest*) 
+
+-     Rangos de edad (*edad*) 
+
+-     Factor de expansión por persona (*fep*)
+
+```{r, echo=FALSE}
+temp <- head(encuesta_mrp,10)
+kable(temp,format = "html", digits =  4) %>% 
+    kable_classic()
+```
+
+Ahora, inspeccionamos el comportamiento de la variable de interés: 
+
+```{r, fig.cap= "Distribuición del ingreso de las personas encuestadas"}
+ggplot(data = encuesta_mrp, aes(x = ingreso)) +
+  geom_histogram() + labs(y = "") +
+  theme_bw(base_size = 20) +
+  scale_x_continuous(labels = scales::dollar_format(),
+                     limits = c(0, 250000)) +
+  theme(axis.text.y = element_blank(),
+        axis.ticks = element_blank())
+```
+
+
 La información auxiliar disponible ha sido extraída del censo (tasa de desocupación) e imágenes satelitales (luces nocturnas, uso del suelo urbano y uso del suelo cultivos)
 
 ```{r}
 tasa_desocupados <- readRDS("Data/tasa_desocupacion_seccion.rds")
 statelevel_predictors_df <- tasa_desocupados
-head(statelevel_predictors_df)
 ```
 
--   *depto*: Corresponde al código asignado a la segunda división administrativa del país.
+```{r, echo=FALSE}
+temp <- head(statelevel_predictors_df,10)
+kable(temp,format = "html", digits =  4) %>% 
+    kable_classic()
+```
+
+
 -   *tasa_desocupacion*: Información extraída del último censo del país.
--   *F182013_stable_lights*, *X2016_crops.coverfraction* y *X2016_urban.coverfraction* información satelital extraída de google earth engine.
 
-### Explorando datos.
+-   *F182013_stable_lights*, *X2016_crops.coverfraction* y *X2016_urban.coverfraction* información satelital extraída con google earth engine operando desde `R`.
 
-En todo ejercicio de investigación lo primero que debemos hacer es conocer nuestras bases de datos y la información disponible en esta.
 
-```{r}
-summary(encuesta_mrp$ingreso)
-```
-
-Se suma el valor de $1$ para eliminar los ceros de la variable.
-
-```{r}
-encuesta_mrp$ingreso <- encuesta_mrp$ingreso + 1
-```
-
-La base de datos de la encuesta tiene la siguientes columnas: - *lp* y *li* lineas de pobreza y pobreza extrema definidas por CEPAL. - *área* división geográfica (Urbano y Rural). - *sexo* Hombre y Mujer. - *etnia* En estas variable se definen tres grupos interés: afrodescendientes, indígenas y Otros. - Años de escolaridad (*anoest*) - Rangos de edad (*edad*) - Factor de expansión por persona (*fep*)
-
-```{r}
-head(encuesta_mrp) %>% data.frame()
-```
 
 ### Niveles de agregación para colapsar encuesta
 
-Después de realizar una investigación en la literatura especializada y realizar estudios de simulación fue posible evidenciar que las predicciones obtenidas con la muestra sin agregar y la muestra agregada convergen a la media del dominio. Sin embargo, el realizar estas estimaciones con la muestra agregada reduce el tiempo computacional necesario para la convergencia del modelo. Con esto en mente se se realiza la identificación de las variables por las cuales se agregará la encuesta.
+Después de realizar una investigación en la literatura especializada y realizar estudios de simulación fue posible evidenciar que las predicciones obtenidas con la muestra sin agregar y la muestra agregada convergen a la media del dominio. Sin embargo, el realizar estas estimaciones con la muestra agregada reduce el tiempo computacional necesario para la convergencia de las cadenas MCMC.  Con esto en mente se se realiza la identificación de las variables por las cuales se agregará la encuesta.
 
 ```{r}
-byAgrega <-
-  grep(
-    pattern =  "^(n|pobreza|ingreso|lp|li|fep)",
-    x = names(encuesta_mrp),
-    invert = TRUE,
-    value = TRUE
-  )
+byAgrega <- c("depto", "mpio",  "segm", "area",   "sexo",   "anoest", "edad",   "etnia" )
+ 
 ```
 
 ### Creando base con la encuesta agregada
@@ -142,13 +178,20 @@ encuesta_df_agg <-
   encuesta_mrp %>%                    # Encuesta  
   group_by_at(all_of(byAgrega)) %>%   # Agrupar por el listado de variables
   summarise(n = n(),                  # Número de observaciones
-            ingreso = mean(ingreso),  # Ingreso medio de las observaciones
+  # Ingreso medio de las personas con características similares.           
+             ingreso = mean(ingreso), 
             .groups = "drop") %>%     
   arrange(desc(n))                    # Ordenar la base.
-head(encuesta_df_agg)
 ```
 
-### Incorporando covariables a la encuesta agregada
+La tabla obtenida es la siguiente: 
+
+```{r, echo=FALSE}
+temp <- head(encuesta_df_agg,10)
+kable(temp,format = "html", digits =  4) %>% 
+    kable_classic()
+```
+El paso a seguir es unificar las tablas creadas. 
 
 ```{r}
 encuesta_df_agg <- inner_join(encuesta_df_agg, statelevel_predictors_df)
@@ -162,18 +205,18 @@ Después de haber ordenado la encuesta, podemos pasar a la definición del model
 options(MC.cores=parallel::detectCores()) # Permite procesar en paralelo. 
 fit <- stan_lmer(
   ingreso ~                               # Ingreso medio (Y)
-    (1 | segm) +                         # Efecto aleatorio (ud)
-     edad +                                   # Efecto fijo (Variables X)
+    (1 | segm) +                          # Efecto aleatorio (ud)
+     edad +                               # Efecto fijo (Variables X)
     sexo  + 
     tasa_desocupacion +
     F182013_stable_lights + 
     X2016_crops.coverfraction +
     X2016_urban.coverfraction ,
-                  weights = n,            # Poderar dado que se agrega la encuesta. 
+                  weights = n,            # Número de observaciones. 
                   data = encuesta_df_agg, # Encuesta agregada 
                   verbose = TRUE,         # Muestre el avance del proceso
                   chains = 4,             # Número de cadenas.
-                 iter = 1000               # Número de realizaciones de la cadena
+                 iter = 1000              # Número de realizaciones de la cadena
                 )
 saveRDS(fit, file = "Data/fit_ingresos.rds")
 ```
@@ -182,17 +225,28 @@ Después de esperar un tiempo prudente se obtiene el siguiente modelo.
 
 ```{r}
 fit <- readRDS("Data/fit_ingresos.rds")
-coef(fit)$segm %>% head()
+```
+
+
+```{r, echo=FALSE}
+temp <- coef(fit)$segm %>% head()
+kable(temp,format = "html", digits =  4) %>% 
+    kable_classic()
 ```
 
 # Proceso de estimación y predicción
 
-Obtener el modelo es solo el primer paso, ahora se debe realizar la predicción en el censo, el cual a sido previamente estandarizado. Ahora leemos el censo y filtramos los niveles que son de interés, por ejemplo niños menores de 4 años o personas sin información de escolaridad en el censo.
+Obtener el modelo es solo un paso más, ahora se debe realizar la predicción en el censo, el cual a sido previamente estandarizado y homologado con la encuesta. 
 
 ```{r}
 poststrat_df <- readRDS("Data/censo_Montevideo.rds") %>% 
      left_join(tasa_desocupados)  
-poststrat_df %>% arrange(desc(n)) %>% head()
+```
+
+```{r, echo=FALSE}
+temp <- poststrat_df %>% arrange(desc(n)) %>% head(10)
+kable(temp,format = "html", digits =  4) %>% 
+    kable_classic()
 ```
 
 Note que la información del censo esta agregada.
@@ -207,40 +261,38 @@ dim(epred_mat)
 dim(poststrat_df)
 ```
 
-Es importante notar que la predicción para cada observación se obtiene por columna y cada una posee la longitud de la cadena.
-
-### Evaluando las predicciones resultantes
-
 Por ser una predicción en dominios no observados, es posible obtener valores por fuera del domino de la variable (valores negativos), los cuales deben ser ajustados de forma manual.
 
-```{r, eval=FALSE}
+```{r, eval=TRUE}
 ## validación de los valores posteriores
 hist(as.numeric(epred_mat))
-
-length(epred_mat[which(epred_mat < 0)])
 ```
 
-Igualando valores negativos a cero.
+```{r, echo=FALSE, eval=TRUE}
+num <- length(epred_mat[which(epred_mat < 0)])
+den <- length(epred_mat)
+```
+En esta ocasión tenemos que el `r (num/den)*100`% es menor que cero, por tanto los igualamos a cero.
 
 ```{r}
 epred_mat[(epred_mat < 0)]<-0
-length(epred_mat[which(epred_mat < 0)])
 ```
 
-Como el interés es realizar comparaciones entre los paises de la región se presenta la estimación del ingreso medio en términos de lineas de pobreza. Para esto procedemos así:\
-Obteniendo las lineas de pobreza por cada post-estrato
+Como el interés es realizar comparaciones entre los países de la región se presenta la estimación del ingreso medio en términos de lineas de pobreza. Para esto procedemos así:
+
+-   Obteniendo las lineas de pobreza por cada post-estrato
 
 ```{r}
 (lp <- unique(encuesta_mrp$lp))
 ```
 
-Ingreso en términos de lineas de pobreza.
+-   Ingreso en términos de lineas de pobreza.
 
 ```{r}
 epred_mat <- epred_mat/lp
 ```
 
-## Estimación del ingreso medio NACIONAL
+## Estimación del ingreso medio en Montevideo
 
 ```{r}
 n_filtered <- poststrat_df$n
@@ -254,7 +306,7 @@ mrp_estimates <- epred_mat %*% n_filtered / sum(n_filtered)
 
 El resultado nos indica que el ingreso medio nacional es `r round(temp_ing$mrp_estimate,2)` lineas de pobreza
 
-### Estimación para mpio == "0111" particular.
+### Estimación para mpio == "0111".
 
 Es importante siempre conservar el orden de la base, dado que relación entre la predicción y el censo en uno a uno.
 
@@ -306,31 +358,37 @@ Después de comprender la forma en que se realiza la estimación de los dominios
 
 El resultado nos indica que el ingreso medio nacional es `r round(mrp_estimate_Ingresolp$mrp_estimate)` lineas de pobreza
 
-### Niveles de Post-estrato
-
-La encuesta no es representativa por segmento, hacer predicciones en desagregaciones más pequeñas se debe hacer con mucha precaución, aquí llegamos hasta mpio y segmento.
-
-Resultados por mpio
+De forma similar es posible obtener los resultados para mpio y segmento. 
 
 ```{r, eval=TRUE}
-# Resultados nacionales ---------------------------------------------------
-(mrp_estimate_mpio <-
+mrp_estimate_mpio <-
   Aux_Agregado(poststrat = poststrat_df,
              epredmat = epred_mat,
              byMap = "mpio")
-)
 ```
 
-Resultados por segmento.
+
+```{r, echo=FALSE}
+kable(mrp_estimate_mpio,
+      format = "html", digits =  4,
+      caption = "Resultados para mpio") %>% 
+    kable_classic()
+```
+
 
 ```{r, eval=TRUE}
-# Resultados nacionales ---------------------------------------------------
 mrp_estimate_segmento <-
   Aux_Agregado(poststrat = poststrat_df,
              epredmat = epred_mat,
              byMap = "segm")
+```
 
-head(mrp_estimate_segmento)
+
+```{r, echo=FALSE}
+kable(mrp_estimate_segmento %>% head(10),
+      format = "html", digits =  4,
+      caption = "Resultados para segmento") %>% 
+    kable_classic()
 ```
 
 ## Algunos mapas resultantes
@@ -361,6 +419,8 @@ Mapa_lp <-
 
 Mapa_lp
 ```
+
+Los espacios en blanco corresponden a segmento sin información auxiliar en la variable tasa de desocupación que fue extraída del censo. 
 
 ```{r, echo=FALSE}
 ## Leer Shape del pais

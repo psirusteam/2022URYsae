@@ -1,4 +1,5 @@
 printr
+kableExtra
 tidyverse
 ggplot2
 tibble

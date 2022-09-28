@@ -98,6 +98,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <link href="3Fay Herriot en R y STAN_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="3Fay Herriot en R y STAN_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
 
+<script src="3Fay Herriot en R y STAN_files/libs/kePrint-0.0.1/kePrint.js"></script>
+<link href="3Fay Herriot en R y STAN_files/libs/lightable-0.0.1/lightable.css" rel="stylesheet">
+
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
 
 </head>
@@ -186,12 +189,12 @@ u_{d} &amp; \stackrel{iid}{\sim} &amp; \left(0,\sigma_{u}^{2}\right)
     \end{eqnarray*}
      con
 \]</span> con</p>
-<p>$$<span class="math display">\[\begin{eqnarray*} g_{1d}\left(\hat{\sigma}_{u}^{2}\right) &amp; = &amp; \gamma_{d}\psi_{d}\\
-
+<p><span class="math display">\[
+\begin{eqnarray*} g_{1d}\left(\hat{\sigma}_{u}^{2}\right) &amp; = &amp; \gamma_{d}\psi_{d}\\
 g_{2d}\left(\hat{\sigma}_{u}^{2}\right) &amp; = &amp; \left(1-\gamma_{d}\right)^{2}\boldsymbol{x}^{T}\left(\sum_{d=1}^{D}\left(\sigma_{u}^{2}+\psi_{d}\right)\boldsymbol{x}_{d}\boldsymbol{x}_{d}^{T}\right)^{-1}\boldsymbol{x}_{d},\\
-
 g_{3d}\left(\hat{\sigma}_{u}^{2}\right) &amp; = &amp; \left(1-\gamma_{d}\right)^{2}\left(\sigma_{u}^{2}+\psi_{d}\right)^{-1}\overline{var}\left(\hat{\sigma}_{u}^{2}\right),
-\end{eqnarray*}\]</span>$$</p>
+\end{eqnarray*}
+\]</span></p>
 <p>donde <span class="math display">\[
 \begin{eqnarray*}
 \overline{var}\left(\hat{\sigma}_{u}^{2}\right) &amp; = &amp; \mathit{I}^{-1 }\left(\sigma_{u}^{2}\right)=2\left\{ \sum_{d=1}^{D}\left(\sigma_{u}^{2}+\psi_{d}\right)^{-2}\right\} ^{-1}
@@ -206,7 +209,7 @@ g_{3d}\left(\hat{\sigma}_{u}^{2}\right) &amp; = &amp; \left(1-\gamma_{d}\right)^
 </ul>
 <section id="datos-de-la-encuesta" class="level2">
 <h2 class="anchored" data-anchor-id="datos-de-la-encuesta">Datos de la encuesta</h2>
-<div class="cell" data-hash="3Fay-Herriot-en-R-y-STAN_cache/html/unnamed-chunk-1_89bedbfb9c8c2b3c7c3d26a92be83af9">
+<div class="cell" data-hash="3Fay-Herriot-en-R-y-STAN_cache/html/unnamed-chunk-1_bf7313f997035b44d465a83473f9998a">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(magrittr)</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>tasa_desocupacion <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"Data/tasa_desocupacion_Montevideo.rds"</span>)</span>
@@ -225,120 +228,143 @@ g_{3d}\left(\hat{\sigma}_{u}^{2}\right) &amp; = &amp; \left(1-\gamma_{d}\right)^
 <span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>  ),</span>
 <span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>  </span>
 <span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>  <span class="at">segm =</span> <span class="fu">paste0</span>(mpio,segm),</span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>  <span class="at">ingreso =</span> ingcorte,lp,li,</span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>  <span class="at">pobreza =</span> <span class="fu">ifelse</span>(ingreso<span class="sc">&lt;</span>lp,<span class="dv">1</span>,<span class="dv">0</span>),</span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>  <span class="at">area =</span> <span class="fu">case_when</span>(areageo2 <span class="sc">==</span> <span class="dv">1</span> <span class="sc">~</span> <span class="st">"1"</span>, <span class="cn">TRUE</span> <span class="sc">~</span> <span class="st">"0"</span>),</span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>    <span class="at">estrato =</span> <span class="fu">paste0</span>(mpio, areageo2),</span>
-<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>    <span class="at">fep =</span> <span class="st">`</span><span class="at">_fep</span><span class="st">`</span></span>
-<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>    ) </span>
-<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(encuesta)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>  lp,li,</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>  <span class="at">pobreza =</span> <span class="fu">ifelse</span>(ingcorte<span class="sc">&lt;</span>lp,<span class="dv">1</span>,<span class="dv">0</span>),</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>  <span class="at">estrato =</span> <span class="fu">paste0</span>(mpio, areageo2),</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>    <span class="at">fep =</span> <span class="st">`</span><span class="at">_fep</span><span class="st">`</span></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>    )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<ul>
+<li><p><em>depto</em>: Corresponde al código asignado a la segunda división administrativa del país.</p></li>
+<li><p><em>mpio</em>: Corresponde al código asignado a la tercera división administrativa del país.</p></li>
+<li><p><em>lp</em> y <em>li</em> lineas de pobreza y pobreza extrema definidas por CEPAL.</p></li>
+<li><p>Factor de expansión por persona (<em>fep</em>)</p></li>
+</ul>
+<div class="cell" data-hash="3Fay-Herriot-en-R-y-STAN_cache/html/unnamed-chunk-2_066cd3e298efcf1db6898acfef4f10e9">
 <div class="cell-output-display">
-<table class="table table-sm table-striped">
-<colgroup>
-<col style="width: 13%">
-<col style="width: 6%">
-<col style="width: 10%">
-<col style="width: 11%">
-<col style="width: 10%">
-<col style="width: 10%">
-<col style="width: 10%">
-<col style="width: 6%">
-<col style="width: 10%">
-<col style="width: 11%">
-</colgroup>
-<thead>
-<tr class="header">
-<th style="text-align: left;">depto</th>
-<th style="text-align: left;">mpio</th>
-<th style="text-align: left;">segm</th>
-<th style="text-align: right;">ingreso</th>
-<th style="text-align: right;">lp</th>
-<th style="text-align: right;">li</th>
-<th style="text-align: right;">pobreza</th>
-<th style="text-align: left;">area</th>
-<th style="text-align: left;">estrato</th>
-<th style="text-align: right;">fep</th>
-</tr>
-</thead>
+
+<table class=" lightable-classic" style="font-family: &quot;Arial Narrow&quot;, &quot;Source Sans Pro&quot;, sans-serif; margin-left: auto; margin-right: auto;">
+<caption>Encuesta</caption>
+ <thead>
+  <tr>
+   <th style="text-align:left;"> depto </th>
+   <th style="text-align:left;"> mpio </th>
+   <th style="text-align:left;"> segm </th>
+   <th style="text-align:right;"> lp </th>
+   <th style="text-align:right;"> li </th>
+   <th style="text-align:right;"> pobreza </th>
+   <th style="text-align:left;"> estrato </th>
+   <th style="text-align:right;"> fep </th>
+  </tr>
+ </thead>
 <tbody>
-<tr class="odd">
-<td style="text-align: left;">MONTEVIDEO</td>
-<td style="text-align: left;">0121</td>
-<td style="text-align: left;">0121132</td>
-<td style="text-align: right;">13000.00</td>
-<td style="text-align: right;">6503.53</td>
-<td style="text-align: right;">3064.55</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: left;">1</td>
-<td style="text-align: left;">01211</td>
-<td style="text-align: right;">27.68059</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">MONTEVIDEO</td>
-<td style="text-align: left;">0105</td>
-<td style="text-align: left;">0105101</td>
-<td style="text-align: right;">79541.67</td>
-<td style="text-align: right;">6503.53</td>
-<td style="text-align: right;">3064.55</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: left;">1</td>
-<td style="text-align: left;">01051</td>
-<td style="text-align: right;">36.66667</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">MONTEVIDEO</td>
-<td style="text-align: left;">0111</td>
-<td style="text-align: left;">0111207</td>
-<td style="text-align: right;">15081.25</td>
-<td style="text-align: right;">6503.53</td>
-<td style="text-align: right;">3064.55</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: left;">1</td>
-<td style="text-align: left;">01111</td>
-<td style="text-align: right;">23.10011</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">MONTEVIDEO</td>
-<td style="text-align: left;">0111</td>
-<td style="text-align: left;">0111211</td>
-<td style="text-align: right;">43200.00</td>
-<td style="text-align: right;">6503.53</td>
-<td style="text-align: right;">3064.55</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: left;">1</td>
-<td style="text-align: left;">01111</td>
-<td style="text-align: right;">33.75000</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">MONTEVIDEO</td>
-<td style="text-align: left;">0111</td>
-<td style="text-align: left;">0111002</td>
-<td style="text-align: right;">31000.00</td>
-<td style="text-align: right;">6503.53</td>
-<td style="text-align: right;">3064.55</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: left;">1</td>
-<td style="text-align: left;">01111</td>
-<td style="text-align: right;">14.76850</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">MONTEVIDEO</td>
-<td style="text-align: left;">0121</td>
-<td style="text-align: left;">0121019</td>
-<td style="text-align: right;">22250.00</td>
-<td style="text-align: right;">6503.53</td>
-<td style="text-align: right;">3064.55</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: left;">1</td>
-<td style="text-align: left;">01211</td>
-<td style="text-align: right;">20.49171</td>
-</tr>
+  <tr>
+   <td style="text-align:left;"> MONTEVIDEO </td>
+   <td style="text-align:left;"> 0121 </td>
+   <td style="text-align:left;"> 0121132 </td>
+   <td style="text-align:right;"> 6503.53 </td>
+   <td style="text-align:right;"> 3064.55 </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:left;"> 01211 </td>
+   <td style="text-align:right;"> 27.6806 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> MONTEVIDEO </td>
+   <td style="text-align:left;"> 0105 </td>
+   <td style="text-align:left;"> 0105101 </td>
+   <td style="text-align:right;"> 6503.53 </td>
+   <td style="text-align:right;"> 3064.55 </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:left;"> 01051 </td>
+   <td style="text-align:right;"> 36.6667 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> MONTEVIDEO </td>
+   <td style="text-align:left;"> 0111 </td>
+   <td style="text-align:left;"> 0111207 </td>
+   <td style="text-align:right;"> 6503.53 </td>
+   <td style="text-align:right;"> 3064.55 </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:left;"> 01111 </td>
+   <td style="text-align:right;"> 23.1001 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> MONTEVIDEO </td>
+   <td style="text-align:left;"> 0111 </td>
+   <td style="text-align:left;"> 0111211 </td>
+   <td style="text-align:right;"> 6503.53 </td>
+   <td style="text-align:right;"> 3064.55 </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:left;"> 01111 </td>
+   <td style="text-align:right;"> 33.7500 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> MONTEVIDEO </td>
+   <td style="text-align:left;"> 0111 </td>
+   <td style="text-align:left;"> 0111002 </td>
+   <td style="text-align:right;"> 6503.53 </td>
+   <td style="text-align:right;"> 3064.55 </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:left;"> 01111 </td>
+   <td style="text-align:right;"> 14.7685 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> MONTEVIDEO </td>
+   <td style="text-align:left;"> 0121 </td>
+   <td style="text-align:left;"> 0121019 </td>
+   <td style="text-align:right;"> 6503.53 </td>
+   <td style="text-align:right;"> 3064.55 </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:left;"> 01211 </td>
+   <td style="text-align:right;"> 20.4917 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> MONTEVIDEO </td>
+   <td style="text-align:left;"> 0110 </td>
+   <td style="text-align:left;"> 0110126 </td>
+   <td style="text-align:right;"> 6503.53 </td>
+   <td style="text-align:right;"> 3064.55 </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:left;"> 01101 </td>
+   <td style="text-align:right;"> 24.4179 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> MONTEVIDEO </td>
+   <td style="text-align:left;"> 0110 </td>
+   <td style="text-align:left;"> 0110126 </td>
+   <td style="text-align:right;"> 6503.53 </td>
+   <td style="text-align:right;"> 3064.55 </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:left;"> 01101 </td>
+   <td style="text-align:right;"> 24.4179 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> MONTEVIDEO </td>
+   <td style="text-align:left;"> 0106 </td>
+   <td style="text-align:left;"> 0106103 </td>
+   <td style="text-align:right;"> 6503.53 </td>
+   <td style="text-align:right;"> 3064.55 </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:left;"> 01061 </td>
+   <td style="text-align:right;"> 24.2743 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> MONTEVIDEO </td>
+   <td style="text-align:left;"> 0116 </td>
+   <td style="text-align:left;"> 0116136 </td>
+   <td style="text-align:right;"> 6503.53 </td>
+   <td style="text-align:right;"> 3064.55 </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:left;"> 01161 </td>
+   <td style="text-align:right;"> 32.0664 </td>
+  </tr>
 </tbody>
 </table>
+
 </div>
 </div>
 <p>Definir el diseño muestral</p>
-<div class="cell" data-hash="3Fay-Herriot-en-R-y-STAN_cache/html/unnamed-chunk-2_b0d0de3d3f6dbd8950b4a0d33c42826d">
+<div class="cell" data-hash="3Fay-Herriot-en-R-y-STAN_cache/html/unnamed-chunk-3_26f789b35a9f9080fb1fbefa52ebcc28">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(survey)</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(srvyr)</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">options</span>(<span class="at">survey.lonely.psu =</span> <span class="st">"adjust"</span>)</span>
@@ -353,342 +379,336 @@ g_{3d}\left(\hat{\sigma}_{u}^{2}\right) &amp; = &amp; \left(1-\gamma_{d}\right)^
 <span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Para la estimación directa de la proporción se emplea la función <code>survey_mean</code>, dando como resultado.</p>
-<div class="cell" data-hash="3Fay-Herriot-en-R-y-STAN_cache/html/unnamed-chunk-3_62fd133aad5c4ead978a696b9681b319">
+<div class="cell" data-hash="3Fay-Herriot-en-R-y-STAN_cache/html/unnamed-chunk-4_12909e052c9f46970767cca05102f4da">
+
+</div>
+<div class="cell" data-hash="3Fay-Herriot-en-R-y-STAN_cache/html/unnamed-chunk-5_4b5d0b92084a06f59b5bb48702a9e692">
 <div class="cell-output-display">
-<table class="table table-sm table-striped">
-<colgroup>
-<col style="width: 3%">
-<col style="width: 3%">
-<col style="width: 6%">
-<col style="width: 8%">
-<col style="width: 9%">
-<col style="width: 7%">
-<col style="width: 12%">
-<col style="width: 14%">
-<col style="width: 17%">
-<col style="width: 17%">
-</colgroup>
-<thead>
-<tr class="header">
-<th style="text-align: left;">mpio</th>
-<th style="text-align: right;">nd</th>
-<th style="text-align: right;">thetahat</th>
-<th style="text-align: right;">thetahat_se</th>
-<th style="text-align: right;">thetahat_deff</th>
-<th style="text-align: left;">depto</th>
-<th style="text-align: right;">tasa_desocupacion</th>
-<th style="text-align: right;">F182013_stable_lights</th>
-<th style="text-align: right;">X2016_crops.coverfraction</th>
-<th style="text-align: right;">X2016_urban.coverfraction</th>
-</tr>
-</thead>
+
+<table class=" lightable-classic" style="font-family: &quot;Arial Narrow&quot;, &quot;Source Sans Pro&quot;, sans-serif; margin-left: auto; margin-right: auto;">
+<caption>Estimación directa</caption>
+ <thead>
+  <tr>
+   <th style="text-align:left;"> mpio </th>
+   <th style="text-align:right;"> nd </th>
+   <th style="text-align:right;"> thetahat </th>
+   <th style="text-align:right;"> thetahat_se </th>
+   <th style="text-align:right;"> thetahat_deff </th>
+   <th style="text-align:left;"> depto </th>
+   <th style="text-align:right;"> tasa_desocupacion </th>
+   <th style="text-align:right;"> F182013_stable_lights </th>
+   <th style="text-align:right;"> X2016_crops.coverfraction </th>
+   <th style="text-align:right;"> X2016_urban.coverfraction </th>
+  </tr>
+ </thead>
 <tbody>
-<tr class="odd">
-<td style="text-align: left;">0110</td>
-<td style="text-align: right;">7328</td>
-<td style="text-align: right;">0.0220320</td>
-<td style="text-align: right;">0.0070555</td>
-<td style="text-align: right;">17.734421</td>
-<td style="text-align: left;">MONTEVIDEO</td>
-<td style="text-align: right;">0.0588619</td>
-<td style="text-align: right;">2055.57255</td>
-<td style="text-align: right;">24.2941176</td>
-<td style="text-align: right;">3684.97647</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">0118</td>
-<td style="text-align: right;">4858</td>
-<td style="text-align: right;">0.0018894</td>
-<td style="text-align: right;">0.0008626</td>
-<td style="text-align: right;">2.009127</td>
-<td style="text-align: left;">MONTEVIDEO</td>
-<td style="text-align: right;">0.0485891</td>
-<td style="text-align: right;">467.68627</td>
-<td style="text-align: right;">20.5529412</td>
-<td style="text-align: right;">620.14902</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">0121</td>
-<td style="text-align: right;">3936</td>
-<td style="text-align: right;">0.0335207</td>
-<td style="text-align: right;">0.0120159</td>
-<td style="text-align: right;">18.225426</td>
-<td style="text-align: left;">MONTEVIDEO</td>
-<td style="text-align: right;">0.0754253</td>
-<td style="text-align: right;">1700.02353</td>
-<td style="text-align: right;">148.4470588</td>
-<td style="text-align: right;">2498.51765</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">0111</td>
-<td style="text-align: right;">3665</td>
-<td style="text-align: right;">0.0805779</td>
-<td style="text-align: right;">0.0160643</td>
-<td style="text-align: right;">13.185260</td>
-<td style="text-align: left;">MONTEVIDEO</td>
-<td style="text-align: right;">0.0784739</td>
-<td style="text-align: right;">4087.03922</td>
-<td style="text-align: right;">1030.8039216</td>
-<td style="text-align: right;">3226.32549</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">0113</td>
-<td style="text-align: right;">3547</td>
-<td style="text-align: right;">0.0619362</td>
-<td style="text-align: right;">0.0193949</td>
-<td style="text-align: right;">23.705771</td>
-<td style="text-align: left;">MONTEVIDEO</td>
-<td style="text-align: right;">0.0905832</td>
-<td style="text-align: right;">2672.30588</td>
-<td style="text-align: right;">529.8117647</td>
-<td style="text-align: right;">2442.36078</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">0117</td>
-<td style="text-align: right;">3416</td>
-<td style="text-align: right;">0.0545169</td>
-<td style="text-align: right;">0.0170063</td>
-<td style="text-align: right;">19.805890</td>
-<td style="text-align: left;">MONTEVIDEO</td>
-<td style="text-align: right;">0.0818528</td>
-<td style="text-align: right;">3449.10588</td>
-<td style="text-align: right;">1003.3450980</td>
-<td style="text-align: right;">2863.31765</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">0112</td>
-<td style="text-align: right;">3283</td>
-<td style="text-align: right;">0.0048864</td>
-<td style="text-align: right;">0.0036808</td>
-<td style="text-align: right;">9.542487</td>
-<td style="text-align: left;">MONTEVIDEO</td>
-<td style="text-align: right;">0.0535851</td>
-<td style="text-align: right;">439.27059</td>
-<td style="text-align: right;">0.1294118</td>
-<td style="text-align: right;">839.98431</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">0120</td>
-<td style="text-align: right;">3125</td>
-<td style="text-align: right;">0.0172780</td>
-<td style="text-align: right;">0.0083585</td>
-<td style="text-align: right;">13.366867</td>
-<td style="text-align: left;">MONTEVIDEO</td>
-<td style="text-align: right;">0.0737116</td>
-<td style="text-align: right;">870.63529</td>
-<td style="text-align: right;">16.4039216</td>
-<td style="text-align: right;">1446.05882</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">0124</td>
-<td style="text-align: right;">3107</td>
-<td style="text-align: right;">0.0022823</td>
-<td style="text-align: right;">0.0013574</td>
-<td style="text-align: right;">2.632986</td>
-<td style="text-align: left;">MONTEVIDEO</td>
-<td style="text-align: right;">0.0495660</td>
-<td style="text-align: right;">481.29020</td>
-<td style="text-align: right;">1.6039216</td>
-<td style="text-align: right;">846.29804</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">0122</td>
-<td style="text-align: right;">2219</td>
-<td style="text-align: right;">0.0210278</td>
-<td style="text-align: right;">0.0101888</td>
-<td style="text-align: right;">11.640993</td>
-<td style="text-align: left;">MONTEVIDEO</td>
-<td style="text-align: right;">0.0589040</td>
-<td style="text-align: right;">507.70588</td>
-<td style="text-align: right;">2.3372549</td>
-<td style="text-align: right;">960.32549</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">0199</td>
-<td style="text-align: right;">2031</td>
-<td style="text-align: right;">0.0401730</td>
-<td style="text-align: right;">0.0231245</td>
-<td style="text-align: right;">29.225903</td>
-<td style="text-align: left;">MONTEVIDEO</td>
-<td style="text-align: right;">0.0784253</td>
-<td style="text-align: right;">3581.83137</td>
-<td style="text-align: right;">660.5176471</td>
-<td style="text-align: right;">2238.46667</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">0109</td>
-<td style="text-align: right;">2005</td>
-<td style="text-align: right;">0.0470802</td>
-<td style="text-align: right;">0.0132672</td>
-<td style="text-align: right;">8.156940</td>
-<td style="text-align: left;">MONTEVIDEO</td>
-<td style="text-align: right;">0.0797746</td>
-<td style="text-align: right;">6096.70980</td>
-<td style="text-align: right;">2006.2392157</td>
-<td style="text-align: right;">2315.81569</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">0114</td>
-<td style="text-align: right;">1975</td>
-<td style="text-align: right;">0.0032928</td>
-<td style="text-align: right;">0.0014666</td>
-<td style="text-align: right;">1.348765</td>
-<td style="text-align: left;">MONTEVIDEO</td>
-<td style="text-align: right;">0.0515015</td>
-<td style="text-align: right;">406.41176</td>
-<td style="text-align: right;">1.0509804</td>
-<td style="text-align: right;">675.96078</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">0116</td>
-<td style="text-align: right;">1785</td>
-<td style="text-align: right;">0.0357431</td>
-<td style="text-align: right;">0.0216663</td>
-<td style="text-align: right;">25.086881</td>
-<td style="text-align: left;">MONTEVIDEO</td>
-<td style="text-align: right;">0.0906389</td>
-<td style="text-align: right;">4150.60784</td>
-<td style="text-align: right;">1803.0509804</td>
-<td style="text-align: right;">1872.21176</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">0115</td>
-<td style="text-align: right;">1773</td>
-<td style="text-align: right;">0.0255318</td>
-<td style="text-align: right;">0.0161587</td>
-<td style="text-align: right;">19.422034</td>
-<td style="text-align: left;">MONTEVIDEO</td>
-<td style="text-align: right;">0.0614133</td>
-<td style="text-align: right;">144.42353</td>
-<td style="text-align: right;">0.0941176</td>
-<td style="text-align: right;">252.05490</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">0123</td>
-<td style="text-align: right;">1091</td>
-<td style="text-align: right;">0.0036481</td>
-<td style="text-align: right;">0.0036154</td>
-<td style="text-align: right;">4.091796</td>
-<td style="text-align: left;">MONTEVIDEO</td>
-<td style="text-align: right;">0.0551001</td>
-<td style="text-align: right;">151.44706</td>
-<td style="text-align: right;">0.0000000</td>
-<td style="text-align: right;">293.20000</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">0119</td>
-<td style="text-align: right;">960</td>
-<td style="text-align: right;">0.0108528</td>
-<td style="text-align: right;">0.0085162</td>
-<td style="text-align: right;">6.741108</td>
-<td style="text-align: left;">MONTEVIDEO</td>
-<td style="text-align: right;">0.0605831</td>
-<td style="text-align: right;">149.47059</td>
-<td style="text-align: right;">0.0000000</td>
-<td style="text-align: right;">286.65098</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">0107</td>
-<td style="text-align: right;">789</td>
-<td style="text-align: right;">0.0266873</td>
-<td style="text-align: right;">0.0180761</td>
-<td style="text-align: right;">10.349385</td>
-<td style="text-align: left;">MONTEVIDEO</td>
-<td style="text-align: right;">0.0605684</td>
-<td style="text-align: right;">93.44314</td>
-<td style="text-align: right;">0.0000000</td>
-<td style="text-align: right;">153.28627</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">0108</td>
-<td style="text-align: right;">626</td>
-<td style="text-align: right;">0.0130784</td>
-<td style="text-align: right;">0.0127111</td>
-<td style="text-align: right;">8.148173</td>
-<td style="text-align: left;">MONTEVIDEO</td>
-<td style="text-align: right;">0.0559251</td>
-<td style="text-align: right;">159.35294</td>
-<td style="text-align: right;">0.0000000</td>
-<td style="text-align: right;">299.32157</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">0106</td>
-<td style="text-align: right;">543</td>
-<td style="text-align: right;">0.0135687</td>
-<td style="text-align: right;">0.0119917</td>
-<td style="text-align: right;">6.082730</td>
-<td style="text-align: left;">MONTEVIDEO</td>
-<td style="text-align: right;">0.0554221</td>
-<td style="text-align: right;">43.23529</td>
-<td style="text-align: right;">0.0000000</td>
-<td style="text-align: right;">80.00000</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">0105</td>
-<td style="text-align: right;">459</td>
-<td style="text-align: right;">0.0000000</td>
-<td style="text-align: right;">0.0000100</td>
-<td style="text-align: right;">1.000000</td>
-<td style="text-align: left;">MONTEVIDEO</td>
-<td style="text-align: right;">0.0550346</td>
-<td style="text-align: right;">63.69020</td>
-<td style="text-align: right;">0.0000000</td>
-<td style="text-align: right;">94.20784</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">0104</td>
-<td style="text-align: right;">448</td>
-<td style="text-align: right;">0.0000000</td>
-<td style="text-align: right;">0.0000100</td>
-<td style="text-align: right;">1.000000</td>
-<td style="text-align: left;">MONTEVIDEO</td>
-<td style="text-align: right;">0.0481507</td>
-<td style="text-align: right;">42.92549</td>
-<td style="text-align: right;">0.0000000</td>
-<td style="text-align: right;">27.93725</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">0103</td>
-<td style="text-align: right;">336</td>
-<td style="text-align: right;">0.0324029</td>
-<td style="text-align: right;">0.0226106</td>
-<td style="text-align: right;">5.692939</td>
-<td style="text-align: left;">MONTEVIDEO</td>
-<td style="text-align: right;">0.0457359</td>
-<td style="text-align: right;">31.76078</td>
-<td style="text-align: right;">0.0000000</td>
-<td style="text-align: right;">13.59608</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">0101</td>
-<td style="text-align: right;">301</td>
-<td style="text-align: right;">0.0098106</td>
-<td style="text-align: right;">0.0109844</td>
-<td style="text-align: right;">3.889131</td>
-<td style="text-align: left;">MONTEVIDEO</td>
-<td style="text-align: right;">0.0600833</td>
-<td style="text-align: right;">44.99216</td>
-<td style="text-align: right;">0.0000000</td>
-<td style="text-align: right;">63.39608</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">0102</td>
-<td style="text-align: right;">144</td>
-<td style="text-align: right;">0.0055590</td>
-<td style="text-align: right;">0.0070574</td>
-<td style="text-align: right;">1.335966</td>
-<td style="text-align: left;">MONTEVIDEO</td>
-<td style="text-align: right;">0.0508130</td>
-<td style="text-align: right;">34.85882</td>
-<td style="text-align: right;">0.0000000</td>
-<td style="text-align: right;">25.17647</td>
-</tr>
+  <tr>
+   <td style="text-align:left;"> 0110 </td>
+   <td style="text-align:right;"> 7328 </td>
+   <td style="text-align:right;"> 0.0220 </td>
+   <td style="text-align:right;"> 0.0071 </td>
+   <td style="text-align:right;"> 17.7344 </td>
+   <td style="text-align:left;"> MONTEVIDEO </td>
+   <td style="text-align:right;"> 0.0589 </td>
+   <td style="text-align:right;"> 2055.5725 </td>
+   <td style="text-align:right;"> 24.2941 </td>
+   <td style="text-align:right;"> 3684.9765 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 0118 </td>
+   <td style="text-align:right;"> 4858 </td>
+   <td style="text-align:right;"> 0.0019 </td>
+   <td style="text-align:right;"> 0.0009 </td>
+   <td style="text-align:right;"> 2.0091 </td>
+   <td style="text-align:left;"> MONTEVIDEO </td>
+   <td style="text-align:right;"> 0.0486 </td>
+   <td style="text-align:right;"> 467.6863 </td>
+   <td style="text-align:right;"> 20.5529 </td>
+   <td style="text-align:right;"> 620.1490 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 0121 </td>
+   <td style="text-align:right;"> 3936 </td>
+   <td style="text-align:right;"> 0.0335 </td>
+   <td style="text-align:right;"> 0.0120 </td>
+   <td style="text-align:right;"> 18.2254 </td>
+   <td style="text-align:left;"> MONTEVIDEO </td>
+   <td style="text-align:right;"> 0.0754 </td>
+   <td style="text-align:right;"> 1700.0235 </td>
+   <td style="text-align:right;"> 148.4471 </td>
+   <td style="text-align:right;"> 2498.5176 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 0111 </td>
+   <td style="text-align:right;"> 3665 </td>
+   <td style="text-align:right;"> 0.0806 </td>
+   <td style="text-align:right;"> 0.0161 </td>
+   <td style="text-align:right;"> 13.1853 </td>
+   <td style="text-align:left;"> MONTEVIDEO </td>
+   <td style="text-align:right;"> 0.0785 </td>
+   <td style="text-align:right;"> 4087.0392 </td>
+   <td style="text-align:right;"> 1030.8039 </td>
+   <td style="text-align:right;"> 3226.3255 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 0113 </td>
+   <td style="text-align:right;"> 3547 </td>
+   <td style="text-align:right;"> 0.0619 </td>
+   <td style="text-align:right;"> 0.0194 </td>
+   <td style="text-align:right;"> 23.7058 </td>
+   <td style="text-align:left;"> MONTEVIDEO </td>
+   <td style="text-align:right;"> 0.0906 </td>
+   <td style="text-align:right;"> 2672.3059 </td>
+   <td style="text-align:right;"> 529.8118 </td>
+   <td style="text-align:right;"> 2442.3608 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 0117 </td>
+   <td style="text-align:right;"> 3416 </td>
+   <td style="text-align:right;"> 0.0545 </td>
+   <td style="text-align:right;"> 0.0170 </td>
+   <td style="text-align:right;"> 19.8059 </td>
+   <td style="text-align:left;"> MONTEVIDEO </td>
+   <td style="text-align:right;"> 0.0819 </td>
+   <td style="text-align:right;"> 3449.1059 </td>
+   <td style="text-align:right;"> 1003.3451 </td>
+   <td style="text-align:right;"> 2863.3176 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 0112 </td>
+   <td style="text-align:right;"> 3283 </td>
+   <td style="text-align:right;"> 0.0049 </td>
+   <td style="text-align:right;"> 0.0037 </td>
+   <td style="text-align:right;"> 9.5425 </td>
+   <td style="text-align:left;"> MONTEVIDEO </td>
+   <td style="text-align:right;"> 0.0536 </td>
+   <td style="text-align:right;"> 439.2706 </td>
+   <td style="text-align:right;"> 0.1294 </td>
+   <td style="text-align:right;"> 839.9843 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 0120 </td>
+   <td style="text-align:right;"> 3125 </td>
+   <td style="text-align:right;"> 0.0173 </td>
+   <td style="text-align:right;"> 0.0084 </td>
+   <td style="text-align:right;"> 13.3669 </td>
+   <td style="text-align:left;"> MONTEVIDEO </td>
+   <td style="text-align:right;"> 0.0737 </td>
+   <td style="text-align:right;"> 870.6353 </td>
+   <td style="text-align:right;"> 16.4039 </td>
+   <td style="text-align:right;"> 1446.0588 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 0124 </td>
+   <td style="text-align:right;"> 3107 </td>
+   <td style="text-align:right;"> 0.0023 </td>
+   <td style="text-align:right;"> 0.0014 </td>
+   <td style="text-align:right;"> 2.6330 </td>
+   <td style="text-align:left;"> MONTEVIDEO </td>
+   <td style="text-align:right;"> 0.0496 </td>
+   <td style="text-align:right;"> 481.2902 </td>
+   <td style="text-align:right;"> 1.6039 </td>
+   <td style="text-align:right;"> 846.2980 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 0122 </td>
+   <td style="text-align:right;"> 2219 </td>
+   <td style="text-align:right;"> 0.0210 </td>
+   <td style="text-align:right;"> 0.0102 </td>
+   <td style="text-align:right;"> 11.6410 </td>
+   <td style="text-align:left;"> MONTEVIDEO </td>
+   <td style="text-align:right;"> 0.0589 </td>
+   <td style="text-align:right;"> 507.7059 </td>
+   <td style="text-align:right;"> 2.3373 </td>
+   <td style="text-align:right;"> 960.3255 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 0199 </td>
+   <td style="text-align:right;"> 2031 </td>
+   <td style="text-align:right;"> 0.0402 </td>
+   <td style="text-align:right;"> 0.0231 </td>
+   <td style="text-align:right;"> 29.2259 </td>
+   <td style="text-align:left;"> MONTEVIDEO </td>
+   <td style="text-align:right;"> 0.0784 </td>
+   <td style="text-align:right;"> 3581.8314 </td>
+   <td style="text-align:right;"> 660.5176 </td>
+   <td style="text-align:right;"> 2238.4667 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 0109 </td>
+   <td style="text-align:right;"> 2005 </td>
+   <td style="text-align:right;"> 0.0471 </td>
+   <td style="text-align:right;"> 0.0133 </td>
+   <td style="text-align:right;"> 8.1569 </td>
+   <td style="text-align:left;"> MONTEVIDEO </td>
+   <td style="text-align:right;"> 0.0798 </td>
+   <td style="text-align:right;"> 6096.7098 </td>
+   <td style="text-align:right;"> 2006.2392 </td>
+   <td style="text-align:right;"> 2315.8157 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 0114 </td>
+   <td style="text-align:right;"> 1975 </td>
+   <td style="text-align:right;"> 0.0033 </td>
+   <td style="text-align:right;"> 0.0015 </td>
+   <td style="text-align:right;"> 1.3488 </td>
+   <td style="text-align:left;"> MONTEVIDEO </td>
+   <td style="text-align:right;"> 0.0515 </td>
+   <td style="text-align:right;"> 406.4118 </td>
+   <td style="text-align:right;"> 1.0510 </td>
+   <td style="text-align:right;"> 675.9608 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 0116 </td>
+   <td style="text-align:right;"> 1785 </td>
+   <td style="text-align:right;"> 0.0357 </td>
+   <td style="text-align:right;"> 0.0217 </td>
+   <td style="text-align:right;"> 25.0869 </td>
+   <td style="text-align:left;"> MONTEVIDEO </td>
+   <td style="text-align:right;"> 0.0906 </td>
+   <td style="text-align:right;"> 4150.6078 </td>
+   <td style="text-align:right;"> 1803.0510 </td>
+   <td style="text-align:right;"> 1872.2118 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 0115 </td>
+   <td style="text-align:right;"> 1773 </td>
+   <td style="text-align:right;"> 0.0255 </td>
+   <td style="text-align:right;"> 0.0162 </td>
+   <td style="text-align:right;"> 19.4220 </td>
+   <td style="text-align:left;"> MONTEVIDEO </td>
+   <td style="text-align:right;"> 0.0614 </td>
+   <td style="text-align:right;"> 144.4235 </td>
+   <td style="text-align:right;"> 0.0941 </td>
+   <td style="text-align:right;"> 252.0549 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 0123 </td>
+   <td style="text-align:right;"> 1091 </td>
+   <td style="text-align:right;"> 0.0036 </td>
+   <td style="text-align:right;"> 0.0036 </td>
+   <td style="text-align:right;"> 4.0918 </td>
+   <td style="text-align:left;"> MONTEVIDEO </td>
+   <td style="text-align:right;"> 0.0551 </td>
+   <td style="text-align:right;"> 151.4471 </td>
+   <td style="text-align:right;"> 0.0000 </td>
+   <td style="text-align:right;"> 293.2000 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 0119 </td>
+   <td style="text-align:right;"> 960 </td>
+   <td style="text-align:right;"> 0.0109 </td>
+   <td style="text-align:right;"> 0.0085 </td>
+   <td style="text-align:right;"> 6.7411 </td>
+   <td style="text-align:left;"> MONTEVIDEO </td>
+   <td style="text-align:right;"> 0.0606 </td>
+   <td style="text-align:right;"> 149.4706 </td>
+   <td style="text-align:right;"> 0.0000 </td>
+   <td style="text-align:right;"> 286.6510 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 0107 </td>
+   <td style="text-align:right;"> 789 </td>
+   <td style="text-align:right;"> 0.0267 </td>
+   <td style="text-align:right;"> 0.0181 </td>
+   <td style="text-align:right;"> 10.3494 </td>
+   <td style="text-align:left;"> MONTEVIDEO </td>
+   <td style="text-align:right;"> 0.0606 </td>
+   <td style="text-align:right;"> 93.4431 </td>
+   <td style="text-align:right;"> 0.0000 </td>
+   <td style="text-align:right;"> 153.2863 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 0108 </td>
+   <td style="text-align:right;"> 626 </td>
+   <td style="text-align:right;"> 0.0131 </td>
+   <td style="text-align:right;"> 0.0127 </td>
+   <td style="text-align:right;"> 8.1482 </td>
+   <td style="text-align:left;"> MONTEVIDEO </td>
+   <td style="text-align:right;"> 0.0559 </td>
+   <td style="text-align:right;"> 159.3529 </td>
+   <td style="text-align:right;"> 0.0000 </td>
+   <td style="text-align:right;"> 299.3216 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 0106 </td>
+   <td style="text-align:right;"> 543 </td>
+   <td style="text-align:right;"> 0.0136 </td>
+   <td style="text-align:right;"> 0.0120 </td>
+   <td style="text-align:right;"> 6.0827 </td>
+   <td style="text-align:left;"> MONTEVIDEO </td>
+   <td style="text-align:right;"> 0.0554 </td>
+   <td style="text-align:right;"> 43.2353 </td>
+   <td style="text-align:right;"> 0.0000 </td>
+   <td style="text-align:right;"> 80.0000 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 0105 </td>
+   <td style="text-align:right;"> 459 </td>
+   <td style="text-align:right;"> 0.0000 </td>
+   <td style="text-align:right;"> 0.0000 </td>
+   <td style="text-align:right;"> 1.0000 </td>
+   <td style="text-align:left;"> MONTEVIDEO </td>
+   <td style="text-align:right;"> 0.0550 </td>
+   <td style="text-align:right;"> 63.6902 </td>
+   <td style="text-align:right;"> 0.0000 </td>
+   <td style="text-align:right;"> 94.2078 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 0104 </td>
+   <td style="text-align:right;"> 448 </td>
+   <td style="text-align:right;"> 0.0000 </td>
+   <td style="text-align:right;"> 0.0000 </td>
+   <td style="text-align:right;"> 1.0000 </td>
+   <td style="text-align:left;"> MONTEVIDEO </td>
+   <td style="text-align:right;"> 0.0482 </td>
+   <td style="text-align:right;"> 42.9255 </td>
+   <td style="text-align:right;"> 0.0000 </td>
+   <td style="text-align:right;"> 27.9373 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 0103 </td>
+   <td style="text-align:right;"> 336 </td>
+   <td style="text-align:right;"> 0.0324 </td>
+   <td style="text-align:right;"> 0.0226 </td>
+   <td style="text-align:right;"> 5.6929 </td>
+   <td style="text-align:left;"> MONTEVIDEO </td>
+   <td style="text-align:right;"> 0.0457 </td>
+   <td style="text-align:right;"> 31.7608 </td>
+   <td style="text-align:right;"> 0.0000 </td>
+   <td style="text-align:right;"> 13.5961 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 0101 </td>
+   <td style="text-align:right;"> 301 </td>
+   <td style="text-align:right;"> 0.0098 </td>
+   <td style="text-align:right;"> 0.0110 </td>
+   <td style="text-align:right;"> 3.8891 </td>
+   <td style="text-align:left;"> MONTEVIDEO </td>
+   <td style="text-align:right;"> 0.0601 </td>
+   <td style="text-align:right;"> 44.9922 </td>
+   <td style="text-align:right;"> 0.0000 </td>
+   <td style="text-align:right;"> 63.3961 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 0102 </td>
+   <td style="text-align:right;"> 144 </td>
+   <td style="text-align:right;"> 0.0056 </td>
+   <td style="text-align:right;"> 0.0071 </td>
+   <td style="text-align:right;"> 1.3360 </td>
+   <td style="text-align:left;"> MONTEVIDEO </td>
+   <td style="text-align:right;"> 0.0508 </td>
+   <td style="text-align:right;"> 34.8588 </td>
+   <td style="text-align:right;"> 0.0000 </td>
+   <td style="text-align:right;"> 25.1765 </td>
+  </tr>
 </tbody>
 </table>
+
 </div>
 </div>
 <p>Dividiendo los datos en observados y NO observados.</p>
-<div class="cell" data-hash="3Fay-Herriot-en-R-y-STAN_cache/html/unnamed-chunk-4_5353a1fedc3502eb1c178a660a8b008d">
+<div class="cell" data-hash="3Fay-Herriot-en-R-y-STAN_cache/html/unnamed-chunk-6_4c0b31e3fcbde8e51b8fafaf1c63375f">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Estimaciones directas</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>data_dir <span class="ot">&lt;-</span> Estimacion_dir <span class="sc">%&gt;%</span></span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(thetahat) ,<span class="sc">!</span><span class="fu">is.na</span>(tasa_desocupacion),</span>
@@ -699,7 +719,7 @@ g_{3d}\left(\hat{\sigma}_{u}^{2}\right) &amp; = &amp; \left(1-\gamma_{d}\right)^
 <span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(tasa_desocupacion))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Correlación de la estimación directa con las covariables.</p>
-<div class="cell" data-hash="3Fay-Herriot-en-R-y-STAN_cache/html/unnamed-chunk-5_ea6c9bdb218892730dd2b0fee8655189">
+<div class="cell" data-hash="3Fay-Herriot-en-R-y-STAN_cache/html/unnamed-chunk-7_89da1fe1ea54120874e47c57bd40219a">
 <div class="cell-output cell-output-stdout">
 <pre><code>      tasa_desocupacion       log_stable_lights log_crops.coverfraction 
               0.7812818               0.6323998               0.7799150 
@@ -723,8 +743,8 @@ Y\mid\mu,\sigma_{e} &amp; \sim &amp; N\left(\mu,\sigma_{e}\right)\\
 \sigma^2_v &amp;\sim &amp; Inversa-Gamma(\alpha_1,\alpha_2)
 \end{eqnarray*}
 \]</span></p>
-<p>El modelo propuesto se escibre en <code>STAN</code> de la siguiente forma.</p>
-<div class="cell" data-hash="3Fay-Herriot-en-R-y-STAN_cache/html/unnamed-chunk-6_533c802608105ff8a8bf5cb5307f4b7d">
+<p>El modelo propuesto se escribe en <code>STAN</code> de la siguiente forma.</p>
+<div class="cell" data-hash="3Fay-Herriot-en-R-y-STAN_cache/html/unnamed-chunk-8_ef493ec29ae83381152dc57db024006a">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>data {</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  int<span class="sc">&lt;</span>lower<span class="ot">=</span><span class="dv">0</span><span class="sc">&gt;</span> N1;   <span class="sc">/</span><span class="er">/</span> number of data items</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  int<span class="sc">&lt;</span>lower<span class="ot">=</span><span class="dv">0</span><span class="sc">&gt;</span> N2;   <span class="sc">/</span><span class="er">/</span> number of data items <span class="cf">for</span> prediction</span>
@@ -765,27 +785,27 @@ Y\mid\mu,\sigma_{e} &amp; \sim &amp; N\left(\mu,\sigma_{e}\right)\\
 <span id="cb5-38"><a href="#cb5-38" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Para ejecutar el modelo debemos cargar el código de <code>STAN</code> de la siguiente forma</p>
-<div class="cell" data-hash="3Fay-Herriot-en-R-y-STAN_cache/html/unnamed-chunk-7_f19c687f1134be5f837eba498c77a4d3">
+<div class="cell" data-hash="3Fay-Herriot-en-R-y-STAN_cache/html/unnamed-chunk-9_575a21c53f2640643274e7c563457562">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(cmdstanr)</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>fit_FH_Nornal <span class="ot">&lt;-</span> <span class="fu">cmdstan_model</span>(<span class="st">"Data/modelosStan/FH_normal.stan"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Definiendo la matriz de datos para <code>STAN</code></p>
-<div class="cell" data-hash="3Fay-Herriot-en-R-y-STAN_cache/html/unnamed-chunk-8_139d12765ba9ca1352c18ef8173513ac">
+<div class="cell" data-hash="3Fay-Herriot-en-R-y-STAN_cache/html/unnamed-chunk-10_6ddeffc27c10b398145b9c070c2e02a2">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Dominios observados</span></span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>Xdat <span class="ot">&lt;-</span></span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">model.matrix</span>(</span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    thetahat <span class="sc">~</span> tasa_desocupacion,</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    thetahat <span class="sc">~</span> mpio <span class="sc">+</span> tasa_desocupacion,</span>
 <span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> data_dir</span>
 <span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>  )</span>
 <span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="do">## Dominios no observados</span></span>
 <span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>Xs <span class="ot">&lt;-</span></span>
 <span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">model.matrix</span>(</span>
-<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>    thetahat <span class="sc">~</span> tasa_desocupacion ,</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>    thetahat <span class="sc">~</span> mpio <span class="sc">+</span> tasa_desocupacion ,</span>
 <span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> data_syn</span>
 <span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Para realizar la predicción del modelo es necesario validar que <span class="math inline">\(X\)</span> y <span class="math inline">\(Xs\)</span> deben tener la mismas columnas en el mismo orden.</p>
-<div class="cell" data-hash="3Fay-Herriot-en-R-y-STAN_cache/html/unnamed-chunk-9_45ca7d6e89d9d1bd22a432da6a04874b">
+<div class="cell" data-hash="3Fay-Herriot-en-R-y-STAN_cache/html/unnamed-chunk-11_76ad70c857c13dea9f48fdff1095323d">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>temp <span class="ot">&lt;-</span> <span class="fu">setdiff</span>(<span class="fu">colnames</span>(Xdat),<span class="fu">colnames</span>(Xs))</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>temp <span class="ot">&lt;-</span> <span class="fu">matrix</span>(</span>
@@ -798,7 +818,7 @@ Y\mid\mu,\sigma_{e} &amp; \sim &amp; N\left(\mu,\sigma_{e}\right)\\
 <span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>Xs <span class="ot">&lt;-</span> <span class="fu">cbind</span>(Xs,temp)[,<span class="fu">colnames</span>(Xdat)]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>El modelo de <code>STAN</code> requiere los datos organizados en una lista de <code>R</code>.</p>
-<div class="cell" data-hash="3Fay-Herriot-en-R-y-STAN_cache/html/unnamed-chunk-10_02f6cdabbab0307aa92018367ce10a49">
+<div class="cell" data-hash="3Fay-Herriot-en-R-y-STAN_cache/html/unnamed-chunk-12_ea32ba8a7ffffe805b45135a423de317">
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>sample_data <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">N1 =</span> <span class="fu">nrow</span>(data_dir),   <span class="co"># Observados.</span></span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">N2 =</span> <span class="fu">nrow</span>(data_syn),   <span class="co"># NO Observados.</span></span>
@@ -810,7 +830,7 @@ Y\mid\mu,\sigma_{e} &amp; \sim &amp; N\left(\mu,\sigma_{e}\right)\\
 <span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>                    )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Ejecutando el código de <code>STAN</code> en <code>R</code> tenemos:</p>
-<div class="cell" data-hash="3Fay-Herriot-en-R-y-STAN_cache/html/unnamed-chunk-11_c73e567f64748d9ca03187bbc66f2e08">
+<div class="cell" data-hash="3Fay-Herriot-en-R-y-STAN_cache/html/unnamed-chunk-13_bf403c72b7b51fc93acffe81bdfef966">
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>model_FH_Nornal <span class="ot">&lt;-</span></span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  fit_FH_Nornal<span class="sc">$</span><span class="fu">sample</span>(</span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> sample_data,</span>
@@ -824,18 +844,18 @@ Y\mid\mu,\sigma_{e} &amp; \sim &amp; N\left(\mu,\sigma_{e}\right)\\
 <div class="cell-output cell-output-stdout">
 <pre><code>Running MCMC with 4 parallel chains...
 
-Chain 2 finished in 4.6 seconds.
-Chain 1 finished in 4.9 seconds.
-Chain 3 finished in 4.8 seconds.
-Chain 4 finished in 4.5 seconds.
+Chain 2 finished in 37.5 seconds.
+Chain 4 finished in 37.8 seconds.
+Chain 3 finished in 38.3 seconds.
+Chain 1 finished in 39.3 seconds.
 
 All 4 chains finished successfully.
-Mean chain execution time: 4.7 seconds.
-Total execution time: 5.9 seconds.</code></pre>
+Mean chain execution time: 38.2 seconds.
+Total execution time: 39.6 seconds.</code></pre>
 </div>
 </div>
 <p>Ahora, al evaluar las predicciones se tiene.</p>
-<div class="cell" data-hash="3Fay-Herriot-en-R-y-STAN_cache/html/unnamed-chunk-12_be76208e0c06972d7eea8f142a046dbf">
+<div class="cell" data-hash="3Fay-Herriot-en-R-y-STAN_cache/html/unnamed-chunk-14_c62327b537fc9c258867339622e02651">
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(posterior)</span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(bayesplot)</span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(patchwork)</span>
@@ -849,20 +869,20 @@ Total execution time: 5.9 seconds.</code></pre>
 <span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Comparando predicción con las cadenas</span></span>
 <span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a><span class="fu">ppc_dens_overlay</span>(<span class="at">y =</span> <span class="fu">as.numeric</span>(data_dir<span class="sc">$</span>thetahat), y_pred2) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="3Fay-Herriot-en-R-y-STAN_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid" width="672"></p>
+<p><img src="3Fay-Herriot-en-R-y-STAN_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <p>Para revisar la calidad de las cadenas tenemos:</p>
-<div class="cell" data-hash="3Fay-Herriot-en-R-y-STAN_cache/html/unnamed-chunk-13_04fdd0425f57806fd7a04fb976cd6c73">
+<div class="cell" data-hash="3Fay-Herriot-en-R-y-STAN_cache/html/unnamed-chunk-15_ed22ca10ca76591dd86cb4f7de77219b">
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>(<span class="fu">mcmc_dens_chains</span>(model_FH_Nornal<span class="sc">$</span><span class="fu">draws</span>(<span class="st">"sigma_v"</span>)) <span class="sc">+</span></span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mcmc_areas</span>(model_FH_Nornal<span class="sc">$</span><span class="fu">draws</span>(<span class="st">"sigma_v"</span>)))<span class="sc">/</span> </span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mcmc_trace</span>(model_FH_Nornal<span class="sc">$</span><span class="fu">draws</span>(<span class="st">"sigma_v"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="3Fay-Herriot-en-R-y-STAN_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid" width="672"></p>
+<p><img src="3Fay-Herriot-en-R-y-STAN_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <p>Los resultados podrían mejorar al adicionar más covariables en los efectos fijos.</p>
-<div class="cell" data-hash="3Fay-Herriot-en-R-y-STAN_cache/html/unnamed-chunk-14_e009270e93e5c5305fa3308271d2300b">
+<div class="cell" data-hash="3Fay-Herriot-en-R-y-STAN_cache/html/unnamed-chunk-16_53b9f72cc2c7862b7c2068cbc04b7c0e">
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>Xdat <span class="ot">&lt;-</span></span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">model.matrix</span>(</span>
 <span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>    thetahat <span class="sc">~</span> tasa_desocupacion <span class="sc">+</span></span>
@@ -890,7 +910,7 @@ Total execution time: 5.9 seconds.</code></pre>
 <span id="cb14-25"><a href="#cb14-25" aria-hidden="true" tabindex="-1"></a>Xs <span class="ot">&lt;-</span> <span class="fu">cbind</span>(Xs,temp)[,<span class="fu">colnames</span>(Xdat)]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Ejecutando nuevamente el modelo</p>
-<div class="cell" data-hash="3Fay-Herriot-en-R-y-STAN_cache/html/unnamed-chunk-15_731132f8c98de74e1baccdd868629220">
+<div class="cell" data-hash="3Fay-Herriot-en-R-y-STAN_cache/html/unnamed-chunk-17_6a2ed004df5cdfb31a4d0d3449bc4ecf">
 <div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>sample_data <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">N1 =</span> <span class="fu">nrow</span>(data_dir),   <span class="co"># Observados.</span></span>
 <span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">N2 =</span> <span class="fu">nrow</span>(data_syn),   <span class="co"># NO Observados.</span></span>
@@ -902,7 +922,7 @@ Total execution time: 5.9 seconds.</code></pre>
 <span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>                    )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Para ejecutar <code>STAN</code> en R tenemos la librería <em>cmdstanr</em></p>
-<div class="cell" data-hash="3Fay-Herriot-en-R-y-STAN_cache/html/unnamed-chunk-16_2a369856af991b7ae933ee3d11243382">
+<div class="cell" data-hash="3Fay-Herriot-en-R-y-STAN_cache/html/unnamed-chunk-18_bb27b55542b55ba12f2069210b229324">
 <div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>model_FH_Nornal <span class="ot">&lt;-</span></span>
 <span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  fit_FH_Nornal<span class="sc">$</span><span class="fu">sample</span>(</span>
 <span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> sample_data,</span>
@@ -914,18 +934,18 @@ Total execution time: 5.9 seconds.</code></pre>
 <div class="cell-output cell-output-stdout">
 <pre><code>Running MCMC with 4 parallel chains...
 
-Chain 3 finished in 8.8 seconds.
-Chain 1 finished in 9.7 seconds.
-Chain 2 finished in 10.4 seconds.
-Chain 4 finished in 10.4 seconds.
+Chain 1 finished in 6.0 seconds.
+Chain 3 finished in 5.6 seconds.
+Chain 2 finished in 6.6 seconds.
+Chain 4 finished in 6.2 seconds.
 
 All 4 chains finished successfully.
-Mean chain execution time: 9.9 seconds.
-Total execution time: 11.1 seconds.</code></pre>
+Mean chain execution time: 6.1 seconds.
+Total execution time: 8.0 seconds.</code></pre>
 </div>
 </div>
 <p>Comparando resultados.</p>
-<div class="cell" data-hash="3Fay-Herriot-en-R-y-STAN_cache/html/unnamed-chunk-17_bd6cbe0e8b3635fecddccd4bb7b1c03b">
+<div class="cell" data-hash="3Fay-Herriot-en-R-y-STAN_cache/html/unnamed-chunk-19_e8e68e5e26d2480518d08db8b87bfece">
 <div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Predicción de la estimación (Observados) </span></span>
 <span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>y_pred_B <span class="ot">&lt;-</span> model_FH_Nornal<span class="sc">$</span><span class="fu">draws</span>(<span class="at">variables =</span> <span class="st">"theta"</span>, <span class="at">format =</span> <span class="st">"matrix"</span>)</span>
 <span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>rowsrandom <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="fu">nrow</span>(y_pred_B), <span class="dv">100</span>)</span>
@@ -933,11 +953,11 @@ Total execution time: 11.1 seconds.</code></pre>
 <span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Comparando predicción con las cadenas</span></span>
 <span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a><span class="fu">ppc_dens_overlay</span>(<span class="at">y =</span> <span class="fu">as.numeric</span>(data_dir<span class="sc">$</span>thetahat), y_pred2) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="3Fay-Herriot-en-R-y-STAN_files/figure-html/unnamed-chunk-17-1.png" class="img-fluid" width="672"></p>
+<p><img src="3Fay-Herriot-en-R-y-STAN_files/figure-html/unnamed-chunk-19-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <p>Comparando estimación directa y predicción de FH</p>
-<div class="cell" data-hash="3Fay-Herriot-en-R-y-STAN_cache/html/unnamed-chunk-18_2a51d8b561a177d2d878a3433c3d2ed9">
+<div class="cell" data-hash="3Fay-Herriot-en-R-y-STAN_cache/html/unnamed-chunk-20_2b404b917381051d80c1a86fa1e64faf">
 <div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
 <span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>theta_FH <span class="ot">&lt;-</span> model_FH_Nornal<span class="sc">$</span><span class="fu">summary</span>(<span class="at">variables =</span>  <span class="st">"theta"</span>)</span>
 <span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>data_dir <span class="sc">%&lt;&gt;%</span> <span class="fu">mutate</span>(<span class="at">pred_normal =</span> theta_FH<span class="sc">$</span>mean)</span>
@@ -950,16 +970,16 @@ Total execution time: 11.1 seconds.</code></pre>
 <span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
 <span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">2</span>) <span class="sc">+</span> <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">20</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="3Fay-Herriot-en-R-y-STAN_files/figure-html/unnamed-chunk-18-1.png" class="img-fluid" width="672"></p>
+<p><img src="3Fay-Herriot-en-R-y-STAN_files/figure-html/unnamed-chunk-20-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <p>Al revisar el comportamiento de las cadenas para <span class="math inline">\(\sigma^2_v\)</span> se tiene</p>
-<div class="cell" data-hash="3Fay-Herriot-en-R-y-STAN_cache/html/unnamed-chunk-19_18c96782c05b4afdd930976325dad317">
+<div class="cell" data-hash="3Fay-Herriot-en-R-y-STAN_cache/html/unnamed-chunk-21_8fb4fbf67f7586d213b2dab468193885">
 <div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>(<span class="fu">mcmc_dens_chains</span>(model_FH_Nornal<span class="sc">$</span><span class="fu">draws</span>(<span class="st">"sigma2_v"</span>)) <span class="sc">+</span></span>
 <span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mcmc_areas</span>(model_FH_Nornal<span class="sc">$</span><span class="fu">draws</span>(<span class="st">"sigma2_v"</span>)))<span class="sc">/</span> </span>
 <span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mcmc_trace</span>(model_FH_Nornal<span class="sc">$</span><span class="fu">draws</span>(<span class="st">"sigma2_v"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="3Fay-Herriot-en-R-y-STAN_files/figure-html/unnamed-chunk-19-1.png" class="img-fluid" width="672"></p>
+<p><img src="3Fay-Herriot-en-R-y-STAN_files/figure-html/unnamed-chunk-21-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 </section>
@@ -976,7 +996,7 @@ Total execution time: 11.1 seconds.</code></pre>
 Var\left( \hat{z}_d \right) = \frac{\widehat{DEFF}_d}{4\times n_d} = \frac{1}{4\times n_{d,efectivo} }
 \]</span></p>
 <p>Realizando estos cálculo a la base de la estimación directa:</p>
-<div class="cell" data-hash="3Fay-Herriot-en-R-y-STAN_cache/html/unnamed-chunk-20_9329d63a3ac5e54a2af63581fedb57da">
+<div class="cell" data-hash="3Fay-Herriot-en-R-y-STAN_cache/html/unnamed-chunk-22_6a446219f249ff05163b47ceea148241">
 <div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>data_dir <span class="sc">%&lt;&gt;%</span> <span class="fu">mutate</span>(</span>
 <span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">n_effec =</span> nd<span class="sc">/</span>thetahat_deff,     <span class="do">## n efectivo</span></span>
 <span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">varhat =</span> <span class="dv">1</span><span class="sc">/</span>(<span class="dv">4</span><span class="sc">*</span>n_effec),         <span class="do">## varianza para zd  </span></span>
@@ -1001,7 +1021,7 @@ Z \mid \mu,\sigma_e &amp;  \sim  &amp; N(\mu, \sigma_e)\\
 \sigma^2_v \sim Inversa-Gamma(\alpha_1,\alpha_2)
 \]</span></p>
 <p>Creando código de <code>STAN</code></p>
-<div class="cell" data-hash="3Fay-Herriot-en-R-y-STAN_cache/html/unnamed-chunk-21_f92318f809b1cc89f1e56c3678a9e97f">
+<div class="cell" data-hash="3Fay-Herriot-en-R-y-STAN_cache/html/unnamed-chunk-23_6b2af4e04c1ba860562c30de7a7bb87b">
 <div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>data {</span>
 <span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>  int<span class="sc">&lt;</span>lower<span class="ot">=</span><span class="dv">0</span><span class="sc">&gt;</span> N1;   <span class="sc">/</span><span class="er">/</span> number of data items</span>
 <span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>  int<span class="sc">&lt;</span>lower<span class="ot">=</span><span class="dv">0</span><span class="sc">&gt;</span> N2;   <span class="sc">/</span><span class="er">/</span> number of data items <span class="cf">for</span> prediction</span>
@@ -1050,11 +1070,11 @@ Z \mid \mu,\sigma_e &amp;  \sim  &amp; N(\mu, \sigma_e)\\
 <span id="cb22-46"><a href="#cb22-46" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Preparando el código de <code>STAN</code></p>
-<div class="cell" data-hash="3Fay-Herriot-en-R-y-STAN_cache/html/unnamed-chunk-22_25dafe62b8f9512f2b32b6d76a3dcf9a">
+<div class="cell" data-hash="3Fay-Herriot-en-R-y-STAN_cache/html/unnamed-chunk-24_8c2f854a1f2c35681878a09fb3a8e9dd">
 <div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>fit_FH_arcsin_Nornal <span class="ot">&lt;-</span> <span class="fu">cmdstan_model</span>(<span class="st">"Data/modelosStan/FH_arcsin_normal.stan"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Organizando la data para compilar <code>STAN</code></p>
-<div class="cell" data-hash="3Fay-Herriot-en-R-y-STAN_cache/html/unnamed-chunk-23_231f5844b24748c01cff04fc2744b24c">
+<div class="cell" data-hash="3Fay-Herriot-en-R-y-STAN_cache/html/unnamed-chunk-25_b69d75a4c75444f2598dd38d490d2b6a">
 <div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>sample_data <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">N1 =</span> <span class="fu">nrow</span>(data_dir),</span>
 <span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>                    <span class="at">N2 =</span> <span class="fu">nrow</span>(data_syn),</span>
 <span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>                    <span class="at">p  =</span> <span class="fu">ncol</span>(Xdat),</span>
@@ -1065,7 +1085,7 @@ Z \mid \mu,\sigma_e &amp;  \sim  &amp; N(\mu, \sigma_e)\\
 <span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>                    )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Ahora, se ejecuta el modelo en <code>R</code></p>
-<div class="cell" data-hash="3Fay-Herriot-en-R-y-STAN_cache/html/unnamed-chunk-24_bcd4259ff7527cda93601b40a1b53ab3">
+<div class="cell" data-hash="3Fay-Herriot-en-R-y-STAN_cache/html/unnamed-chunk-26_4e5d73c3a4dea6dc47429efdeb10a4be">
 <div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>model_FH_arcsin_Nornal <span class="ot">&lt;-</span></span>
 <span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>  fit_FH_arcsin_Nornal<span class="sc">$</span><span class="fu">sample</span>(</span>
 <span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> sample_data,</span>
@@ -1079,29 +1099,29 @@ Z \mid \mu,\sigma_e &amp;  \sim  &amp; N(\mu, \sigma_e)\\
 <div class="cell-output cell-output-stdout">
 <pre><code>Running MCMC with 4 parallel chains...
 
-Chain 1 finished in 8.2 seconds.
-Chain 2 finished in 9.5 seconds.
-Chain 3 finished in 10.1 seconds.
-Chain 4 finished in 9.5 seconds.
+Chain 2 finished in 5.9 seconds.
+Chain 1 finished in 6.8 seconds.
+Chain 3 finished in 7.0 seconds.
+Chain 4 finished in 6.7 seconds.
 
 All 4 chains finished successfully.
-Mean chain execution time: 9.3 seconds.
-Total execution time: 10.9 seconds.</code></pre>
+Mean chain execution time: 6.6 seconds.
+Total execution time: 7.7 seconds.</code></pre>
 </div>
 </div>
 <p>La distribución posterior obtenida es la siguientes</p>
-<div class="cell" data-hash="3Fay-Herriot-en-R-y-STAN_cache/html/unnamed-chunk-25_21ed8b73f551067e7761f0d1058f7d32">
+<div class="cell" data-hash="3Fay-Herriot-en-R-y-STAN_cache/html/unnamed-chunk-27_cd1e1bc21a732f46084b26f22dc66f86">
 <div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>y_pred_B <span class="ot">&lt;-</span></span>
 <span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>  model_FH_arcsin_Nornal<span class="sc">$</span><span class="fu">draws</span>(<span class="at">variables =</span> <span class="st">"theta"</span>, <span class="at">format =</span> <span class="st">"matrix"</span>)</span>
 <span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>rowsrandom <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="fu">nrow</span>(y_pred_B), <span class="dv">100</span>)</span>
 <span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>y_pred2 <span class="ot">&lt;-</span> y_pred_B[rowsrandom, ]</span>
 <span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a><span class="fu">ppc_dens_overlay</span>(<span class="at">y =</span> <span class="fu">as.numeric</span>(data_dir<span class="sc">$</span>thetahat), y_pred2) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="3Fay-Herriot-en-R-y-STAN_files/figure-html/unnamed-chunk-25-1.png" class="img-fluid" width="672"></p>
+<p><img src="3Fay-Herriot-en-R-y-STAN_files/figure-html/unnamed-chunk-27-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <p>Evaluando el resultado de la predicción de forma visual.</p>
-<div class="cell" data-hash="3Fay-Herriot-en-R-y-STAN_cache/html/unnamed-chunk-26_ca13ae5fc34181d0a11602a4806d4f49">
+<div class="cell" data-hash="3Fay-Herriot-en-R-y-STAN_cache/html/unnamed-chunk-28_81c801d92d93ad80c7f0f8c91e417e9f">
 <div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>theta_FH <span class="ot">&lt;-</span> model_FH_arcsin_Nornal<span class="sc">$</span><span class="fu">summary</span>(<span class="at">variables =</span>  <span class="st">"theta"</span>)</span>
 <span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>data_dir <span class="sc">%&lt;&gt;%</span> <span class="fu">mutate</span>(<span class="at">pred_arcsin =</span> theta_FH<span class="sc">$</span>mean)</span>
 <span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> data_dir, <span class="fu">aes</span>(<span class="at">x =</span> pred_arcsin, <span class="at">y =</span> thetahat)) <span class="sc">+</span></span>
@@ -1113,101 +1133,135 @@ Total execution time: 10.9 seconds.</code></pre>
 <span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
 <span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span> <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">20</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="3Fay-Herriot-en-R-y-STAN_files/figure-html/unnamed-chunk-26-1.png" class="img-fluid" width="672"></p>
+<p><img src="3Fay-Herriot-en-R-y-STAN_files/figure-html/unnamed-chunk-28-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <p>Predicción en los dominios <strong>NO</strong> observados</p>
-<div class="cell" data-hash="3Fay-Herriot-en-R-y-STAN_cache/html/unnamed-chunk-27_b8f66f0a92a073639d5a9b03bc85d8ec">
+<div class="cell" data-hash="3Fay-Herriot-en-R-y-STAN_cache/html/unnamed-chunk-29_148af2a8e6aa94b825e797995c451493">
 <div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>theta_FH_pred <span class="ot">&lt;-</span></span>
 <span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>  model_FH_arcsin_Nornal<span class="sc">$</span><span class="fu">summary</span>(<span class="at">variables =</span>  <span class="st">"theta_pred"</span>)</span>
-<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>data_syn <span class="sc">%&lt;&gt;%</span> <span class="fu">mutate</span>(<span class="at">pred_arcsin =</span> theta_FH_pred<span class="sc">$</span>mean)</span>
-<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>data_syn <span class="sc">%&gt;%</span> <span class="fu">select</span>(mpio<span class="sc">:</span>thetahat_se,pred_arcsin)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>data_syn <span class="sc">%&lt;&gt;%</span> <span class="fu">mutate</span>(<span class="at">pred_arcsin =</span> theta_FH_pred<span class="sc">$</span>mean)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-hash="3Fay-Herriot-en-R-y-STAN_cache/html/unnamed-chunk-30_9fca6968bdb146351d3e466a98f7e164">
 <div class="cell-output-display">
-<table class="table table-sm table-striped">
-<thead>
-<tr class="header">
-<th style="text-align: left;">mpio</th>
-<th style="text-align: right;">nd</th>
-<th style="text-align: right;">thetahat</th>
-<th style="text-align: right;">thetahat_se</th>
-<th style="text-align: right;">pred_arcsin</th>
-</tr>
-</thead>
+
+<table class=" lightable-classic" style="font-family: &quot;Arial Narrow&quot;, &quot;Source Sans Pro&quot;, sans-serif; margin-left: auto; margin-right: auto;">
+<caption>Estimación arcsin</caption>
+ <thead>
+  <tr>
+   <th style="text-align:left;"> mpio </th>
+   <th style="text-align:right;"> nd </th>
+   <th style="text-align:right;"> thetahat </th>
+   <th style="text-align:right;"> thetahat_se </th>
+   <th style="text-align:right;"> pred_arcsin </th>
+  </tr>
+ </thead>
 <tbody>
-<tr class="odd">
-<td style="text-align: left;">0105</td>
-<td style="text-align: right;">459</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">1e-05</td>
-<td style="text-align: right;">0.0090554</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">0104</td>
-<td style="text-align: right;">448</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">1e-05</td>
-<td style="text-align: right;">0.0074899</td>
-</tr>
+  <tr>
+   <td style="text-align:left;"> 0105 </td>
+   <td style="text-align:right;"> 459 </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> 0.0091 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 0104 </td>
+   <td style="text-align:right;"> 448 </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> 0.0075 </td>
+  </tr>
 </tbody>
 </table>
+
 </div>
 </div>
 <p>Resultados de la estimación de <span class="math inline">\(\sigma^2_v\)</span></p>
-<div class="cell" data-hash="3Fay-Herriot-en-R-y-STAN_cache/html/unnamed-chunk-28_c3fa2a5b533dc572d052878e6d6b9790">
+<div class="cell" data-hash="3Fay-Herriot-en-R-y-STAN_cache/html/unnamed-chunk-31_616c8254b1e4405b3adfd0f00267431f">
 <div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>model_FH_arcsin_Nornal<span class="sc">$</span><span class="fu">summary</span>(</span>
 <span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">variables =</span> <span class="fu">c</span>(<span class="st">"sigma2_v"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<table class="table table-sm table-striped">
-<colgroup>
-<col style="width: 9%">
-<col style="width: 10%">
-<col style="width: 10%">
-<col style="width: 10%">
-<col style="width: 10%">
-<col style="width: 9%">
-<col style="width: 8%">
-<col style="width: 9%">
-<col style="width: 9%">
-<col style="width: 9%">
-</colgroup>
+
+<table>
 <thead>
-<tr class="header">
-<th style="text-align: left;">variable</th>
-<th style="text-align: right;">mean</th>
-<th style="text-align: right;">median</th>
-<th style="text-align: right;">sd</th>
-<th style="text-align: right;">mad</th>
-<th style="text-align: right;">q5</th>
-<th style="text-align: right;">q95</th>
-<th style="text-align: right;">rhat</th>
-<th style="text-align: right;">ess_bulk</th>
-<th style="text-align: right;">ess_tail</th>
+<tr>
+<th style="text-align:left;">
+variable
+</th>
+<th style="text-align:right;">
+mean
+</th>
+<th style="text-align:right;">
+median
+</th>
+<th style="text-align:right;">
+sd
+</th>
+<th style="text-align:right;">
+mad
+</th>
+<th style="text-align:right;">
+q5
+</th>
+<th style="text-align:right;">
+q95
+</th>
+<th style="text-align:right;">
+rhat
+</th>
+<th style="text-align:right;">
+ess_bulk
+</th>
+<th style="text-align:right;">
+ess_tail
+</th>
 </tr>
 </thead>
 <tbody>
-<tr class="odd">
-<td style="text-align: left;">sigma2_v</td>
-<td style="text-align: right;">0.0005018</td>
-<td style="text-align: right;">0.0003495</td>
-<td style="text-align: right;">0.0004964</td>
-<td style="text-align: right;">0.0003183</td>
-<td style="text-align: right;">6.35e-05</td>
-<td style="text-align: right;">0.00146</td>
-<td style="text-align: right;">1.007562</td>
-<td style="text-align: right;">339.3557</td>
-<td style="text-align: right;">763.0864</td>
+<tr>
+<td style="text-align:left;">
+sigma2_v
+</td>
+<td style="text-align:right;">
+0.0005018
+</td>
+<td style="text-align:right;">
+0.0003495
+</td>
+<td style="text-align:right;">
+0.0004964
+</td>
+<td style="text-align:right;">
+0.0003183
+</td>
+<td style="text-align:right;">
+6.35e-05
+</td>
+<td style="text-align:right;">
+0.00146
+</td>
+<td style="text-align:right;">
+1.007562
+</td>
+<td style="text-align:right;">
+339.3557
+</td>
+<td style="text-align:right;">
+763.0864
+</td>
 </tr>
 </tbody>
+
 </table>
 </div>
 </div>
 <p>Evaluación de las cadenas</p>
-<div class="cell" data-hash="3Fay-Herriot-en-R-y-STAN_cache/html/unnamed-chunk-29_3ab4e70bf6ba6dc27aaf1517bceac9a7">
+<div class="cell" data-hash="3Fay-Herriot-en-R-y-STAN_cache/html/unnamed-chunk-32_a97c6269761d4dda349087b6c88924f3">
 <div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>(<span class="fu">mcmc_dens_chains</span>(model_FH_arcsin_Nornal<span class="sc">$</span><span class="fu">draws</span>(<span class="st">"sigma2_v"</span>)) <span class="sc">+</span></span>
 <span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mcmc_areas</span>(model_FH_arcsin_Nornal<span class="sc">$</span><span class="fu">draws</span>(<span class="st">"sigma2_v"</span>)))<span class="sc">/</span> </span>
 <span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mcmc_trace</span>(model_FH_arcsin_Nornal<span class="sc">$</span><span class="fu">draws</span>(<span class="st">"sigma2_v"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="3Fay-Herriot-en-R-y-STAN_files/figure-html/unnamed-chunk-29-1.png" class="img-fluid" width="672"></p>
+<p><img src="3Fay-Herriot-en-R-y-STAN_files/figure-html/unnamed-chunk-32-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 </section>
@@ -1238,7 +1292,7 @@ b &amp;=&amp; (1 - \theta) \times \phi\\
 \end{eqnarray*}
 \]</span></p>
 <p>Creando código de <code>STAN</code></p>
-<div class="cell" data-hash="3Fay-Herriot-en-R-y-STAN_cache/html/unnamed-chunk-30_63b2467cc4cc685b94e8ef9c3899ec54">
+<div class="cell" data-hash="3Fay-Herriot-en-R-y-STAN_cache/html/unnamed-chunk-33_aadfd439896c240abbdeed68e86ce156">
 <div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>data {</span>
 <span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>  int<span class="sc">&lt;</span>lower<span class="ot">=</span><span class="dv">1</span><span class="sc">&gt;</span> N1;                      <span class="sc">/</span><span class="er">/</span> sample size</span>
 <span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>  int<span class="sc">&lt;</span>lower<span class="ot">=</span><span class="dv">1</span><span class="sc">&gt;</span> N2;                      <span class="sc">/</span><span class="er">/</span> sample size</span>
@@ -1298,11 +1352,11 @@ b &amp;=&amp; (1 - \theta) \times \phi\\
 <span id="cb32-57"><a href="#cb32-57" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Preparando el código de <code>STAN</code></p>
-<div class="cell" data-hash="3Fay-Herriot-en-R-y-STAN_cache/html/unnamed-chunk-31_b118dd67742ce8d93ed84438a715ff6e">
+<div class="cell" data-hash="3Fay-Herriot-en-R-y-STAN_cache/html/unnamed-chunk-34_4994066dc4add75d538fb937e33d425c">
 <div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>fit_FH_beta <span class="ot">&lt;-</span> <span class="fu">cmdstan_model</span>(<span class="st">"Data/modelosStan/FH_beta.stan"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Organizando insumos para <code>STAN</code></p>
-<div class="cell" data-hash="3Fay-Herriot-en-R-y-STAN_cache/html/unnamed-chunk-32_d8ba0c3010f5dc2f1d8e205683ac5a2f">
+<div class="cell" data-hash="3Fay-Herriot-en-R-y-STAN_cache/html/unnamed-chunk-35_2377b64612c4c558ff397d3519c91316">
 <div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>sample_data <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">N1 =</span> <span class="fu">nrow</span>(data_dir),</span>
 <span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>                    <span class="at">N2 =</span> <span class="fu">nrow</span>(data_syn),</span>
 <span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>                    <span class="at">p  =</span> <span class="fu">ncol</span>(Xdat),</span>
@@ -1313,7 +1367,7 @@ b &amp;=&amp; (1 - \theta) \times \phi\\
 <span id="cb34-8"><a href="#cb34-8" aria-hidden="true" tabindex="-1"></a>                    )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Ejecutando el modelo en <code>R</code></p>
-<div class="cell" data-hash="3Fay-Herriot-en-R-y-STAN_cache/html/unnamed-chunk-33_6da43b0ba2726e069f2b6d2b2a3a5467">
+<div class="cell" data-hash="3Fay-Herriot-en-R-y-STAN_cache/html/unnamed-chunk-36_a8e006ec4f871e9c9a77d8b8ca5f5f50">
 <div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>model_FH_beta <span class="ot">&lt;-</span></span>
 <span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>  fit_FH_beta<span class="sc">$</span><span class="fu">sample</span>(</span>
 <span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> sample_data,</span>
@@ -1327,28 +1381,28 @@ b &amp;=&amp; (1 - \theta) \times \phi\\
 <div class="cell-output cell-output-stdout">
 <pre><code>Running MCMC with 4 parallel chains...
 
-Chain 4 finished in 20.2 seconds.
-Chain 2 finished in 21.5 seconds.
-Chain 3 finished in 20.6 seconds.
-Chain 1 finished in 21.8 seconds.
+Chain 3 finished in 15.0 seconds.
+Chain 4 finished in 14.5 seconds.
+Chain 2 finished in 15.5 seconds.
+Chain 1 finished in 15.6 seconds.
 
 All 4 chains finished successfully.
-Mean chain execution time: 21.0 seconds.
-Total execution time: 22.3 seconds.</code></pre>
+Mean chain execution time: 15.2 seconds.
+Total execution time: 16.0 seconds.</code></pre>
 </div>
 </div>
 <p>La distribución posterior toma la siguiente forma:</p>
-<div class="cell" data-hash="3Fay-Herriot-en-R-y-STAN_cache/html/unnamed-chunk-34_88c8c4c45be0ca39bf7e36d90ff28aa7">
+<div class="cell" data-hash="3Fay-Herriot-en-R-y-STAN_cache/html/unnamed-chunk-37_ddd88c7334f8787a7f5959aa7068a440">
 <div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>y_pred_B <span class="ot">&lt;-</span> model_FH_beta<span class="sc">$</span><span class="fu">draws</span>(<span class="at">variables =</span> <span class="st">"theta"</span>, <span class="at">format =</span> <span class="st">"matrix"</span>)</span>
 <span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>rowsrandom <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="fu">nrow</span>(y_pred_B), <span class="dv">100</span>)</span>
 <span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>y_pred2 <span class="ot">&lt;-</span> y_pred_B[rowsrandom, ]</span>
 <span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a><span class="fu">ppc_dens_overlay</span>(<span class="at">y =</span> <span class="fu">as.numeric</span>(data_dir<span class="sc">$</span>thetahat), y_pred2) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="3Fay-Herriot-en-R-y-STAN_files/figure-html/unnamed-chunk-34-1.png" class="img-fluid" width="672"></p>
+<p><img src="3Fay-Herriot-en-R-y-STAN_files/figure-html/unnamed-chunk-37-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <p>Ahora, la comparación entre la estimación directa y la predicción del modelo.</p>
-<div class="cell" data-hash="3Fay-Herriot-en-R-y-STAN_cache/html/unnamed-chunk-35_be21408b5839b5ed63813bce95d4f136">
+<div class="cell" data-hash="3Fay-Herriot-en-R-y-STAN_cache/html/unnamed-chunk-38_f19c9c423ecda18c9f80c844227bd18a">
 <div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>theta_FH <span class="ot">&lt;-</span> model_FH_beta<span class="sc">$</span><span class="fu">summary</span>(<span class="at">variables =</span>  <span class="st">"theta"</span>)</span>
 <span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>data_dir <span class="sc">%&lt;&gt;%</span> <span class="fu">mutate</span>(<span class="at">pred_beta =</span> theta_FH<span class="sc">$</span>mean)</span>
 <span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> data_dir, <span class="fu">aes</span>(<span class="at">x =</span> pred_beta, <span class="at">y =</span> thetahat)) <span class="sc">+</span></span>
@@ -1360,71 +1414,101 @@ Total execution time: 22.3 seconds.</code></pre>
 <span id="cb38-9"><a href="#cb38-9" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
 <span id="cb38-10"><a href="#cb38-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span> <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">20</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="3Fay-Herriot-en-R-y-STAN_files/figure-html/unnamed-chunk-35-1.png" class="img-fluid" width="672"></p>
+<p><img src="3Fay-Herriot-en-R-y-STAN_files/figure-html/unnamed-chunk-38-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <p>Estimación de <span class="math inline">\(\sigma_v^2\)</span> es obtenida así:</p>
-<div class="cell" data-hash="3Fay-Herriot-en-R-y-STAN_cache/html/unnamed-chunk-36_bc48b885f38506dce0e15cdd97fd22d6">
+<div class="cell" data-hash="3Fay-Herriot-en-R-y-STAN_cache/html/unnamed-chunk-39_a3f08da961364a1d66e084f69526d193">
 <div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>model_FH_beta<span class="sc">$</span><span class="fu">summary</span>(<span class="at">variables =</span> <span class="fu">c</span>(<span class="st">"sigma2_v"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<table class="table table-sm table-striped">
-<colgroup>
-<col style="width: 9%">
-<col style="width: 10%">
-<col style="width: 10%">
-<col style="width: 10%">
-<col style="width: 10%">
-<col style="width: 10%">
-<col style="width: 10%">
-<col style="width: 8%">
-<col style="width: 9%">
-<col style="width: 9%">
-</colgroup>
+
+<table>
 <thead>
-<tr class="header">
-<th style="text-align: left;">variable</th>
-<th style="text-align: right;">mean</th>
-<th style="text-align: right;">median</th>
-<th style="text-align: right;">sd</th>
-<th style="text-align: right;">mad</th>
-<th style="text-align: right;">q5</th>
-<th style="text-align: right;">q95</th>
-<th style="text-align: right;">rhat</th>
-<th style="text-align: right;">ess_bulk</th>
-<th style="text-align: right;">ess_tail</th>
+<tr>
+<th style="text-align:left;">
+variable
+</th>
+<th style="text-align:right;">
+mean
+</th>
+<th style="text-align:right;">
+median
+</th>
+<th style="text-align:right;">
+sd
+</th>
+<th style="text-align:right;">
+mad
+</th>
+<th style="text-align:right;">
+q5
+</th>
+<th style="text-align:right;">
+q95
+</th>
+<th style="text-align:right;">
+rhat
+</th>
+<th style="text-align:right;">
+ess_bulk
+</th>
+<th style="text-align:right;">
+ess_tail
+</th>
 </tr>
 </thead>
 <tbody>
-<tr class="odd">
-<td style="text-align: left;">sigma2_v</td>
-<td style="text-align: right;">0.2809638</td>
-<td style="text-align: right;">0.2402795</td>
-<td style="text-align: right;">0.1903446</td>
-<td style="text-align: right;">0.1542163</td>
-<td style="text-align: right;">0.0627716</td>
-<td style="text-align: right;">0.6312961</td>
-<td style="text-align: right;">1.00206</td>
-<td style="text-align: right;">515.3531</td>
-<td style="text-align: right;">444.2774</td>
+<tr>
+<td style="text-align:left;">
+sigma2_v
+</td>
+<td style="text-align:right;">
+0.2809638
+</td>
+<td style="text-align:right;">
+0.2402795
+</td>
+<td style="text-align:right;">
+0.1903446
+</td>
+<td style="text-align:right;">
+0.1542163
+</td>
+<td style="text-align:right;">
+0.0627716
+</td>
+<td style="text-align:right;">
+0.6312961
+</td>
+<td style="text-align:right;">
+1.00206
+</td>
+<td style="text-align:right;">
+515.3531
+</td>
+<td style="text-align:right;">
+444.2774
+</td>
 </tr>
 </tbody>
+
 </table>
 </div>
 </div>
 <p>Al evaluar la calidad de las cadenas tenemos que:</p>
-<div class="cell" data-hash="3Fay-Herriot-en-R-y-STAN_cache/html/unnamed-chunk-37_a515f1ac8bfd41708f75cf8acf2e7673">
+<div class="cell" data-hash="3Fay-Herriot-en-R-y-STAN_cache/html/unnamed-chunk-40_2bb0bff6a1deb1d4aa204586e10a3d35">
 <div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>(<span class="fu">mcmc_dens_chains</span>(model_FH_beta<span class="sc">$</span><span class="fu">draws</span>(<span class="st">"sigma2_v"</span>)) <span class="sc">+</span></span>
 <span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mcmc_areas</span>(model_FH_beta<span class="sc">$</span><span class="fu">draws</span>(<span class="st">"sigma2_v"</span>)))<span class="sc">/</span> </span>
 <span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mcmc_trace</span>(model_FH_beta<span class="sc">$</span><span class="fu">draws</span>(<span class="st">"sigma2_v"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="3Fay-Herriot-en-R-y-STAN_files/figure-html/unnamed-chunk-37-1.png" class="img-fluid" width="672"></p>
+<p><img src="3Fay-Herriot-en-R-y-STAN_files/figure-html/unnamed-chunk-40-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 </section>
 <section id="creando-el-mapa-con-los-resultados." class="level3">
 <h3 class="anchored" data-anchor-id="creando-el-mapa-con-los-resultados.">Creando el mapa con los resultados.</h3>
 <p>Por último se contruye un mapa con los resultados obtenidos.</p>
-<div class="cell" data-hash="3Fay-Herriot-en-R-y-STAN_cache/html/unnamed-chunk-38_b1364db0bd40386d14f99141c35140a5">
+<div class="cell" data-hash="3Fay-Herriot-en-R-y-STAN_cache/html/unnamed-chunk-41_5765955445bc8c26439e196565b332cf">
 <div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(sp)</span>
 <span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(sf)</span>
 <span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tmap)</span>
@@ -1454,7 +1538,7 @@ Total execution time: 22.3 seconds.</code></pre>
 <span id="cb41-27"><a href="#cb41-27" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb41-28"><a href="#cb41-28" aria-hidden="true" tabindex="-1"></a>Mapa_lp</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="3Fay-Herriot-en-R-y-STAN_files/figure-html/unnamed-chunk-38-1.png" class="img-fluid" width="672"></p>
+<p><img src="3Fay-Herriot-en-R-y-STAN_files/figure-html/unnamed-chunk-41-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 </section>
