@@ -1,4 +1,5 @@
 printr
+kableExtra
 patchwork
 Matrix
 lme4
@@ -16,7 +17,6 @@ rstan
 Rcpp
 rstanarm
 magrittr
-kableExtra
 sp
 sf
 tmap

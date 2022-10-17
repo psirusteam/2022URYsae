@@ -18,14 +18,14 @@ library(printr)
 En la estimación de áreas pequeñas, el modelo de muestreo captura la relación entre las estimaciones directa de la encuesta que siempre se acompaña de un error de estimación y el parámetro de interés que están tratando de estimar. Para los datos de empleo en la encuesta, el modelo de muestreo podría ser:
 
 $$
-Y_d \sim Multinon\left( \theta_{1d}^{N}, \theta_{2d}^{N},\theta_{3d}^{N} \right)
+Y_d \sim Multinon\left( \theta_{1d}, \theta_{2d},\theta_{3d} \right)
 $$
 
-con $d = 1,\cdots, D$ representa los dominios de interés. Los parámetros de interés $\theta_{1d}^{N}, \theta_{2d}^{N}$ y $\theta_{3d}^{N}$ representan la proporción de personas en algún estado laboral (Ocupado, Desocupado o Inactivo). Las estimaciones directas son representadas por $\hat{\theta}_{1d}, \hat{\theta}_{2d}$ y $\hat{\theta}_{3d}$ respectivamente.
+con $d = 1,\cdots, D$ representa los dominios de interés. Los parámetros de interés $\theta_{1d}, \theta_{2d}$ y $\theta_{3d}$ representan la proporción de personas en algún estado laboral (Ocupado, Desocupado o Inactivo). Las estimaciones directas son representadas por $\hat{\theta}_{1d}, \hat{\theta}_{2d}$ y $\hat{\theta}_{3d}$ respectivamente.
 
 ## Modelo bayesiano
 
-Para definir el modelo bayesiando debemos considerar una función de enlace para $\boldsymbol{\theta_d} = \left( \theta_{1d}^{N}, \theta_{2d}^{N},\theta_{3d}^{N} \right)$, teniendo presente que la distribución multinomial es la generalización de la distribución binomial la función de enlace natural seria la transformación **logit**.
+Para definir el modelo bayesiando debemos considerar una función de enlace para $\boldsymbol{\theta_d} = \left( \theta_{1d}, \theta_{2d},\theta_{3d} \right)$. Teniendo presente que la distribución multinomial es la generalización de la distribución binomial la función de enlace natural seria la transformación **logit**.
 
 Esta función de enlace intenta capturar la relación entre $\boldsymbol{\theta_d}$ y cualquier información auxiliar que esté disponible. En este caso, se desea relacionar la condición de actividad económica (Ocupado, Desocupado e Inactivo) con el sexo, edad, años de estudio, etnia, departamento, área geográfica. También podemos utilizar variables auxiliares provenientes de registros administrativos o fuentes externas como la información satelital.
 
@@ -49,19 +49,17 @@ Ahora es posible definir $\mu_{1d}$ y $\mu_{2d}$ como:
 
 $$
 \begin{eqnarray*}
-\mu_{1d}&=&\boldsymbol{X}_d^{T}\boldsymbol{\beta_1}+u_{d}\\
-\mu_{2d}&=&\boldsymbol{X}_d^{T}\boldsymbol{\beta_2}+u_{d}
+\mu_{1d}&=&\boldsymbol{X}_d^{T}\boldsymbol{\beta_1}+u_{1d}\\
+\mu_{2d}&=&\boldsymbol{X}_d^{T}\boldsymbol{\beta_2}+u_{2d}
 \end{eqnarray*}
 $$
 
-para $u_{d}\sim N\left(0,\sigma_{u}\right)$.
-
-Las distribuciones previas se consideran no informativas
+para $u_{1d}\sim N\left(0,\sigma_{u}\right)$ y $u_{2d}\sim N\left(0,\sigma_{u}\right)$, siendo este el caso más simple. Para nuestro escenario se asume que $Cor\left(u_{1d},u_{2d} \right) \neq 0$ por tanto,  $\boldsymbol{u}_d = \left(u_{1d},u_{2d} \right) \sim N_2\left(0,\Sigma_{u}\right)$ bajo esta condiciones  la distribuciones previas estarían dadas por: 
 
 $$
 \begin{eqnarray*}
 \beta_k & \sim   & N(\mu_0, \tau^2_0)\\
-\sigma^2_u &\sim & Inversa-Gamma(\alpha_1,\alpha_2)
+\Sigma_{u} &\sim& Wishart\left( \Gamma_0, m_0 \right) 
 \end{eqnarray*}
 $$
 
@@ -69,7 +67,7 @@ A continuación se muestra el proceso realizado para la obtención de la predicc
 
 ### Proceso de estimación en `R`
 
-Las librerías utilizada para desarrollar la metodología son las siguientes.
+Las librerías utilizadas para desarrollar la metodología son las siguientes.
 
 ```{r}
 rm(list =ls())
@@ -79,19 +77,19 @@ library(scales)
 library(kableExtra)
 library(patchwork)
 library(cmdstanr)
-source("0Funciones/funciones_mrp.R")
+library(printr)
 ```
 
 Un conjunto de funciones desarrolladas para realizar de forma eficiente los procesos están consignadas en la siguiente rutina.
 
 ```{r}
-library(printr)
+source("0Funciones/funciones_mrp.R")
 source("0Funciones/Funciones_empleo.R")
 ```
 
 Entre las funciones incluidas en el archivo encuentra
 
--   *Indicadores_encuesta*: Realiza la estimación de las tasa de interés, de igual forma se tiene la función de *Indicadores_censo* para el calculo de los indicadores en el censo. Los indicadores son calculados son:
+-   **Indicadores_encuesta**: Realiza la estimación de las tasa de interés, de igual forma se tiene la función de *Indicadores_censo* para el calculo de los indicadores en el censo. Los indicadores son calculados como sigue:
 
     Tasa de participación:
 
@@ -115,7 +113,7 @@ Entre las funciones incluidas en el archivo encuentra
 
 Los datos empleados en esta ocasión corresponden a la ultima encuesta de hogares, la cual ha sido estandarizada por *CEPAL* y se encuentra disponible en *BADEHOG*. Se filtran las personas con una edad mayor a los 15 años en el censo y la encuesta.
 
-En interés se centra en la estimación de la Tasa de ocupados, Tasa de desocupados y Tasa de Participación. La variable respuesta es la condición de actividad económica, la cual se identifica en la base de datos como **empleo**. La variable puede tomar los valores
+En interés se centra en la estimación de la Tasa de ocupados, Tasa de desocupados y Tasa de Participación. La variable respuesta es **la condición de actividad económica**, la cual se identifica en la base de datos como **empleo** y toma los valores de: 
 
 -   Niño = **-1**
 
@@ -151,7 +149,7 @@ encuesta_mrp <-  readRDS("Data/encuestaURY20N_Montevideo.rds") %>%
   sexo = as.character(sexo),
   anoest = case_when(
     edad < 5 | anoest == -1   ~ "98"  ,    #No aplica
-    anoest < 1  ~ "1",     # Sin educacion
+    anoest < 1  ~ "1",     # Sin educación
     anoest <= 6 ~ "2",   # 1 - 6
     anoest <= 12 ~ "3",     # 7 - 12
     anoest > 12 ~ "4",    # mas de 12
@@ -165,7 +163,7 @@ encuesta_mrp <-  readRDS("Data/encuestaURY20N_Montevideo.rds") %>%
                    edad < 65 ~ "4",
                    TRUE ~ "5"),
   
-  etnia = case_when(etnia_ee == 1 ~ "1", # Indigena
+  etnia = case_when(etnia_ee == 1 ~ "1", # Indígena
                     etnia_ee  == 2 ~ "2", # afro negro mulato
                     TRUE ~ "3"),  # Otro  
   fep = `_fep`
@@ -182,7 +180,7 @@ kable(encuesta_mrp %>%
 
 ```
 
-En censo fue estandarizado previamente, por tanto, debemos leer el censo y filtrar a los niños de la base de datos.
+La base del censo fue estandarizado previamente, por tanto, se debe realizar la lectura del archivo estandarizado y excluir a los niños.
 
 ```{r}
 censo_mrp <- readRDS("Data/censo_Montevideo.rds") %>% 
@@ -214,7 +212,7 @@ kable(statelevel_predictors_df %>%
 
 ```
 
--   *tasa_desocupacion*: Información extraida del último censo del país.
+-   *tasa_desocupacion*: Información extraída del último censo del país.
 -   *F182013_stable_lights*, *X2016_crops.coverfraction* y *X2016_urban.coverfraction* información satelital extraída de google earth engine.
 
 ### Programando el Modelo en `STAN`
@@ -343,10 +341,12 @@ fit <-
 
 ### Niveles de agregación para colapsar encuesta
 
-La estimación del modelo multinomial se realiza mediante el conteo del número de éxitos en cada categoría, es decir, dadas las variables $X$ cuantas personas de la encuestas están cada uno de los estados. Para lograr hacer el conteo identificamos las variables de agregación.
+La estimación del modelo multinomial se realiza mediante el conteo del número de éxitos en cada categoría, es decir, dadas las variables $X$ cuantas personas de la encuestas están en cada uno de los estados. Para lograr hacer el conteo identificamos las variables de agregación.
 
 ```{r}
-byAgrega <- c("depto",  "mpio",   "segm"  , "empleo", "area",   "sexo",   "anoest", "edad", "etnia")
+byAgrega <- c("depto",  "mpio",   "segm"  ,
+              "empleo", "area",   "sexo",  
+              "anoest", "edad", "etnia")
   
 ```
 
@@ -438,7 +438,7 @@ Xp <- censo_df %>%
   model.matrix(model_fijo, data = .)  
 ```
 
--   $Z$ Matriz con los efectos aleatorios en el censo:
+-   $Zp$ Matriz con los efectos aleatorios en el censo:
 
 ```{r}
 Zp <- censo_df %>% select(matches("segm")) %>%
@@ -492,11 +492,13 @@ Znames <-  colnames(Z)
 
 ### Creando la información para el modelo
 
+La forma de introducir los datos en `STAN` es mediante un objeto tipo lista de `R`, la cual se construye de la siguiente forma:   
+
 ```{r, eval=TRUE}
 sample_data <- list(D = nrow(encuesta_df_agg), # Número de dominios. 
                     P = ncol(Y),               # Número de estados.
                     K = ncol(X[,xnames]),      # Número de efecto fijo.
-                    D1 = nrow(Xp),             # Número de a predecir. 
+                    D1 = nrow(Xp),             # Número de dominios a predecir. 
                     Kz = ncol(Z),              # Número de efectos aleatorios.
                     Z = Z[,Znames],            # Matriz de efectos aleatorios.
                     Zp = Zp[,Znames],          # Matriz de efectos aleatorios.
@@ -506,7 +508,7 @@ sample_data <- list(D = nrow(encuesta_df_agg), # Número de dominios.
 )
 ```
 
-El modelo se compila con la siguiente instrucción, el tiempo de ejecución fue de aproximadamente 3 días.
+El modelo se compila con la siguiente instrucción,  `el tiempo de ejecución fue de aproximadamente 3 días`.
 
 ```{r, eval=FALSE}
 fit_mcmc <- fit$sample(
@@ -519,7 +521,7 @@ fit_mcmc <- fit$sample(
 )
 ```
 
-Después de obtener el resultado, se exportan los resultados con la sintaxis
+Después de obtener el resultado, se exportan con la sintaxis
 
 ```{r, eval=FALSE}
 fit_mcmc$save_object(
@@ -588,7 +590,7 @@ brks_TO <- c(0 ,20, 40, 60, 80,100)
 brks_TD <- c(0,5, 10, 15, 20, 100)
 brks_TP <- c(0 ,20, 40, 60, 80,100)
 
-## Leer Shapefile del pais
+## Leer Shapefile del país
 ShapeSAE <- read_sf("Shape/secc_hog11.shp")%>% 
   filter(nombdepto == "MONTEVIDEO") %>% 
   mutate(mpio = str_pad(codsec,width = 4,pad = "0"))
@@ -625,7 +627,7 @@ kable(Indicadores_segm %>% head(20),
 ```
 
 ```{r, echo=FALSE}
-## Leer Shapefile del pais
+## Leer Shapefile del país
 ShapeSAE <- read_sf("Shape/ine_seg_11.shp") %>% 
   filter(nombdepto == "MONTEVIDEO") %>% 
   mutate(mpio = str_pad(codsec,width = 4,pad = "0"),
