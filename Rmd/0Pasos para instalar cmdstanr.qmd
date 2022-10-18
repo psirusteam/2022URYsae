@@ -2,7 +2,7 @@
 title: "Pasos para instalar cmdstanr"
 subtitle: "CEPAL - División de Estadísticas Sociales"
 author: "Andrés Gutiérrez - Stalyn Guerrero"
-format: html
+format: docx
 project:
   type: website
   output-dir: docs
@@ -18,8 +18,7 @@ knitr::opts_chunk$set(echo = TRUE,
 
 Siguiendo la guía del autor de **cmdstanr** (https://mc-stan.org/cmdstanr/index.html)
 
-
-1.	Ejecutar: 
+1.  Ejecutar:
 
 ```{r, eval=FALSE}
 install.packages("cmdstanr", 
@@ -29,13 +28,13 @@ install.packages("remotes")
 remotes::install_github("stan-dev/cmdstanr")
 ```
 
-2.	Ejecutar  
+2.  Ejecutar
 
 ```{r, eval=FALSE}
 install_cmdstan() 
 ```
 
-3. Validar instalación 
+3.  Validar instalación
 
 ```{r}
 library(cmdstanr)
@@ -60,4 +59,3 @@ fit_mcmc <- mod$sample(
 fit_mcmc$summary(variables = "theta")
 
 ```
-
