@@ -1,0 +1,63 @@
+---
+title: "Pasos para instalar cmdstanr"
+subtitle: "CEPAL - División de Estadísticas Sociales"
+author: "Andrés Gutiérrez - Stalyn Guerrero"
+format: html
+project:
+  type: website
+  output-dir: docs
+---
+
+
+```{r setup, include=FALSE, message=FALSE, error=FALSE, warning=FALSE}
+knitr::opts_chunk$set(echo = TRUE, 
+                      message = FALSE,
+                      warning = FALSE,
+                      cache = TRUE)
+```
+
+Siguiendo la guía del autor de **cmdstanr** (https://mc-stan.org/cmdstanr/index.html)
+
+
+1.	Ejecutar: 
+
+```{r, eval=FALSE}
+install.packages("cmdstanr", 
+repos = c("https://mc-stan.org/r-packages/", getOption("repos")))
+# Alternativa 
+install.packages("remotes") 
+remotes::install_github("stan-dev/cmdstanr")
+```
+
+2.	Ejecutar  
+
+```{r, eval=FALSE}
+install_cmdstan() 
+```
+
+3. Validar instalación 
+
+```{r}
+library(cmdstanr)
+library(posterior)
+library(bayesplot)
+
+# ?cmdstan_model
+file <- file.path(cmdstan_path(), "examples/bernoulli/bernoulli.stan")
+mod <- cmdstan_model(file)
+
+stan_data <- list(N = 10, y = c(0,1,0,0,0,0,0,0,0,1))
+
+
+fit_mcmc <- mod$sample(
+  data = stan_data,
+  seed = 123,
+  chains = 2,
+  parallel_chains = 2,
+  refresh = 1000
+)
+
+fit_mcmc$summary(variables = "theta")
+
+```
+
