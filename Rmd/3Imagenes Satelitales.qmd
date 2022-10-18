@@ -1,0 +1,252 @@
+---
+title: "Fay Herriot en R y STAN (Imagenes satelitales)"
+subtitle: "CEPAL - División de Estadísticas Sociales"
+author: "Andrés Gutiérrez - Stalyn Guerrero"
+format: html
+project:
+  type: website
+  output-dir: docs
+---
+
+```{r setup, include=FALSE, message=FALSE, error=FALSE, warning=FALSE}
+knitr::opts_chunk$set(echo = TRUE, 
+                      message = FALSE,
+                      warning = FALSE,
+                      cache = TRUE)
+# Paquete que trae funciones útiles para R Markdown
+library(printr)
+library(kableExtra)
+library(knitr)                              
+# Paquete que trae varios paquetes comunes en el tidyverse
+library(tidyverse)                          
+# Paquete que permite compilar python desde R
+library(reticulate)
+# Paquete que nos permite conectar con Google Earth Engine desde R
+library(rgee)
+# Paquete para la lectura de Shapefile
+library(geojsonio)
+library(sf)
+```
+
+
+# Uso de imágenes satalitales y SAE
+
+Uno de los artículo pioneros de estimación de áreas pequeñas fue el artículo de Singh, R, et. al. (2002) el cual abordó la estimación del rendimiento de cultivos para los tehsil (unidad subadministrativa)  del distriyo Rohtak district en Haryana (India). 
+
+
+Las imagénes raster representan el mundo mediante un conjunto de celdas contiguas igualmente espaciadas conocidas como pixeles, estas imágenes tienen información como un sistema de información geográfico, Un sistema de referencia de coordenadas. Las imágenes almacenan un identificador, un valor en cada pixel (o un vector con diferentes valores) y cada celda tiene asociada una escala de colores.
+
+Las imágenes pueden obtenerse crudas y procesadas, estas primeras contienen solamente las capas de colores, las segundas contienen también valores que han sido procesados en cada celda (índices de vegetación, intensidad lumínica, tipo de vegetación). 
+
+La información cruda puede utilizarse para entrenar características que se desean entrenar (carreteras, tipo de cultivo, bosque / no bosque), afortunadamente en Google Earth Engine encontramos muchos indicadores  procesadas asociadas a un pixel. Estos indicadores pueden agregarse a nivel de un área geográfica.
+
+
+### Fuentes de datos de imágenes satelitales
+
+Algunas de las principales fuentes de imágenes satalitales son: 
+
+  * http://earthexplorer.usgs.gov/
+
+  * https://lpdaacsvc.cr.usgs.gov/appeears/
+
+  * https://search.earthdata.nasa.gov/search
+
+  * https://scihub.copernicus.eu/
+
+  * https://aws.amazon.com/public-data-sets/landsat/
+
+Sin embargo la mayor parte de estas fuentes están centralizadas en **Google Earth Engine** que permite buscar fuentes de datos provenientes de imágenes satelitales. GEE se puede manejar porm medio de APIS en diferentes lenguajes de programación: Javascript (por defecto), Python y R (paquete rgee).
+
+
+
+# Google Earth Eninge
+
+
+Crear una cuenta en [link](https://earthengine.google.com/), una vez que se ingrese a la cuenta puede buscarse los conjuntos de datos de interés:
+
+```{r echo=FALSE, out.width = "500px", out.height="250px",fig.align='center'}
+knitr::include_graphics("imagenes/lights.png")
+```
+
+
+* Una vez se busque el conjunto de datos se puede abrir un editor de código brindado por google en  Javascript. 
+
+*  Copiar y pegar la sintaxis que brinda el buscador de conjunto de datos para visualizar la imagen raster y disponer de sentencias que permitan la obtención  del conjunto de datos de interés posteriormente en R
+
+```{r echo=FALSE, out.width = "500px", out.height="250px",fig.align='center'}
+knitr::include_graphics("imagenes/query.png")
+```
+
+# Instalación de rgee
+
+*  Descargar e instalar anaconda o conda. (<https://www.anaconda.com/products/individual>)
+
+*  Abrir Anaconda prompt y configurar ambiente de trabajo (ambiente python rgee_py) con las siguientes sentencias:
+
+```{python, echo=TRUE, eval=FALSE}
+conda create -n rgee_py python=3.9
+activate rgee_py
+pip install google-api-python-client
+pip install earthengine-api
+pip install numpy
+```
+
+*  Listar los ambientes de Python disponibles en anaconda prompt
+
+```{python, echo=TRUE, eval=FALSE}
+conda env list
+```
+
+
+*   Una vez identificado la ruta del ambiente ambiente rgee_py definirla en R (**no se debe olvidar cambiar \\ por /**). 
+*   Instalar `reticulate` y `rgee`, cargar paquetes para procesamiento espacial y configurar el ambiente de trabajo como sigue:
+
+````{r, echo=TRUE, eval = FALSE}
+library(reticulate) # Conexión con Python
+library(rgee) # Conexión con Google Earth Engine
+library(sf) # Paquete para manejar datos geográficos
+library(dplyr) # Paquete para procesamiento de datos
+
+rgee_environment_dir = "C://Users//guerr//.conda//envs//rgee_py"
+
+# Configurar python (Algunas veces no es detectado y se debe reiniciar R)
+reticulate::use_python(rgee_environment_dir, required=T)
+
+rgee::ee_install_set_pyenv(py_path = rgee_environment_dir, py_env = "rgee_py")
+
+Sys.setenv(RETICULATE_PYTHON = rgee_environment_dir)
+Sys.setenv(EARTHENGINE_PYTHON = rgee_environment_dir)
+```
+
+*  Una vez configurado el ambiente puede iniciarlizarse una sesión de Google Earth Engine como sigue:
+
+```{r, eval=FALSE}
+rgee::ee_Initialize(drive = T)
+```
+
+**Notas:** 
+
+-   Se debe inicializar cada sesión con el comando `rgee::ee_Initialize(drive = T)`. 
+
+-   Los comandos de javascript que invoquen métodos con "." se sustituyen por signo peso, por ejemplo:
+
+```{r,eval=FALSE}
+ee.ImageCollection().filterDate()  # Javascript
+ee$ImageCollection()$filterDate()  # R
+```
+
+## Descargar información satelital
+
+*   **Paso 1**: disponer de los shapefile 
+
+```{r}
+URY_SEGM <- read_sf("../Shape/ine_seg_11.shp") %>%
+  filter(nombdepto == "MONTEVIDEO") %>%
+  mutate(
+    mpio = str_pad(codsec, width = 4, pad = "0"),
+    segm = str_pad(codseg, width = 7, pad = "0")
+  )
+plot(URY_SEGM["geometry"])
+```
+
+*   **Paso 2**: Seleccionar el archivo de imágenes  que desea procesar, para nuestro ejemplo **luces nocturnas**.  
+
+```{r echo=FALSE, out.width = "500px", out.height="250px",fig.align='center'}
+knitr::include_graphics("imagenes/Montevideo.bmp")
+```
+
+```{r, eval = FALSE}
+luces <- ee$ImageCollection("NOAA/DMSP-OLS/NIGHTTIME_LIGHTS") %>%
+  ee$ImageCollection$filterDate("2013-01-01", "2014-01-01") %>%
+  ee$ImageCollection$map(function(x) x$select("stable_lights")) %>%
+  ee$ImageCollection$toBands()
+
+```
+
+```{r echo=FALSE, out.width = "500px", out.height="250px",fig.align='center'}
+knitr::include_graphics("imagenes/Descriptivo_deluces.bmp")
+```
+
+* **Paso 3**: Descargar la información
+
+```{r, eval=FALSE}
+## Tiempo 5 minutos 
+URY_luces <- ee_extract(
+  x = luces,
+  y = URY_SEGM["segm"],
+  ee$Reducer$sum(),
+  sf = FALSE
+)
+
+```
+
+## Repetir la rutina para la información de urbanismo. 
+
+```{r echo=FALSE, out.width = "500px", out.height="250px",fig.align='center'}
+knitr::include_graphics("imagenes/Agricultura_Montevideo.bmp")
+```
+
+
+```{r, eval=FALSE}
+## Tiempo 5 minutos 
+tiposuelo <- 
+  ee$ImageCollection("COPERNICUS/Landcover/100m/Proba-V-C3/Global") %>%
+  ee$ImageCollection$filterDate("2016-01-01", "2016-12-31") %>%
+  ee$ImageCollection$map(function(x){
+    x$select("urban-coverfraction", "crops-coverfraction")}) %>% 
+
+
+URY_urbano_cultivo <- ee_extract(
+                   x = tiposuelo,
+                   y = URY_SEGM["segm"],
+                   ee$Reducer$sum(),
+                   sf = FALSE
+                 ) 
+```
+
+
+* **Paso 4**  consolidar la información. 
+
+```{r, eval=FALSE}
+tasa_desocupacion <-  URY_luces %>%  
+  full_join(URY_urbano_cultivo)
+
+```
+
+```{r, eval=TRUE, echo=FALSE}
+tasa_desocupacion <-
+  readRDS("../Data/tasa_desocupacion_seccion.rds")
+```
+
+Los resultados se muestran en los siguientes mapas
+
+```{r, echo=FALSE}
+temp <- left_join(URY_SEGM["segm"], tasa_desocupacion)%>% 
+            select(tasa_desocupacion:X2016_urban.coverfraction)
+
+  plot(
+    temp["tasa_desocupacion"] %>% 
+    mutate(), 
+       key.pos = 4, 
+       breaks = c(0,0.02,0.05,0.07,0.1,0.15,0.2,0.3))
+
+  plot(
+    temp["F182013_stable_lights"] %>% 
+    mutate(), 
+       key.pos = 4, 
+       breaks = c(0,5,10,50,100,300,500,1000))
+
+  plot(
+    temp["X2016_crops.coverfraction"] %>% 
+    mutate(), 
+       key.pos = 4, 
+       breaks = c(0,.5,1,1.5,2,3,5,7,20,50,100,500))
+  
+  plot(
+    temp["X2016_urban.coverfraction"] %>% 
+    mutate(), 
+       key.pos = 4, 
+       breaks = c(0,.5,1,3,5,7,20,50,100,320))
+
+```
+
