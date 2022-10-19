@@ -414,11 +414,11 @@ mcmc_trace(model_Binomial$draws("theta"))
 mcmc_trace(model_Binomial$draws("spred"))
 ```
 
-Cuando se tiene una sucesión de variables aleatorias $S_1,\ldots,S_i, \ldots,S_k$ independientes y con distribución $Binomial(n_i,\theta)$ para $i=1,\ldots,k$, entonces la distribución posterior del parámetro de interés $\theta$ es
+Cuando se tiene una sucesión de variables aleatorias $S_1,\ldots,S_i, \ldots,S_k$ independientes y con distribución $Binomial(n_i,\theta_i)$ para $i=1,\ldots,k$, entonces la distribución posterior del parámetro de interés $\theta_i$ es
 
 $$
 \begin{equation*}
-\theta \mid S_1,\ldots,S_k \sim Beta\left(\sum_{i=1}^ks_i+\alpha,\beta+\sum_{i=1}^k n_i-\sum_{i=1}^k s_i\right)
+\theta_i \mid s_i \sim Beta\left(s_i+\alpha,\ \beta+ n_i- s_i\right)
 \end{equation*}
 $$
 
