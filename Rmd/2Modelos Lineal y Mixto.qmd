@@ -223,11 +223,11 @@ $$
 y $\sigma^2_0$ es una estimación previa del parámetro de interés $\sigma^2$.
 
 ```{r, eval=TRUE, echo=FALSE}
-readRDS("Data/tasa_desocupacion.rds") %>% 
+readRDS("../Data/tasa_desocupacion.rds") %>% 
   rename(Suelo_cultivo = X2016_crops.coverfraction,
          Suelo_urbano = X2016_urban.coverfraction,
          Luces_nocturna = F182013_stable_lights) %>% 
-saveRDS("Data/tasa_desocupacion2.rds")  
+saveRDS("../Data/tasa_desocupacion2.rds")  
  
 ```
 
@@ -237,9 +237,9 @@ saveRDS("Data/tasa_desocupacion2.rds")
 
 ```{r, message=FALSE, echo=TRUE, warning=FALSE}
 library(tidyverse)
-encuesta <- readRDS("Data/encuestaURY20N.rds") %>% 
+encuesta <- readRDS("../Data/encuestaURY20N.rds") %>% 
   filter(edad > 18)
-tasa_desocupacion <- readRDS("Data/tasa_desocupacion2.rds")
+tasa_desocupacion <- readRDS("../Data/tasa_desocupacion2.rds")
 
 (datalm <- encuesta %>% 
   transmute(
@@ -302,7 +302,7 @@ Preparando el código de `STAN`
 ```{r, eval=TRUE}
 library(cmdstanr)
 ## Definir el modelo
-fitLm1 <- cmdstan_model(stan_file = "Data/modelosStan/ModeloLm1.stan") 
+fitLm1 <- cmdstan_model(stan_file = "../Data/modelosStan/ModeloLm1.stan") 
 ```
 
 Organizando datos para `STAN`
@@ -398,7 +398,7 @@ generated quantities {
 Preparando el código de `STAN`
 
 ```{r, eval=TRUE}
-fitLm2 <- cmdstan_model(stan_file = "Data/modelosStan/ModeloLm2.stan") 
+fitLm2 <- cmdstan_model(stan_file = "../Data/modelosStan/ModeloLm2.stan") 
 ```
 
 Organizando datos para `STAN`
@@ -589,7 +589,7 @@ generated quantities {
 Preparando el código de `STAN`
 
 ```{r, eval=TRUE}
-fitLosgit1 <- cmdstan_model(stan_file = "Data/modelosStan/ModeloLogit.stan") 
+fitLosgit1 <- cmdstan_model(stan_file = "../Data/modelosStan/ModeloLogit.stan") 
 ```
 
 Organizando datos para `STAN`
@@ -672,7 +672,7 @@ generated quantities {
 Preparando el código de `STAN`
 
 ```{r, eval=TRUE}
-fitLosgit2 <- cmdstan_model(stan_file = "Data/modelosStan/ModeloLogit2.stan") 
+fitLosgit2 <- cmdstan_model(stan_file = "../Data/modelosStan/ModeloLogit2.stan") 
 ```
 
 Para ejecutar `STAN` en R tenemos la librería *cmdstanr*
@@ -799,7 +799,7 @@ generated quantities {
 Preparando el código de `STAN`
 
 ```{r, eval=TRUE}
-fitBinomial <- cmdstan_model(stan_file = "Data/modelosStan/ModeloBinomial.stan") 
+fitBinomial <- cmdstan_model(stan_file = "../Data/modelosStan/ModeloBinomial.stan") 
 ```
 
 Organizando datos para `STAN`
@@ -1042,7 +1042,7 @@ model {
 Preparando el código de `STAN`
 
 ```{r, eval=TRUE}
-fitMultinomial <- cmdstan_model(stan_file = "Data/modelosStan/ModeloMultinomial.stan") 
+fitMultinomial <- cmdstan_model(stan_file = "../Data/modelosStan/ModeloMultinomial.stan") 
 ```
 
 Organizando datos para `STAN`
@@ -1269,7 +1269,7 @@ generated quantities {
 Preparando el código de `STAN`
 
 ```{r, eval=TRUE}
-fitMultinivel2 <- cmdstan_model(stan_file = "Data/modelosStan/Multinivel_Intercepto2.stan") 
+fitMultinivel2 <- cmdstan_model(stan_file = "../Data/modelosStan/Multinivel_Intercepto2.stan") 
 ```
 
 Organizando datos para `STAN`.

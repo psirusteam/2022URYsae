@@ -1,0 +1,863 @@
+---
+title: "Fay Herriot en R y STAN"
+subtitle: "CEPAL - División de Estadísticas Sociales"
+author: "Andrés Gutiérrez - Stalyn Guerrero"
+format: html
+project:
+  type: website
+  output-dir: docs
+---
+
+```{r setup, include=FALSE, message=FALSE, error=FALSE, warning=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, cache = TRUE)
+library(printr)
+library(kableExtra)
+```
+
+# Modelo Fay-Herriot
+
+-   El modelo FH enlaza indicadores de las áreas $\delta_d$, $d = 1, \cdots , D$, asumiendo que varían respeto a un vector de $p$ covariables, $\boldsymbol{x}_d$ , de forma constante.
+
+-   Viene dado por
+
+$$
+\delta_d = \boldsymbol{x^T}_d\boldsymbol{\beta} + u_d ,\ \ \ \ \  d = 1, \cdots , D
+$$ - ud es el término de error, o el efecto aleatorio, diferente para cada área dado por
+
+$$
+\begin{eqnarray*}
+u_{d} & \stackrel{iid}{\sim} & \left(0,\sigma_{u}^{2}\right)
+\end{eqnarray*}
+$$
+
+-   Sin embargo, los verdaderos valores de los indicadores $\delta_d$ no son observables. - Entonces, usamos el estimador directo $\hat{\delta}^{DIR}_d$ para $\delta_d$ , lo que conlleva un error debido al muestro.
+
+-   $\hat{\delta}^{DIR}_d$ todavía se considera insesgado bajo el diseño muestral.
+
+-   Podemos definir, entonces, $$
+    \hat{\delta}^{DIR}_d = \delta_d + e_d, \ \ \ \ \ \ d = 1, \cdots , D 
+    $$ donde $e_d$ es el error debido al muestreo, $d_{d} \stackrel{ind}{\sim} \left(0,\psi\right)$
+
+-   Dichas varianzas $\psi_d = var_{\pi}\left(\hat{\delta}^{DIR}_d\mid\delta_d\right)$, $d = 1,\cdots,D$ se estiman con los microdatos de la encuesta.
+
+-   Por tanto, el modelo se hace, $$
+    \hat{\delta}^{DIR}_d = \boldsymbol{x^T}_d\boldsymbol{\beta} + u_d + e_d, \ \ \ \ \ \ d = 1, \cdots , D
+    $$
+
+-   El BLUP (best linear unbiased predictor) bajo el modelo FH de $\delta_d$ viene dado por
+
+$$
+    \begin{eqnarray*}
+    \tilde{\delta}_{d}^{FH} & = & \boldsymbol{x_d}^{T}\tilde{\boldsymbol{\beta}}+\tilde{u}_{d}
+    \end{eqnarray*}
+$$
+
+-   Si sustituimos $\tilde{u}_d = \gamma_d\left(\hat{\delta}^{DIR}_d - \boldsymbol{x_d}^{T}\tilde{\boldsymbol{\beta}} \right)$ en el BLUP bajo el modelo FH, obtenemos $$
+    \begin{eqnarray*}
+    \tilde{\delta}_{d}^{FH} & = & \gamma_d\hat{\delta}^{DIR}_{d}+(1-\gamma_d)\boldsymbol{x_d}^{T}\tilde{\boldsymbol{\beta}}
+    \end{eqnarray*}
+    $$ siendo $\gamma_d=\frac{\sigma^2_u}{\sigma^2_u + \psi_d}$.
+
+-   Habitualmente, no sabemos el verdadero valor de $\sigma^2_u$ efectos aleatorios $u_d$.
+
+-   Sea $\hat{\sigma}^2_u$ un estimador consistente para $\sigma^2_u$. Entonces, obtenemos el BLUP empírico (empirical BLUP, EBLUP) de $\delta_d$ ,
+
+$$
+    \begin{eqnarray*}
+    \tilde{\delta}_{d}^{FH} & = & \hat{\gamma_d}\hat{\delta}^{DIR}_{d}+(1-\hat{\gamma_d})\boldsymbol{x_d}^{T}\hat{\boldsymbol{\beta}}
+    \end{eqnarray*}
+$$
+
+donde $\hat{\gamma_d}=\frac{\hat{\sigma}^2_u}{\hat{\sigma}^2_u + \psi_d}$.
+
+-   Un estimador insesgado de segundo orden del ECM (llamado el estimador Prasad-Rao) viene dado por
+
+$$
+    \begin{eqnarray*}
+    mse_{PR}\left(\tilde{\delta}_{d}^{FH}\right) & = & g_{1d}\left(\hat{\sigma}_{u}^{2}\right)+g_{2d}\left(\hat{\sigma}_{u}^{2}\right)+2g_{3d}\left(\hat{\sigma}_{u}^{2}\right)
+    \end{eqnarray*}
+     con 
+$$ con
+
+$$
+\begin{eqnarray*} g_{1d}\left(\hat{\sigma}_{u}^{2}\right) & = & \gamma_{d}\psi_{d}\\
+g_{2d}\left(\hat{\sigma}_{u}^{2}\right) & = & \left(1-\gamma_{d}\right)^{2}\boldsymbol{x}^{T}\left(\sum_{d=1}^{D}\left(\sigma_{u}^{2}+\psi_{d}\right)\boldsymbol{x}_{d}\boldsymbol{x}_{d}^{T}\right)^{-1}\boldsymbol{x}_{d},\\
+g_{3d}\left(\hat{\sigma}_{u}^{2}\right) & = & \left(1-\gamma_{d}\right)^{2}\left(\sigma_{u}^{2}+\psi_{d}\right)^{-1}\overline{var}\left(\hat{\sigma}_{u}^{2}\right),
+\end{eqnarray*}
+$$
+
+donde $$
+\begin{eqnarray*}
+\overline{var}\left(\hat{\sigma}_{u}^{2}\right) & = & \mathit{I}^{-1 }\left(\sigma_{u}^{2}\right)=2\left\{ \sum_{d=1}^{D}\left(\sigma_{u}^{2}+\psi_{d}\right)^{-2}\right\} ^{-1}
+\end{eqnarray*}
+$$ para un estimador REML y $\mathit{I}$ es la información Fisher
+
+# Estimación de Fay Herriot normal.
+
+-   El estimador directo no es el único insumo del modelo de áreas de Fay-Herriot; también lo es su varianza. El estimador puntual da un indicio de la localización del parámetro, y su varianza presenta el nivel de certeza o confianza sobre esta localización.
+
+-   Al tratar con cifras provenientes de procesamientos con encuestas de hogares, es indispensable siempre tener en cuenta que el sustento inferencial recae en la estrategia de muestreo, definida como la dupla compuesta por el diseño de muestreo y el estimador escogido.
+
+## Datos de la encuesta
+
+```{r}
+library(tidyverse)
+library(magrittr)
+tasa_desocupacion <- readRDS("../Data/tasa_desocupacion_Montevideo.rds")
+encuesta <- readRDS("../Data/encuestaURY20N_Montevideo.rds") %>% 
+  transmute(
+ depto = "MONTEVIDEO",
+  mpio = str_pad(
+    string = secc,
+    pad = "1",
+    width = 3
+  ),
+  mpio = str_pad(
+    string = mpio,
+    pad = "0",
+    width = 4
+  ),
+  
+  segm = paste0(mpio,segm),
+  lp,li,
+  pobreza = ifelse(ingcorte<lp,1,0),
+  estrato = paste0(mpio, areageo2),
+    fep = `_fep`
+    )
+```
+
+-   *depto*: Corresponde al código asignado a la segunda división administrativa del país.
+
+-   *mpio*: Corresponde al código asignado a la tercera división administrativa del país.
+
+-   *lp* y *li* lineas de pobreza y pobreza extrema definidas por CEPAL. 
+
+-   Factor de expansión por persona (*fep*)
+
+
+```{r, echo=FALSE}
+kable(encuesta %>% head(10),
+      format = "html", digits =  4,
+      caption = "Encuesta") %>% 
+    kable_classic()
+```
+Definir el diseño muestral
+
+```{r}
+library(survey)
+library(srvyr)
+options(survey.lonely.psu = "adjust")
+
+diseno <-
+  as_survey_design(
+    ids = segm,
+    weights = fep,
+    strata = estrato,
+    nest = TRUE,
+    .data = encuesta
+  )
+
+```
+
+Para la estimación directa de la proporción se emplea la función `survey_mean`, dando como resultado.
+
+```{r,echo=FALSE}
+Estimacion_dir <- diseno %>% group_by(mpio) %>%
+  summarise(nd = unweighted(n()),
+            thetahat = survey_mean(pobreza, vartype = c("se"),
+                                   deff = TRUE)) %>%
+  full_join(tasa_desocupacion)
+
+Estimacion_dir %<>%
+  mutate(
+    mpio,
+    thetahat_se = ifelse(thetahat_se < 0.00001, 0.00001, thetahat_se),
+    thetahat_deff = ifelse(
+      thetahat_deff < 0.00001 | is.nan(thetahat_deff),
+      1,
+      thetahat_deff
+    )
+    
+  ) %>% filter(!is.na(tasa_desocupacion)) %>% 
+  arrange(desc(nd),desc(thetahat_se))
+```
+
+
+```{r,echo=FALSE}
+kable(Estimacion_dir,
+      format = "html", digits =  4,
+      caption = "Estimación directa") %>% 
+    kable_classic()
+```
+
+
+Dividiendo los datos en observados y NO observados.
+
+```{r}
+## Estimaciones directas
+data_dir <- Estimacion_dir %>%
+  filter(!is.na(thetahat) ,!is.na(tasa_desocupacion),
+         thetahat > 0)
+## No observados
+data_syn <-
+  Estimacion_dir %>% anti_join(data_dir %>% select(mpio)) %>%
+  filter(!is.na(tasa_desocupacion))
+```
+
+Correlación de la estimación directa con las covariables.
+
+```{r,echo=FALSE}
+c(tasa_desocupacion = cor(data_dir$thetahat, data_dir$tasa_desocupacion),
+log_stable_lights = cor(data_dir$thetahat, log(data_dir$F182013_stable_lights)),
+log_crops.coverfraction = cor(data_dir$thetahat, log(data_dir$X2016_crops.coverfraction+1)),
+log_urban.coverfraction = cor(data_dir$thetahat, log(data_dir$X2016_urban.coverfraction)))
+```
+
+### Modelo bayesiano
+
+$$
+\begin{eqnarray*}
+Y\mid\mu,\sigma_{e} & \sim & N\left(\mu,\sigma_{e}\right)\\
+\mu & = & \boldsymbol{X\beta}+V
+\end{eqnarray*}
+$$
+
+donde $V \sim N(0 , \sigma_v)$.
+
+Las distribuciones previas para $\boldsymbol{\beta}$ y $\sigma^2_v$
+
+$$
+\begin{eqnarray*}
+\beta_k & \sim   & N(\mu_0, \tau^2_0)\\
+\sigma^2_v &\sim & Inversa-Gamma(\alpha_1,\alpha_2)
+\end{eqnarray*}
+$$
+
+El modelo propuesto se escribe en `STAN` de la siguiente forma.
+
+```{r, eval=FALSE}
+data {
+  int<lower=0> N1;   // number of data items
+  int<lower=0> N2;   // number of data items for prediction
+  int<lower=0> p;   // number of predictors
+  matrix[N1, p] X;   // predictor matrix
+  matrix[N2, p] Xs;   // predictor matrix
+  vector[N1] y;      // predictor matrix 
+  vector[N1] sigma_e; // known variances
+}
+
+parameters {
+  vector[p] beta;       // coefficients for predictors
+  real<lower=0> sigma2_v;
+  vector[N1] v;
+}
+
+transformed parameters{
+  vector[N1] theta;
+  real<lower=0> sigma_v;
+  theta = X * beta + v;
+  sigma_v = sqrt(sigma2_v);
+}
+
+model {
+  // likelihood
+  y ~ normal(theta, sigma_e); 
+  // priors
+  beta ~ normal(0, 100);
+  v ~ normal(0, sigma_v);
+  sigma2_v ~ inv_gamma(0.0001, 0.0001);
+}
+
+generated quantities{
+  vector[N2] y_pred;
+  for(j in 1:N2) {
+    y_pred[j] = normal_rng(Xs[j] * beta, sigma_v);
+  }
+}
+
+
+```
+
+Para ejecutar el modelo debemos cargar el código de `STAN` de la siguiente forma
+
+```{r, eval=TRUE}
+library(cmdstanr)
+fit_FH_Nornal <- cmdstan_model("../Data/modelosStan/FH_normal.stan")
+```
+
+Definiendo la matriz de datos para `STAN`
+
+```{r,eval=TRUE}
+## Dominios observados
+Xdat <-
+  model.matrix(
+    thetahat ~ mpio + tasa_desocupacion,
+    data = data_dir
+  )
+## Dominios no observados
+Xs <-
+  model.matrix(
+    thetahat ~ mpio + tasa_desocupacion ,
+    data = data_syn
+  )
+```
+
+Para realizar la predicción del modelo es necesario validar que $X$ y $Xs$ deben tener la mismas columnas en el mismo orden.
+
+```{r}
+temp <- setdiff(colnames(Xdat),colnames(Xs))
+
+temp <- matrix(
+  0,
+  nrow = nrow(Xs),
+  ncol = length(temp),
+  dimnames = list(1:nrow(Xs), temp)
+)
+
+Xs <- cbind(Xs,temp)[,colnames(Xdat)]
+
+```
+
+El modelo de `STAN` requiere los datos organizados en una lista de `R`.
+
+```{r}
+sample_data <- list(
+  N1 = nrow(data_dir),   # Observados.
+  N2 = nrow(data_syn),   # NO Observados.
+  p  = ncol(Xdat),       # Número de regresores.
+  X  = as.matrix(Xdat),  # Covariables Observados.
+  Xs = as.matrix(Xs),    # Covariables NO Observados
+  y  = as.numeric(data_dir$thetahat),          # Estimación directa. 
+  sigma_e = as.numeric(data_dir$thetahat_se)   # Error de estimación
+                    )
+```
+
+Ejecutando el código de `STAN` en `R` tenemos:
+
+```{r, eval = TRUE, message=FALSE}
+model_FH_Nornal <-
+  fit_FH_Nornal$sample(
+    data = sample_data,
+    chains = 4,
+    parallel_chains = 4,
+    iter_warmup = 1000,
+    iter_sampling = 1000,
+    seed = 1234,
+    refresh = 0
+  )
+
+```
+
+Ahora, al evaluar las predicciones se tiene.
+
+```{r, eval=TRUE}
+library(posterior)
+library(bayesplot)
+library(patchwork)
+
+# Predicción de la estimación (Observados) 
+
+y_pred_B <- model_FH_Nornal$draws(variables = "theta", format = "matrix")
+rowsrandom <- sample(nrow(y_pred_B), 100)
+y_pred2 <- y_pred_B[rowsrandom, ]
+
+# Comparando predicción con las cadenas
+ppc_dens_overlay(y = as.numeric(data_dir$thetahat), y_pred2) 
+```
+
+Para revisar la calidad de las cadenas tenemos:
+
+```{r, eval=TRUE}
+(mcmc_dens_chains(model_FH_Nornal$draws("sigma_v")) +
+    mcmc_areas(model_FH_Nornal$draws("sigma_v")))/ 
+  mcmc_trace(model_FH_Nornal$draws("sigma_v"))
+```
+
+Los resultados podrían mejorar al adicionar más covariables en los efectos fijos.
+
+```{r}
+Xdat <-
+  model.matrix(
+    thetahat ~ tasa_desocupacion +
+      log(F182013_stable_lights/100) +
+      log(X2016_urban.coverfraction/100),
+    data = data_dir
+  )
+
+Xs <-
+  model.matrix(
+    nd ~ tasa_desocupacion +
+      log(F182013_stable_lights/100) +
+      log(X2016_urban.coverfraction/100) ,
+    data = data_syn
+  )
+temp <- setdiff(colnames(Xdat),colnames(Xs))
+
+temp <- matrix(
+  0,
+  nrow = nrow(Xs),
+  ncol = length(temp),
+  dimnames = list(1:nrow(Xs), temp)
+)
+
+Xs <- cbind(Xs,temp)[,colnames(Xdat)]
+
+
+```
+
+Ejecutando nuevamente el modelo
+
+```{r}
+sample_data <- list(
+  N1 = nrow(data_dir),   # Observados.
+  N2 = nrow(data_syn),   # NO Observados.
+  p  = ncol(Xdat),       # Número de regresores.
+  X  = as.matrix(Xdat),  # Covariables Observados.
+  Xs = as.matrix(Xs),    # Covariables NO Observados
+  y  = as.numeric(data_dir$thetahat),          # Estimación directa. 
+  sigma_e = as.numeric(data_dir$thetahat_se)   # Error de estimación
+                    )
+```
+
+Para ejecutar `STAN` en R tenemos la librería *cmdstanr*
+
+```{r, eval = TRUE, message=FALSE}
+model_FH_Nornal <-
+  fit_FH_Nornal$sample(
+    data = sample_data,
+    chains = 4,
+    parallel_chains = 4,
+    seed = 1234,
+    refresh = 0
+  )
+
+```
+
+Comparando resultados.
+
+```{r, eval=TRUE}
+# Predicción de la estimación (Observados) 
+y_pred_B <- model_FH_Nornal$draws(variables = "theta", format = "matrix")
+rowsrandom <- sample(nrow(y_pred_B), 100)
+y_pred2 <- y_pred_B[rowsrandom,]
+# Comparando predicción con las cadenas
+ppc_dens_overlay(y = as.numeric(data_dir$thetahat), y_pred2) 
+```
+
+Comparando estimación directa y predicción de FH
+
+```{r, eval=TRUE}
+library(ggplot2)
+theta_FH <- model_FH_Nornal$summary(variables =  "theta")
+data_dir %<>% mutate(pred_normal = theta_FH$mean)
+ggplot(data = data_dir, aes(x = pred_normal, y = thetahat)) +
+  geom_abline(
+    slope = 1,
+    intercept = 0,
+    color = "red",
+    size = 1.5
+  ) +
+  geom_point(size = 2) + theme_bw(base_size = 20)
+```
+
+Al revisar el comportamiento de las cadenas para $\sigma^2_v$ se tiene
+
+```{r, eval=TRUE}
+(mcmc_dens_chains(model_FH_Nornal$draws("sigma2_v")) +
+    mcmc_areas(model_FH_Nornal$draws("sigma2_v")))/ 
+  mcmc_trace(model_FH_Nornal$draws("sigma2_v"))
+```
+
+# Estimación de Fay Herriot arcsin.
+
+En su concepción más básica, el modelo de **FH** es una combinación lineal de covariables. Sin embargo, el resultado de esta combinación pueden tomar valores que se salen del rango aceptable en el que puede estar una proporción; es decir, en general el estimador de Fay-Herriot $\theta \in R$, mientras que el estimador directo $\theta \in (0,1)$.
+
+Transformación arcoseno
+
+$$
+\hat{z}_d = arcsin\left( \sqrt{ \hat{\theta}_d} \right)
+$$ donde
+
+$$
+Var\left( \hat{z}_d \right) = \frac{\widehat{DEFF}_d}{4\times n_d} = \frac{1}{4\times n_{d,efectivo} }
+$$
+
+Realizando estos cálculo a la base de la estimación directa:
+
+```{r}
+data_dir %<>% mutate(
+  n_effec = nd/thetahat_deff,     ## n efectivo
+  varhat = 1/(4*n_effec),         ## varianza para zd  
+  T_thetahat = asin(sqrt(thetahat)) ## creando zd
+  )
+
+```
+
+### Modelo bayesiano
+
+El modelo estaría definido de la siguiente forma:
+
+$$
+\begin{eqnarray*}
+Z \mid \mu,\sigma_e &  \sim  & N(\mu, \sigma_e)\\
+\mu & = & \boldsymbol{X\beta} + V \\
+\theta & = &  \left(sin(\mu)\right)^2
+\end{eqnarray*}
+$$ donde $V \sim N(0 , \sigma_v)$.
+
+Las distribuciones previas para $\boldsymbol{\beta}$ y $\sigma^2_v$
+
+$$
+\beta_k \sim N(\mu_0, \tau^2_0)
+$$
+
+$$
+\sigma^2_v \sim Inversa-Gamma(\alpha_1,\alpha_2)
+$$
+
+Creando código de `STAN`
+
+```{r, eval=FALSE}
+data {
+  int<lower=0> N1;   // number of data items
+  int<lower=0> N2;   // number of data items for prediction
+  int<lower=0> p;   // number of predictors
+  matrix[N1, p] X;   // predictor matrix
+  matrix[N2, p] Xs;   // predictor matrix
+  vector[N1] y;      // predictor matrix 
+  vector[N1] sigma_e; // known variances
+}
+
+// The parameters accepted by the model. Our model
+// accepts two parameters 'mu' and 'sigma'.
+parameters {
+  vector[p] beta;       // coefficients for predictors
+  real<lower=0> sigma2_v;
+  vector[N1] v;
+}
+
+transformed parameters{
+  vector[N1] theta;
+  vector[N1] lp;
+  real<lower=0> sigma_v;
+  lp = X * beta + v;
+  sigma_v = sqrt(sigma2_v);
+  for(k in 1:N1){
+    theta[k] = pow(sin(lp[k]), 2);
+  }
+}
+
+model {
+  // likelihood
+  y ~ normal(lp, sigma_e); 
+  // priors
+  beta ~ normal(0, 100);
+  v ~ normal(0, sigma_v);
+  sigma2_v ~ inv_gamma(0.0001, 0.0001);
+}
+
+generated quantities{
+  vector[N2] theta_pred;
+  vector[N2] lppred;
+  for(j in 1:N2) {
+    lppred[j] = normal_rng(Xs[j] * beta, sigma_v);
+    theta_pred[j] = pow(sin(lppred[j]), 2);
+  }
+}
+
+```
+
+Preparando el código de `STAN`
+
+```{r, eval=TRUE}
+fit_FH_arcsin_Nornal <- cmdstan_model("../Data/modelosStan/FH_arcsin_normal.stan")
+```
+
+Organizando la data para compilar `STAN`
+
+```{r}
+sample_data <- list(N1 = nrow(data_dir),
+                    N2 = nrow(data_syn),
+                    p  = ncol(Xdat),
+                    X  = as.matrix(Xdat),
+                    Xs = as.matrix(Xs),
+                    y  = as.numeric(data_dir$T_thetahat),
+                    sigma_e = sqrt(data_dir$varhat)
+                    )
+```
+
+Ahora, se ejecuta el modelo en `R`
+
+```{r, eval = TRUE, message=FALSE}
+model_FH_arcsin_Nornal <-
+  fit_FH_arcsin_Nornal$sample(
+    data = sample_data,
+    iter_warmup = 2000,
+    iter_sampling = 1000,
+    chains = 4,
+    parallel_chains = 4,
+    seed = 1234,
+    refresh = 0
+  )
+
+```
+
+La distribución posterior obtenida es la siguientes
+
+```{r, eval=TRUE}
+y_pred_B <-
+  model_FH_arcsin_Nornal$draws(variables = "theta", format = "matrix")
+rowsrandom <- sample(nrow(y_pred_B), 100)
+y_pred2 <- y_pred_B[rowsrandom, ]
+ppc_dens_overlay(y = as.numeric(data_dir$thetahat), y_pred2) 
+```
+
+Evaluando el resultado de la predicción de forma visual.
+
+```{r, eval=TRUE}
+theta_FH <- model_FH_arcsin_Nornal$summary(variables =  "theta")
+data_dir %<>% mutate(pred_arcsin = theta_FH$mean)
+ggplot(data = data_dir, aes(x = pred_arcsin, y = thetahat)) +
+  geom_abline(
+    slope = 1,
+    intercept = 0,
+    color = "red",
+    size = 2
+  ) +
+  geom_point() + theme_bw(base_size = 20)
+```
+
+Predicción en los dominios **NO** observados
+
+```{r, eval=TRUE}
+theta_FH_pred <-
+  model_FH_arcsin_Nornal$summary(variables =  "theta_pred")
+data_syn %<>% mutate(pred_arcsin = theta_FH_pred$mean)
+```
+
+
+```{r,echo=FALSE}
+kable(data_syn %>% select(mpio:thetahat_se,pred_arcsin) %>% 
+  head(10),
+      format = "html", digits =  4,
+      caption = "Estimación arcsin") %>% 
+    kable_classic()
+```
+
+Resultados de la estimación de $\sigma^2_v$
+
+```{r, eval=TRUE}
+model_FH_arcsin_Nornal$summary(
+  variables = c("sigma2_v"))
+```
+
+Evaluación de las cadenas
+
+```{r, eval=TRUE}
+(mcmc_dens_chains(model_FH_arcsin_Nornal$draws("sigma2_v")) +
+    mcmc_areas(model_FH_arcsin_Nornal$draws("sigma2_v")))/ 
+  mcmc_trace(model_FH_arcsin_Nornal$draws("sigma2_v"))
+```
+
+# Estimación de Fay Herriot beta
+
+Una forma natural de modelar la variable es mediante la distribución beta, dado que su dominio se encuentra en el intervalo
+
+### Modelo bayesiano
+
+El modelo Fay Herriot beta estaría dado por las siguientes expresiones $$
+\begin{eqnarray*}
+Y \mid a,b & \sim & beta(a, b)\\
+a &=& \theta \times \phi\\
+b &=& (1 - \theta) \times \phi\\
+\end{eqnarray*}
+$$ donde
+
+$$
+\begin{eqnarray*}
+\theta &= &\frac{\exp{\left(\mu\right)}}{ 1+ \exp{\left(\mu\right)}}\\ \\   
+\mu &=& \boldsymbol{X\beta} + V 
+\end{eqnarray*}
+$$ con $V \sim N(0 , \sigma_v)$ y $\phi = \frac{n_d}{\widehat{DEFF}_d} -1 = n_{d,efecctivo} -1$
+
+Las distribuciones previas para $\boldsymbol{\beta}$ y $\sigma^2_v$
+
+$$
+\begin{eqnarray*}
+\beta_k &\sim& N(\mu_0, \tau^2_0)\\
+\sigma^2_v &\sim& Inversa-Gamma(\alpha_1,\alpha_2)
+\end{eqnarray*}
+$$
+
+Creando código de `STAN`
+
+```{r, eval=FALSE}
+data {
+  int<lower=1> N1;                      // sample size
+  int<lower=1> N2;                      // sample size
+  int<lower=1> p;                       // p predictors
+  vector<lower=0,upper=1>[N1] y;        // response 
+  matrix[N1,p] X;
+  matrix[N2,p] Xs;
+  vector<lower=0>[N1] phi;              // dispersion parameter
+}
+
+parameters {
+  vector[p] beta;
+  real<lower=0> sigma2_v;               // K predictors
+  vector[N1] v;
+// reg coefficients
+}
+
+transformed parameters{
+  vector[N1] LP;
+  real<lower=0> sigma_v;
+  vector[N1] theta;                     // linear predictor
+  LP = X * beta + v;
+  sigma_v = sqrt(sigma2_v); 
+  for (i in 1:N1) { 
+    theta[i] = inv_logit(LP[i]); 
+  }
+}
+
+model {
+  // model calculations
+  vector[N1] a;                         // parameter for beta distn
+  vector[N1] b;                         // parameter for beta distn
+
+  for (i in 1:N1) { 
+    a[i] = theta[i] * phi[i];
+    b[i] = (1 - theta[i]) * phi[i];
+  }
+
+  // priors
+  beta ~ normal(0, 100);
+  v ~ normal(0, sigma_v);
+  sigma2_v ~ inv_gamma(0.0001, 0.0001);
+
+  // likelihood
+  y ~ beta(a, b);
+}
+
+generated quantities {
+  // phi es desconocido 
+  // vector[N2] y_pred;
+  // vector[N2] thetapred;
+  // 
+  // for (i in 1:N2) {
+  //   y_pred[i] = normal_rng(Xs[i] * beta, sigma_v);
+  //   thetapred[i] = inv_logit(y_pred[i]);
+  // } 
+}
+  
+
+```
+
+Preparando el código de `STAN`
+
+```{r, eval=TRUE}
+fit_FH_beta <- cmdstan_model("../Data/modelosStan/FH_beta.stan")
+```
+
+Organizando insumos para `STAN`
+
+```{r}
+sample_data <- list(N1 = nrow(data_dir),
+                    N2 = nrow(data_syn),
+                    p  = ncol(Xdat),
+                    X  = as.matrix(Xdat),
+                    Xs = as.matrix(Xs),
+                    y  = as.numeric(data_dir$thetahat),
+                   phi = data_dir$n_effec - 1
+                    )
+```
+
+Ejecutando el modelo en `R`
+
+```{r, eval = TRUE, message=FALSE}
+model_FH_beta <-
+  fit_FH_beta$sample(
+    data = sample_data,
+    iter_warmup = 1000,
+    iter_sampling = 1000,
+    chains = 4,
+    parallel_chains = 4,
+    seed = 1234,
+    refresh = 0
+  )
+
+```
+
+La distribución posterior toma la siguiente forma:
+
+```{r, eval=TRUE}
+y_pred_B <- model_FH_beta$draws(variables = "theta", format = "matrix")
+rowsrandom <- sample(nrow(y_pred_B), 100)
+y_pred2 <- y_pred_B[rowsrandom, ]
+ppc_dens_overlay(y = as.numeric(data_dir$thetahat), y_pred2) 
+```
+
+Ahora, la comparación entre la estimación directa y la predicción del modelo.
+
+```{r, eval=TRUE}
+theta_FH <- model_FH_beta$summary(variables =  "theta")
+data_dir %<>% mutate(pred_beta = theta_FH$mean)
+ggplot(data = data_dir, aes(x = pred_beta, y = thetahat)) +
+  geom_abline(
+    slope = 1,
+    intercept = 0,
+    color = "red",
+    size = 2
+  ) +
+  geom_point() + theme_bw(base_size = 20)
+```
+
+Estimación de $\sigma_v^2$ es obtenida así:
+
+```{r, eval=TRUE}
+model_FH_beta$summary(variables = c("sigma2_v"))
+```
+
+Al evaluar la calidad de las cadenas tenemos que:
+
+```{r, eval=TRUE}
+(mcmc_dens_chains(model_FH_beta$draws("sigma2_v")) +
+    mcmc_areas(model_FH_beta$draws("sigma2_v")))/ 
+  mcmc_trace(model_FH_beta$draws("sigma2_v"))
+```
+
+### Creando el mapa con los resultados.
+
+Por último se contruye un mapa con los resultados obtenidos.
+
+```{r}
+library(sp)
+library(sf)
+library(tmap)
+
+data_map <- rbind(
+  data_dir %>% select(mpio,pred_arcsin), 
+  data_syn %>% select(mpio,pred_arcsin))
+
+## Leer Shape del pais
+ShapeSAE <- read_sf("../Shape/secc_hog11.shp")%>% 
+  filter(nombdepto == "MONTEVIDEO") %>% 
+  mutate(mpio = str_pad(codsec,width = 4,pad = "0"))
+
+mapa <- tm_shape(ShapeSAE %>%
+                           left_join(data_map,  by = "mpio"))
+
+brks_lp <- c(0,0.05,0.07, 0.1, 0.15, 0.2, 1)
+tmap_options(check.and.fix = TRUE)
+Mapa_lp <-
+  mapa + tm_polygons(
+    "pred_arcsin",
+    breaks = brks_lp,
+    title = "Mapa de pobreza",
+    palette = "YlOrRd",
+    colorNA = "white"
+  ) + tm_layout(asp = 0)
+
+Mapa_lp
+
+```

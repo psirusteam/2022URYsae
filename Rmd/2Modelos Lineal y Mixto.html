@@ -301,7 +301,7 @@ S^2_e&amp;=&amp;(\mathbf{y}-\mathbf{X}\hat{\boldsymbol{\beta}})'(\mathbf{y}-\mat
 \end{align*}
 \]</span></p>
 <p>y <span class="math inline">\(\sigma^2_0\)</span> es una estimación previa del parámetro de interés <span class="math inline">\(\sigma^2\)</span>.</p>
-<div class="cell" data-hash="2Modelos-Lineal-y-Mixto_cache/html/unnamed-chunk-1_93f49cc0e9a8791d8249b7c7f6b71f56">
+<div class="cell" data-hash="2Modelos-Lineal-y-Mixto_cache/html/unnamed-chunk-1_04054bdacf8a8aa7e3e598eec15ab7be">
 
 </div>
 </section>
@@ -310,11 +310,11 @@ S^2_e&amp;=&amp;(\mathbf{y}-\mathbf{X}\hat{\boldsymbol{\beta}})'(\mathbf{y}-\mat
 <ul>
 <li>ENCUESTA CONTINUA DE HOGARES (ECH) 2020</li>
 </ul>
-<div class="cell" data-hash="2Modelos-Lineal-y-Mixto_cache/html/unnamed-chunk-2_ac893a6d0a45b0b50db0ea0eb7d3a865">
+<div class="cell" data-hash="2Modelos-Lineal-y-Mixto_cache/html/unnamed-chunk-2_f6f6a61230fb0bee783132b1f15f9aad">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>encuesta <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"Data/encuestaURY20N.rds"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>encuesta <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"../Data/encuestaURY20N.rds"</span>) <span class="sc">%&gt;%</span> </span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(edad <span class="sc">&gt;</span> <span class="dv">18</span>)</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>tasa_desocupacion <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"Data/tasa_desocupacion2.rds"</span>)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>tasa_desocupacion <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"../Data/tasa_desocupacion2.rds"</span>)</span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>(datalm <span class="ot">&lt;-</span> encuesta <span class="sc">%&gt;%</span> </span>
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">transmute</span>(</span>
@@ -539,10 +539,10 @@ S^2_e&amp;=&amp;(\mathbf{y}-\mathbf{X}\hat{\boldsymbol{\beta}})'(\mathbf{y}-\mat
 <span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Preparando el código de <code>STAN</code></p>
-<div class="cell" data-hash="2Modelos-Lineal-y-Mixto_cache/html/unnamed-chunk-5_21e760270a1b57a76375296c1d33186a">
+<div class="cell" data-hash="2Modelos-Lineal-y-Mixto_cache/html/unnamed-chunk-5_3147e712f216af2791e1da3b54346e7b">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(cmdstanr)</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="do">## Definir el modelo</span></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>fitLm1 <span class="ot">&lt;-</span> <span class="fu">cmdstan_model</span>(<span class="at">stan_file =</span> <span class="st">"Data/modelosStan/ModeloLm1.stan"</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>fitLm1 <span class="ot">&lt;-</span> <span class="fu">cmdstan_model</span>(<span class="at">stan_file =</span> <span class="st">"../Data/modelosStan/ModeloLm1.stan"</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Organizando datos para <code>STAN</code></p>
 <div class="cell" data-hash="2Modelos-Lineal-y-Mixto_cache/html/unnamed-chunk-6_04e420bcc7c1043a26451ad214c7f030">
@@ -562,14 +562,14 @@ S^2_e&amp;=&amp;(\mathbf{y}-\mathbf{X}\hat{\boldsymbol{\beta}})'(\mathbf{y}-\mat
 <div class="cell-output cell-output-stdout">
 <pre><code>Running MCMC with 4 parallel chains...
 
-Chain 1 finished in 0.6 seconds.
-Chain 2 finished in 0.7 seconds.
-Chain 3 finished in 0.6 seconds.
+Chain 1 finished in 0.4 seconds.
+Chain 2 finished in 0.4 seconds.
+Chain 3 finished in 0.4 seconds.
 Chain 4 finished in 0.4 seconds.
 
 All 4 chains finished successfully.
-Mean chain execution time: 0.6 seconds.
-Total execution time: 1.9 seconds.</code></pre>
+Mean chain execution time: 0.4 seconds.
+Total execution time: 0.9 seconds.</code></pre>
 </div>
 </div>
 <p>La estimación del parámetro <span class="math inline">\(B\)</span> es:</p>
@@ -588,23 +588,23 @@ Total execution time: 1.9 seconds.</code></pre>
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">b0</td>
-<td style="text-align: right;">7.984318e+02</td>
-<td style="text-align: right;">1.010604e+03</td>
+<td style="text-align: right;">8.239326e+02</td>
+<td style="text-align: right;">1.001445e+03</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">b1</td>
-<td style="text-align: right;">2.050163e+00</td>
-<td style="text-align: right;">4.049307e-01</td>
+<td style="text-align: right;">2.048245e+00</td>
+<td style="text-align: right;">4.041642e-01</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">sigma</td>
-<td style="text-align: right;">1.667933e+04</td>
-<td style="text-align: right;">3.049156e+03</td>
+<td style="text-align: right;">1.662340e+04</td>
+<td style="text-align: right;">3.018359e+03</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">sigma2</td>
-<td style="text-align: right;">2.874952e+08</td>
-<td style="text-align: right;">1.108167e+08</td>
+<td style="text-align: right;">2.854455e+08</td>
+<td style="text-align: right;">1.090641e+08</td>
 </tr>
 </tbody>
 </table>
@@ -677,8 +677,8 @@ Total execution time: 1.9 seconds.</code></pre>
 <span id="cb12-24"><a href="#cb12-24" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Preparando el código de <code>STAN</code></p>
-<div class="cell" data-hash="2Modelos-Lineal-y-Mixto_cache/html/unnamed-chunk-14_042f828c3d68962cec859bfa8d183153">
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>fitLm2 <span class="ot">&lt;-</span> <span class="fu">cmdstan_model</span>(<span class="at">stan_file =</span> <span class="st">"Data/modelosStan/ModeloLm2.stan"</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell" data-hash="2Modelos-Lineal-y-Mixto_cache/html/unnamed-chunk-14_8f9d13397e47d3af57b0d3e6139aecaf">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>fitLm2 <span class="ot">&lt;-</span> <span class="fu">cmdstan_model</span>(<span class="at">stan_file =</span> <span class="st">"../Data/modelosStan/ModeloLm2.stan"</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Organizando datos para <code>STAN</code></p>
 <div class="cell" data-hash="2Modelos-Lineal-y-Mixto_cache/html/unnamed-chunk-15_d80bf27534ed8de943d2925f97e5a8a6">
@@ -856,14 +856,14 @@ Total execution time: 1.9 seconds.</code></pre>
 <div class="cell-output cell-output-stdout">
 <pre><code>Running MCMC with 4 parallel chains...
 
-Chain 1 finished in 2.1 seconds.
-Chain 2 finished in 3.3 seconds.
-Chain 4 finished in 3.0 seconds.
-Chain 3 finished in 3.1 seconds.
+Chain 1 finished in 1.8 seconds.
+Chain 4 finished in 2.6 seconds.
+Chain 3 finished in 2.8 seconds.
+Chain 2 finished in 3.0 seconds.
 
 All 4 chains finished successfully.
-Mean chain execution time: 2.9 seconds.
-Total execution time: 3.9 seconds.</code></pre>
+Mean chain execution time: 2.6 seconds.
+Total execution time: 3.3 seconds.</code></pre>
 </div>
 </div>
 <p>La estimación del parámetro <span class="math inline">\(B\)</span> es:</p>
@@ -882,33 +882,33 @@ Total execution time: 3.9 seconds.</code></pre>
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">beta[1]</td>
-<td style="text-align: right;">1.966851e+04</td>
-<td style="text-align: right;">2.144388e+03</td>
+<td style="text-align: right;">1.964638e+04</td>
+<td style="text-align: right;">2.140133e+03</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">beta[2]</td>
-<td style="text-align: right;">-1.203638e+03</td>
-<td style="text-align: right;">1.014439e+04</td>
+<td style="text-align: right;">-1.110047e+03</td>
+<td style="text-align: right;">1.023341e+04</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">beta[3]</td>
-<td style="text-align: right;">-2.789424e-01</td>
-<td style="text-align: right;">1.064733e-01</td>
+<td style="text-align: right;">-2.771689e-01</td>
+<td style="text-align: right;">1.072407e-01</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">beta[4]</td>
-<td style="text-align: right;">1.023500e-02</td>
-<td style="text-align: right;">6.089700e-03</td>
+<td style="text-align: right;">1.022820e-02</td>
+<td style="text-align: right;">6.045200e-03</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">beta[5]</td>
-<td style="text-align: right;">1.051581e+00</td>
-<td style="text-align: right;">2.230483e-01</td>
+<td style="text-align: right;">1.050852e+00</td>
+<td style="text-align: right;">2.230622e-01</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">sigma2</td>
-<td style="text-align: right;">9.794371e+06</td>
-<td style="text-align: right;">4.518940e+06</td>
+<td style="text-align: right;">9.843444e+06</td>
+<td style="text-align: right;">4.597092e+06</td>
 </tr>
 </tbody>
 </table>
@@ -1122,8 +1122,8 @@ p(\boldsymbol{\beta} \mid \mathbf{Y}, \mathbf{X})&amp;\propto
 <span id="cb26-22"><a href="#cb26-22" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Preparando el código de <code>STAN</code></p>
-<div class="cell" data-hash="2Modelos-Lineal-y-Mixto_cache/html/unnamed-chunk-27_769de6ef07b803625130d63d185112dc">
-<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>fitLosgit1 <span class="ot">&lt;-</span> <span class="fu">cmdstan_model</span>(<span class="at">stan_file =</span> <span class="st">"Data/modelosStan/ModeloLogit.stan"</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell" data-hash="2Modelos-Lineal-y-Mixto_cache/html/unnamed-chunk-27_2c965074ec091b193a96f08c3df4e724">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>fitLosgit1 <span class="ot">&lt;-</span> <span class="fu">cmdstan_model</span>(<span class="at">stan_file =</span> <span class="st">"../Data/modelosStan/ModeloLogit.stan"</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Organizando datos para <code>STAN</code></p>
 <div class="cell" data-hash="2Modelos-Lineal-y-Mixto_cache/html/unnamed-chunk-28_cd29169bb5bcf338e55df13d50772284">
@@ -1235,14 +1235,14 @@ p(\boldsymbol{\beta} \mid \mathbf{Y}, \mathbf{X})&amp;\propto
 <div class="cell-output cell-output-stdout">
 <pre><code>Running MCMC with 4 parallel chains...
 
-Chain 1 finished in 114.0 seconds.
-Chain 3 finished in 114.4 seconds.
-Chain 4 finished in 118.0 seconds.
-Chain 2 finished in 119.0 seconds.
+Chain 1 finished in 47.0 seconds.
+Chain 4 finished in 49.7 seconds.
+Chain 2 finished in 50.5 seconds.
+Chain 3 finished in 51.0 seconds.
 
 All 4 chains finished successfully.
-Mean chain execution time: 116.3 seconds.
-Total execution time: 119.5 seconds.</code></pre>
+Mean chain execution time: 49.6 seconds.
+Total execution time: 51.3 seconds.</code></pre>
 </div>
 </div>
 <p>La estimación del parámetro <span class="math inline">\(B\)</span> es:</p>
@@ -1279,99 +1279,99 @@ Total execution time: 119.5 seconds.</code></pre>
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">beta[1]</td>
-<td style="text-align: right;">-3.3434793</td>
-<td style="text-align: right;">-3.2367550</td>
-<td style="text-align: right;">0.8354596</td>
-<td style="text-align: right;">0.7881724</td>
-<td style="text-align: right;">-4.8300745</td>
-<td style="text-align: right;">-2.1499490</td>
-<td style="text-align: right;">1.0057320</td>
-<td style="text-align: right;">836.8421</td>
-<td style="text-align: right;">830.4055</td>
+<td style="text-align: right;">-3.3497376</td>
+<td style="text-align: right;">-3.2273700</td>
+<td style="text-align: right;">0.8457605</td>
+<td style="text-align: right;">0.7557035</td>
+<td style="text-align: right;">-4.8905335</td>
+<td style="text-align: right;">-2.1668655</td>
+<td style="text-align: right;">1.0022890</td>
+<td style="text-align: right;">640.9310</td>
+<td style="text-align: right;">508.5378</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">beta[2]</td>
-<td style="text-align: right;">0.0995752</td>
-<td style="text-align: right;">0.0997726</td>
-<td style="text-align: right;">0.1845910</td>
-<td style="text-align: right;">0.1794433</td>
-<td style="text-align: right;">-0.2029523</td>
-<td style="text-align: right;">0.4112233</td>
-<td style="text-align: right;">1.0016933</td>
-<td style="text-align: right;">3089.2216</td>
-<td style="text-align: right;">2418.8430</td>
+<td style="text-align: right;">0.1018459</td>
+<td style="text-align: right;">0.1057320</td>
+<td style="text-align: right;">0.1822503</td>
+<td style="text-align: right;">0.1807269</td>
+<td style="text-align: right;">-0.1942952</td>
+<td style="text-align: right;">0.4030622</td>
+<td style="text-align: right;">0.9999778</td>
+<td style="text-align: right;">3179.5454</td>
+<td style="text-align: right;">2367.4879</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">beta[3]</td>
-<td style="text-align: right;">1.9734862</td>
-<td style="text-align: right;">1.8827100</td>
-<td style="text-align: right;">0.8343575</td>
-<td style="text-align: right;">0.7996107</td>
-<td style="text-align: right;">0.7656482</td>
-<td style="text-align: right;">3.4214505</td>
-<td style="text-align: right;">1.0061307</td>
-<td style="text-align: right;">816.3759</td>
-<td style="text-align: right;">662.4403</td>
+<td style="text-align: right;">1.9818516</td>
+<td style="text-align: right;">1.8647400</td>
+<td style="text-align: right;">0.8424081</td>
+<td style="text-align: right;">0.7763413</td>
+<td style="text-align: right;">0.8179544</td>
+<td style="text-align: right;">3.5258710</td>
+<td style="text-align: right;">1.0018374</td>
+<td style="text-align: right;">612.5555</td>
+<td style="text-align: right;">600.8927</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">beta[4]</td>
-<td style="text-align: right;">1.1156690</td>
-<td style="text-align: right;">1.0267350</td>
-<td style="text-align: right;">0.8331050</td>
-<td style="text-align: right;">0.7863518</td>
-<td style="text-align: right;">-0.0739933</td>
-<td style="text-align: right;">2.5889685</td>
-<td style="text-align: right;">1.0059831</td>
-<td style="text-align: right;">842.4007</td>
-<td style="text-align: right;">853.5226</td>
+<td style="text-align: right;">1.1282628</td>
+<td style="text-align: right;">1.0155750</td>
+<td style="text-align: right;">0.8412230</td>
+<td style="text-align: right;">0.7613448</td>
+<td style="text-align: right;">-0.0242025</td>
+<td style="text-align: right;">2.6951585</td>
+<td style="text-align: right;">1.0019149</td>
+<td style="text-align: right;">623.2609</td>
+<td style="text-align: right;">637.3172</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">beta[5]</td>
-<td style="text-align: right;">-1.0489816</td>
-<td style="text-align: right;">-1.1015150</td>
-<td style="text-align: right;">1.0287001</td>
-<td style="text-align: right;">0.9700948</td>
-<td style="text-align: right;">-2.6250840</td>
-<td style="text-align: right;">0.7225176</td>
-<td style="text-align: right;">1.0036991</td>
-<td style="text-align: right;">1038.9277</td>
-<td style="text-align: right;">1094.8096</td>
+<td style="text-align: right;">-1.0411763</td>
+<td style="text-align: right;">-1.0901700</td>
+<td style="text-align: right;">1.0325339</td>
+<td style="text-align: right;">0.9894984</td>
+<td style="text-align: right;">-2.6619860</td>
+<td style="text-align: right;">0.7483496</td>
+<td style="text-align: right;">1.0027252</td>
+<td style="text-align: right;">692.8100</td>
+<td style="text-align: right;">848.8655</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">beta[6]</td>
-<td style="text-align: right;">-0.2439958</td>
-<td style="text-align: right;">-0.2444510</td>
-<td style="text-align: right;">0.2310275</td>
-<td style="text-align: right;">0.2233870</td>
-<td style="text-align: right;">-0.6229504</td>
-<td style="text-align: right;">0.1314485</td>
-<td style="text-align: right;">1.0008948</td>
-<td style="text-align: right;">1692.0760</td>
-<td style="text-align: right;">2237.9337</td>
+<td style="text-align: right;">-0.2486105</td>
+<td style="text-align: right;">-0.2432475</td>
+<td style="text-align: right;">0.2242935</td>
+<td style="text-align: right;">0.2208706</td>
+<td style="text-align: right;">-0.6210340</td>
+<td style="text-align: right;">0.1179966</td>
+<td style="text-align: right;">1.0010698</td>
+<td style="text-align: right;">1840.8184</td>
+<td style="text-align: right;">2249.4020</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">beta[7]</td>
-<td style="text-align: right;">-1.6557287</td>
-<td style="text-align: right;">-1.6532050</td>
-<td style="text-align: right;">0.2638989</td>
-<td style="text-align: right;">0.2654669</td>
-<td style="text-align: right;">-2.0938540</td>
-<td style="text-align: right;">-1.2301995</td>
-<td style="text-align: right;">1.0006199</td>
-<td style="text-align: right;">1728.8458</td>
-<td style="text-align: right;">2625.4267</td>
+<td style="text-align: right;">-1.6602107</td>
+<td style="text-align: right;">-1.6597800</td>
+<td style="text-align: right;">0.2628274</td>
+<td style="text-align: right;">0.2648887</td>
+<td style="text-align: right;">-2.0887085</td>
+<td style="text-align: right;">-1.2284460</td>
+<td style="text-align: right;">1.0008309</td>
+<td style="text-align: right;">2012.8296</td>
+<td style="text-align: right;">2437.3561</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">beta[8]</td>
-<td style="text-align: right;">-4.0607687</td>
-<td style="text-align: right;">-4.0057150</td>
-<td style="text-align: right;">0.6578058</td>
-<td style="text-align: right;">0.6468806</td>
-<td style="text-align: right;">-5.2082930</td>
-<td style="text-align: right;">-3.0980960</td>
-<td style="text-align: right;">0.9997316</td>
-<td style="text-align: right;">2509.5693</td>
-<td style="text-align: right;">2250.0364</td>
+<td style="text-align: right;">-4.0842036</td>
+<td style="text-align: right;">-4.0112500</td>
+<td style="text-align: right;">0.6726816</td>
+<td style="text-align: right;">0.6339301</td>
+<td style="text-align: right;">-5.3120995</td>
+<td style="text-align: right;">-3.1193270</td>
+<td style="text-align: right;">1.0015888</td>
+<td style="text-align: right;">2563.4578</td>
+<td style="text-align: right;">2009.1281</td>
 </tr>
 </tbody>
 </table>
@@ -1425,8 +1425,8 @@ Total execution time: 119.5 seconds.</code></pre>
 <span id="cb36-22"><a href="#cb36-22" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Preparando el código de <code>STAN</code></p>
-<div class="cell" data-hash="2Modelos-Lineal-y-Mixto_cache/html/unnamed-chunk-36_a232c2a5b52309b0d8abb7269d5c5657">
-<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>fitLosgit2 <span class="ot">&lt;-</span> <span class="fu">cmdstan_model</span>(<span class="at">stan_file =</span> <span class="st">"Data/modelosStan/ModeloLogit2.stan"</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell" data-hash="2Modelos-Lineal-y-Mixto_cache/html/unnamed-chunk-36_1708b7e3e58d9ecb678a53d5675450f8">
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>fitLosgit2 <span class="ot">&lt;-</span> <span class="fu">cmdstan_model</span>(<span class="at">stan_file =</span> <span class="st">"../Data/modelosStan/ModeloLogit2.stan"</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Para ejecutar <code>STAN</code> en R tenemos la librería <em>cmdstanr</em></p>
 <div class="cell" data-hash="2Modelos-Lineal-y-Mixto_cache/html/unnamed-chunk-37_42dd30dff98a989532286058bfa7bdf8">
@@ -1440,14 +1440,14 @@ Total execution time: 119.5 seconds.</code></pre>
 <div class="cell-output cell-output-stdout">
 <pre><code>Running MCMC with 4 parallel chains...
 
-Chain 1 finished in 163.0 seconds.
-Chain 3 finished in 173.6 seconds.
-Chain 2 finished in 178.9 seconds.
-Chain 4 finished in 178.8 seconds.
+Chain 1 finished in 68.4 seconds.
+Chain 4 finished in 71.5 seconds.
+Chain 3 finished in 72.8 seconds.
+Chain 2 finished in 77.0 seconds.
 
 All 4 chains finished successfully.
-Mean chain execution time: 173.6 seconds.
-Total execution time: 180.7 seconds.</code></pre>
+Mean chain execution time: 72.4 seconds.
+Total execution time: 77.2 seconds.</code></pre>
 </div>
 </div>
 <p>La estimación del parámetro <span class="math inline">\(B\)</span> es:</p>
@@ -1484,99 +1484,99 @@ Total execution time: 180.7 seconds.</code></pre>
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">beta[1]</td>
-<td style="text-align: right;">-3.2794162</td>
-<td style="text-align: right;">-3.1952200</td>
-<td style="text-align: right;">0.7661987</td>
-<td style="text-align: right;">0.7761040</td>
-<td style="text-align: right;">-4.6578110</td>
-<td style="text-align: right;">-2.1811995</td>
-<td style="text-align: right;">1.013772</td>
-<td style="text-align: right;">257.3973</td>
-<td style="text-align: right;">360.2843</td>
+<td style="text-align: right;">-3.3332348</td>
+<td style="text-align: right;">-3.2536650</td>
+<td style="text-align: right;">0.7908788</td>
+<td style="text-align: right;">0.7840582</td>
+<td style="text-align: right;">-4.7045565</td>
+<td style="text-align: right;">-2.1873560</td>
+<td style="text-align: right;">1.026023</td>
+<td style="text-align: right;">220.7655</td>
+<td style="text-align: right;">284.4963</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">beta[2]</td>
-<td style="text-align: right;">0.1068138</td>
-<td style="text-align: right;">0.1028655</td>
-<td style="text-align: right;">0.1848087</td>
-<td style="text-align: right;">0.1932058</td>
-<td style="text-align: right;">-0.1939791</td>
-<td style="text-align: right;">0.4102259</td>
-<td style="text-align: right;">1.007090</td>
-<td style="text-align: right;">558.3932</td>
-<td style="text-align: right;">964.2482</td>
+<td style="text-align: right;">0.0757540</td>
+<td style="text-align: right;">0.0725971</td>
+<td style="text-align: right;">0.1847678</td>
+<td style="text-align: right;">0.1862678</td>
+<td style="text-align: right;">-0.2233134</td>
+<td style="text-align: right;">0.3878363</td>
+<td style="text-align: right;">1.004140</td>
+<td style="text-align: right;">563.9095</td>
+<td style="text-align: right;">1110.9357</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">beta[3]</td>
-<td style="text-align: right;">1.9002727</td>
-<td style="text-align: right;">1.8088800</td>
-<td style="text-align: right;">0.7761965</td>
-<td style="text-align: right;">0.7603959</td>
-<td style="text-align: right;">0.8056029</td>
-<td style="text-align: right;">3.3321845</td>
-<td style="text-align: right;">1.010136</td>
-<td style="text-align: right;">262.2740</td>
-<td style="text-align: right;">374.0215</td>
+<td style="text-align: right;">1.9745658</td>
+<td style="text-align: right;">1.8837500</td>
+<td style="text-align: right;">0.8001186</td>
+<td style="text-align: right;">0.7752441</td>
+<td style="text-align: right;">0.8340352</td>
+<td style="text-align: right;">3.3609075</td>
+<td style="text-align: right;">1.026622</td>
+<td style="text-align: right;">227.2871</td>
+<td style="text-align: right;">275.5769</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">beta[4]</td>
-<td style="text-align: right;">1.0496545</td>
-<td style="text-align: right;">0.9630240</td>
-<td style="text-align: right;">0.7718999</td>
-<td style="text-align: right;">0.7648941</td>
-<td style="text-align: right;">-0.0389813</td>
-<td style="text-align: right;">2.4678205</td>
-<td style="text-align: right;">1.010684</td>
-<td style="text-align: right;">259.1352</td>
-<td style="text-align: right;">359.7196</td>
+<td style="text-align: right;">1.1197877</td>
+<td style="text-align: right;">1.0228750</td>
+<td style="text-align: right;">0.7912913</td>
+<td style="text-align: right;">0.7782983</td>
+<td style="text-align: right;">0.0017313</td>
+<td style="text-align: right;">2.5057440</td>
+<td style="text-align: right;">1.026696</td>
+<td style="text-align: right;">224.8613</td>
+<td style="text-align: right;">263.6050</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">beta[5]</td>
-<td style="text-align: right;">-1.1615861</td>
-<td style="text-align: right;">-1.1741350</td>
-<td style="text-align: right;">0.9916037</td>
-<td style="text-align: right;">0.9585024</td>
-<td style="text-align: right;">-2.7324870</td>
-<td style="text-align: right;">0.5268376</td>
-<td style="text-align: right;">1.004195</td>
-<td style="text-align: right;">317.5826</td>
-<td style="text-align: right;">504.7234</td>
+<td style="text-align: right;">-1.0165700</td>
+<td style="text-align: right;">-1.0496550</td>
+<td style="text-align: right;">1.0015232</td>
+<td style="text-align: right;">1.0003176</td>
+<td style="text-align: right;">-2.6053630</td>
+<td style="text-align: right;">0.6687550</td>
+<td style="text-align: right;">1.018563</td>
+<td style="text-align: right;">286.2922</td>
+<td style="text-align: right;">440.5527</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">beta[6]</td>
-<td style="text-align: right;">-0.2388994</td>
-<td style="text-align: right;">-0.2432170</td>
-<td style="text-align: right;">0.2220629</td>
-<td style="text-align: right;">0.2242052</td>
-<td style="text-align: right;">-0.6017763</td>
-<td style="text-align: right;">0.1383370</td>
-<td style="text-align: right;">1.003840</td>
-<td style="text-align: right;">662.2151</td>
-<td style="text-align: right;">1001.2197</td>
+<td style="text-align: right;">-0.2392411</td>
+<td style="text-align: right;">-0.2278820</td>
+<td style="text-align: right;">0.2298685</td>
+<td style="text-align: right;">0.2288670</td>
+<td style="text-align: right;">-0.6327349</td>
+<td style="text-align: right;">0.1221797</td>
+<td style="text-align: right;">1.005465</td>
+<td style="text-align: right;">451.8669</td>
+<td style="text-align: right;">847.1253</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">beta[7]</td>
-<td style="text-align: right;">-1.6568140</td>
-<td style="text-align: right;">-1.6566500</td>
-<td style="text-align: right;">0.2533547</td>
-<td style="text-align: right;">0.2444956</td>
-<td style="text-align: right;">-2.0664700</td>
-<td style="text-align: right;">-1.2353545</td>
-<td style="text-align: right;">1.005746</td>
-<td style="text-align: right;">524.1251</td>
-<td style="text-align: right;">986.1271</td>
+<td style="text-align: right;">-1.6516955</td>
+<td style="text-align: right;">-1.6554500</td>
+<td style="text-align: right;">0.2661331</td>
+<td style="text-align: right;">0.2558004</td>
+<td style="text-align: right;">-2.0853870</td>
+<td style="text-align: right;">-1.2109930</td>
+<td style="text-align: right;">1.004583</td>
+<td style="text-align: right;">531.2064</td>
+<td style="text-align: right;">906.6342</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">beta[8]</td>
-<td style="text-align: right;">-4.0064632</td>
-<td style="text-align: right;">-3.9424600</td>
-<td style="text-align: right;">0.6227832</td>
-<td style="text-align: right;">0.6013277</td>
-<td style="text-align: right;">-5.1058115</td>
-<td style="text-align: right;">-3.0842555</td>
-<td style="text-align: right;">1.004894</td>
-<td style="text-align: right;">639.4188</td>
-<td style="text-align: right;">1028.8745</td>
+<td style="text-align: right;">-4.0522629</td>
+<td style="text-align: right;">-4.0037350</td>
+<td style="text-align: right;">0.6539552</td>
+<td style="text-align: right;">0.6406685</td>
+<td style="text-align: right;">-5.1874125</td>
+<td style="text-align: right;">-3.0579680</td>
+<td style="text-align: right;">1.001956</td>
+<td style="text-align: right;">458.5598</td>
+<td style="text-align: right;">681.3590</td>
 </tr>
 </tbody>
 </table>
@@ -1763,8 +1763,8 @@ p(\boldsymbol{\beta} \mid \mathbf{Y}, \mathbf{X})&amp;\propto
 <span id="cb45-25"><a href="#cb45-25" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Preparando el código de <code>STAN</code></p>
-<div class="cell" data-hash="2Modelos-Lineal-y-Mixto_cache/html/unnamed-chunk-44_9815782a10995a461ec5964473c92c4c">
-<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a>fitBinomial <span class="ot">&lt;-</span> <span class="fu">cmdstan_model</span>(<span class="at">stan_file =</span> <span class="st">"Data/modelosStan/ModeloBinomial.stan"</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell" data-hash="2Modelos-Lineal-y-Mixto_cache/html/unnamed-chunk-44_894870760fe68232ab92133b6e07e477">
+<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a>fitBinomial <span class="ot">&lt;-</span> <span class="fu">cmdstan_model</span>(<span class="at">stan_file =</span> <span class="st">"../Data/modelosStan/ModeloBinomial.stan"</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Organizando datos para <code>STAN</code></p>
 <div class="cell" data-hash="2Modelos-Lineal-y-Mixto_cache/html/unnamed-chunk-45_65c9787766f15c30f56b49dbddc8020d">
@@ -1844,14 +1844,14 @@ p(\boldsymbol{\beta} \mid \mathbf{Y}, \mathbf{X})&amp;\propto
 <div class="cell-output cell-output-stdout">
 <pre><code>Running MCMC with 4 parallel chains...
 
-Chain 1 finished in 0.9 seconds.
-Chain 2 finished in 1.0 seconds.
-Chain 3 finished in 1.2 seconds.
-Chain 4 finished in 0.5 seconds.
+Chain 1 finished in 0.8 seconds.
+Chain 2 finished in 0.8 seconds.
+Chain 3 finished in 1.0 seconds.
+Chain 4 finished in 1.0 seconds.
 
 All 4 chains finished successfully.
 Mean chain execution time: 0.9 seconds.
-Total execution time: 2.8 seconds.</code></pre>
+Total execution time: 1.2 seconds.</code></pre>
 </div>
 </div>
 <p>La estimación del parámetro <span class="math inline">\(B\)</span> es:</p>
@@ -1868,7 +1868,7 @@ Total execution time: 2.8 seconds.</code></pre>
 <col style="width: 11%">
 <col style="width: 11%">
 <col style="width: 9%">
-<col style="width: 10%">
+<col style="width: 9%">
 <col style="width: 9%">
 </colgroup>
 <thead>
@@ -1888,51 +1888,51 @@ Total execution time: 2.8 seconds.</code></pre>
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">beta[1]</td>
-<td style="text-align: right;">-2.7473009</td>
-<td style="text-align: right;">-2.747795</td>
-<td style="text-align: right;">0.0581358</td>
-<td style="text-align: right;">0.0597784</td>
-<td style="text-align: right;">-2.8438460</td>
-<td style="text-align: right;">-2.6506810</td>
-<td style="text-align: right;">1.000795</td>
-<td style="text-align: right;">1152.3375</td>
-<td style="text-align: right;">1527.882</td>
+<td style="text-align: right;">-2.7445356</td>
+<td style="text-align: right;">-2.744495</td>
+<td style="text-align: right;">0.0590749</td>
+<td style="text-align: right;">0.0599638</td>
+<td style="text-align: right;">-2.8428050</td>
+<td style="text-align: right;">-2.6485960</td>
+<td style="text-align: right;">1.002497</td>
+<td style="text-align: right;">1385.848</td>
+<td style="text-align: right;">1656.870</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">beta[2]</td>
-<td style="text-align: right;">1.8319863</td>
-<td style="text-align: right;">1.832450</td>
-<td style="text-align: right;">0.1846688</td>
-<td style="text-align: right;">0.1869633</td>
-<td style="text-align: right;">1.5227435</td>
-<td style="text-align: right;">2.1397710</td>
-<td style="text-align: right;">1.001835</td>
-<td style="text-align: right;">994.1002</td>
-<td style="text-align: right;">1398.227</td>
+<td style="text-align: right;">1.8386581</td>
+<td style="text-align: right;">1.839420</td>
+<td style="text-align: right;">0.1862255</td>
+<td style="text-align: right;">0.1889500</td>
+<td style="text-align: right;">1.5240600</td>
+<td style="text-align: right;">2.1387270</td>
+<td style="text-align: right;">1.002705</td>
+<td style="text-align: right;">1188.089</td>
+<td style="text-align: right;">1419.861</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">beta[3]</td>
-<td style="text-align: right;">-0.1210646</td>
-<td style="text-align: right;">-0.121083</td>
-<td style="text-align: right;">0.0182517</td>
-<td style="text-align: right;">0.0180099</td>
-<td style="text-align: right;">-0.1511184</td>
-<td style="text-align: right;">-0.0907931</td>
-<td style="text-align: right;">1.002057</td>
-<td style="text-align: right;">1108.7827</td>
-<td style="text-align: right;">1658.836</td>
+<td style="text-align: right;">-0.1218676</td>
+<td style="text-align: right;">-0.121811</td>
+<td style="text-align: right;">0.0184392</td>
+<td style="text-align: right;">0.0181982</td>
+<td style="text-align: right;">-0.1517055</td>
+<td style="text-align: right;">-0.0918095</td>
+<td style="text-align: right;">1.002686</td>
+<td style="text-align: right;">1291.902</td>
+<td style="text-align: right;">1841.062</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">beta[4]</td>
-<td style="text-align: right;">-7.3884777</td>
-<td style="text-align: right;">-7.399825</td>
-<td style="text-align: right;">0.3948191</td>
-<td style="text-align: right;">0.3976556</td>
-<td style="text-align: right;">-8.0142255</td>
-<td style="text-align: right;">-6.7288875</td>
-<td style="text-align: right;">1.000427</td>
-<td style="text-align: right;">860.4543</td>
-<td style="text-align: right;">1083.682</td>
+<td style="text-align: right;">-7.4088571</td>
+<td style="text-align: right;">-7.416235</td>
+<td style="text-align: right;">0.3950512</td>
+<td style="text-align: right;">0.4052391</td>
+<td style="text-align: right;">-8.0311515</td>
+<td style="text-align: right;">-6.7477395</td>
+<td style="text-align: right;">1.001540</td>
+<td style="text-align: right;">1092.597</td>
+<td style="text-align: right;">1389.414</td>
 </tr>
 </tbody>
 </table>
@@ -2208,8 +2208,8 @@ p(\boldsymbol{\beta}_k \mid \mathbf{Y}, \mathbf{X}, n)&amp;\propto
 <span id="cb56-41"><a href="#cb56-41" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Preparando el código de <code>STAN</code></p>
-<div class="cell" data-hash="2Modelos-Lineal-y-Mixto_cache/html/unnamed-chunk-54_76c8a87c559fb8d393629150eb31c0ae">
-<div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a>fitMultinomial <span class="ot">&lt;-</span> <span class="fu">cmdstan_model</span>(<span class="at">stan_file =</span> <span class="st">"Data/modelosStan/ModeloMultinomial.stan"</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell" data-hash="2Modelos-Lineal-y-Mixto_cache/html/unnamed-chunk-54_fafc73844567392609df7baf7a8ddb1b">
+<div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a>fitMultinomial <span class="ot">&lt;-</span> <span class="fu">cmdstan_model</span>(<span class="at">stan_file =</span> <span class="st">"../Data/modelosStan/ModeloMultinomial.stan"</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Organizando datos para <code>STAN</code></p>
 <div class="cell" data-hash="2Modelos-Lineal-y-Mixto_cache/html/unnamed-chunk-55_6f39377305446d7e1369e04d5031b1c9">
@@ -2353,14 +2353,14 @@ p(\boldsymbol{\beta}_k \mid \mathbf{Y}, \mathbf{X}, n)&amp;\propto
 <div class="cell-output cell-output-stdout">
 <pre><code>Running MCMC with 4 parallel chains...
 
-Chain 4 finished in 39.7 seconds.
-Chain 1 finished in 40.7 seconds.
-Chain 2 finished in 41.1 seconds.
-Chain 3 finished in 41.3 seconds.
+Chain 2 finished in 20.5 seconds.
+Chain 3 finished in 20.7 seconds.
+Chain 4 finished in 20.7 seconds.
+Chain 1 finished in 21.4 seconds.
 
 All 4 chains finished successfully.
-Mean chain execution time: 40.7 seconds.
-Total execution time: 41.8 seconds.</code></pre>
+Mean chain execution time: 20.8 seconds.
+Total execution time: 21.5 seconds.</code></pre>
 </div>
 </div>
 <p>La estimación del parámetro <span class="math inline">\(B\)</span> es:</p>
@@ -2397,123 +2397,123 @@ Total execution time: 41.8 seconds.</code></pre>
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">beta[1,1]</td>
-<td style="text-align: right;">-2.7548190</td>
-<td style="text-align: right;">-2.7570650</td>
-<td style="text-align: right;">0.1581888</td>
-<td style="text-align: right;">0.1585863</td>
-<td style="text-align: right;">-3.0090635</td>
-<td style="text-align: right;">-2.4903475</td>
-<td style="text-align: right;">1.001342</td>
-<td style="text-align: right;">2063.169</td>
-<td style="text-align: right;">2348.714</td>
+<td style="text-align: right;">-2.7631160</td>
+<td style="text-align: right;">-2.7651550</td>
+<td style="text-align: right;">0.1561829</td>
+<td style="text-align: right;">0.1538865</td>
+<td style="text-align: right;">-3.0257915</td>
+<td style="text-align: right;">-2.5038660</td>
+<td style="text-align: right;">1.003299</td>
+<td style="text-align: right;">1728.285</td>
+<td style="text-align: right;">1836.273</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">beta[2,1]</td>
-<td style="text-align: right;">-0.3197407</td>
-<td style="text-align: right;">-0.3191035</td>
-<td style="text-align: right;">0.0712883</td>
-<td style="text-align: right;">0.0715303</td>
-<td style="text-align: right;">-0.4369039</td>
-<td style="text-align: right;">-0.2043757</td>
-<td style="text-align: right;">1.001029</td>
-<td style="text-align: right;">2255.833</td>
-<td style="text-align: right;">2511.367</td>
+<td style="text-align: right;">-0.3217239</td>
+<td style="text-align: right;">-0.3223580</td>
+<td style="text-align: right;">0.0724355</td>
+<td style="text-align: right;">0.0745822</td>
+<td style="text-align: right;">-0.4386742</td>
+<td style="text-align: right;">-0.2019735</td>
+<td style="text-align: right;">1.003412</td>
+<td style="text-align: right;">1818.229</td>
+<td style="text-align: right;">2168.713</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">beta[1,2]</td>
-<td style="text-align: right;">8.3531416</td>
-<td style="text-align: right;">8.3372550</td>
-<td style="text-align: right;">2.5139929</td>
-<td style="text-align: right;">2.5554019</td>
-<td style="text-align: right;">4.0969010</td>
-<td style="text-align: right;">12.3081300</td>
-<td style="text-align: right;">1.000689</td>
-<td style="text-align: right;">2250.755</td>
-<td style="text-align: right;">2408.096</td>
+<td style="text-align: right;">8.4814945</td>
+<td style="text-align: right;">8.4759550</td>
+<td style="text-align: right;">2.4520060</td>
+<td style="text-align: right;">2.4365197</td>
+<td style="text-align: right;">4.3680355</td>
+<td style="text-align: right;">12.5462950</td>
+<td style="text-align: right;">1.004375</td>
+<td style="text-align: right;">2133.414</td>
+<td style="text-align: right;">1748.726</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">beta[2,2]</td>
-<td style="text-align: right;">1.4862313</td>
-<td style="text-align: right;">1.4715950</td>
-<td style="text-align: right;">1.1304306</td>
-<td style="text-align: right;">1.1286737</td>
-<td style="text-align: right;">-0.3801239</td>
-<td style="text-align: right;">3.3194240</td>
-<td style="text-align: right;">1.000674</td>
-<td style="text-align: right;">2468.182</td>
-<td style="text-align: right;">2513.451</td>
+<td style="text-align: right;">1.5071402</td>
+<td style="text-align: right;">1.5355950</td>
+<td style="text-align: right;">1.1434878</td>
+<td style="text-align: right;">1.1468875</td>
+<td style="text-align: right;">-0.3618738</td>
+<td style="text-align: right;">3.3667055</td>
+<td style="text-align: right;">1.002910</td>
+<td style="text-align: right;">1962.056</td>
+<td style="text-align: right;">2231.404</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">beta[1,3]</td>
-<td style="text-align: right;">0.7731497</td>
-<td style="text-align: right;">0.7723850</td>
-<td style="text-align: right;">0.1278339</td>
-<td style="text-align: right;">0.1295896</td>
-<td style="text-align: right;">0.5665250</td>
-<td style="text-align: right;">0.9891173</td>
-<td style="text-align: right;">1.000522</td>
-<td style="text-align: right;">1983.971</td>
-<td style="text-align: right;">2262.735</td>
+<td style="text-align: right;">0.7696227</td>
+<td style="text-align: right;">0.7674775</td>
+<td style="text-align: right;">0.1281324</td>
+<td style="text-align: right;">0.1281975</td>
+<td style="text-align: right;">0.5616610</td>
+<td style="text-align: right;">0.9850567</td>
+<td style="text-align: right;">1.001082</td>
+<td style="text-align: right;">1935.714</td>
+<td style="text-align: right;">2491.877</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">beta[2,3]</td>
-<td style="text-align: right;">0.1860937</td>
-<td style="text-align: right;">0.1844565</td>
-<td style="text-align: right;">0.0608281</td>
-<td style="text-align: right;">0.0593603</td>
-<td style="text-align: right;">0.0867226</td>
-<td style="text-align: right;">0.2873273</td>
-<td style="text-align: right;">1.001872</td>
-<td style="text-align: right;">2033.488</td>
-<td style="text-align: right;">2249.490</td>
+<td style="text-align: right;">0.1847624</td>
+<td style="text-align: right;">0.1847795</td>
+<td style="text-align: right;">0.0621539</td>
+<td style="text-align: right;">0.0617154</td>
+<td style="text-align: right;">0.0829161</td>
+<td style="text-align: right;">0.2856263</td>
+<td style="text-align: right;">1.001585</td>
+<td style="text-align: right;">2039.268</td>
+<td style="text-align: right;">2344.241</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">beta[1,4]</td>
-<td style="text-align: right;">-0.0163800</td>
-<td style="text-align: right;">-0.0162605</td>
-<td style="text-align: right;">0.0160324</td>
-<td style="text-align: right;">0.0158411</td>
-<td style="text-align: right;">-0.0430605</td>
-<td style="text-align: right;">0.0094141</td>
-<td style="text-align: right;">1.000517</td>
-<td style="text-align: right;">1924.830</td>
-<td style="text-align: right;">1994.199</td>
+<td style="text-align: right;">-0.0159379</td>
+<td style="text-align: right;">-0.0157428</td>
+<td style="text-align: right;">0.0161485</td>
+<td style="text-align: right;">0.0161589</td>
+<td style="text-align: right;">-0.0425290</td>
+<td style="text-align: right;">0.0106129</td>
+<td style="text-align: right;">1.000824</td>
+<td style="text-align: right;">1903.619</td>
+<td style="text-align: right;">2486.081</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">beta[2,4]</td>
-<td style="text-align: right;">-0.0100763</td>
-<td style="text-align: right;">-0.0099994</td>
-<td style="text-align: right;">0.0071480</td>
-<td style="text-align: right;">0.0071767</td>
-<td style="text-align: right;">-0.0220565</td>
-<td style="text-align: right;">0.0014781</td>
-<td style="text-align: right;">1.002754</td>
-<td style="text-align: right;">2170.374</td>
-<td style="text-align: right;">2217.956</td>
+<td style="text-align: right;">-0.0097694</td>
+<td style="text-align: right;">-0.0099567</td>
+<td style="text-align: right;">0.0072523</td>
+<td style="text-align: right;">0.0071187</td>
+<td style="text-align: right;">-0.0214356</td>
+<td style="text-align: right;">0.0025633</td>
+<td style="text-align: right;">1.001157</td>
+<td style="text-align: right;">1955.521</td>
+<td style="text-align: right;">2089.158</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">beta[1,5]</td>
-<td style="text-align: right;">-1.6973711</td>
-<td style="text-align: right;">-1.6968000</td>
-<td style="text-align: right;">0.2971306</td>
-<td style="text-align: right;">0.2949336</td>
-<td style="text-align: right;">-2.1930070</td>
-<td style="text-align: right;">-1.2130425</td>
-<td style="text-align: right;">1.001113</td>
-<td style="text-align: right;">1732.485</td>
-<td style="text-align: right;">2189.819</td>
+<td style="text-align: right;">-1.6925855</td>
+<td style="text-align: right;">-1.6960200</td>
+<td style="text-align: right;">0.2988801</td>
+<td style="text-align: right;">0.3029248</td>
+<td style="text-align: right;">-2.1781565</td>
+<td style="text-align: right;">-1.2127295</td>
+<td style="text-align: right;">1.000928</td>
+<td style="text-align: right;">2014.424</td>
+<td style="text-align: right;">2307.255</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">beta[2,5]</td>
-<td style="text-align: right;">-1.1388786</td>
-<td style="text-align: right;">-1.1357700</td>
-<td style="text-align: right;">0.1375825</td>
-<td style="text-align: right;">0.1358877</td>
-<td style="text-align: right;">-1.3699755</td>
-<td style="text-align: right;">-0.9145632</td>
-<td style="text-align: right;">1.002568</td>
-<td style="text-align: right;">2004.635</td>
-<td style="text-align: right;">2201.493</td>
+<td style="text-align: right;">-1.1352687</td>
+<td style="text-align: right;">-1.1372500</td>
+<td style="text-align: right;">0.1354035</td>
+<td style="text-align: right;">0.1345978</td>
+<td style="text-align: right;">-1.3593740</td>
+<td style="text-align: right;">-0.9131014</td>
+<td style="text-align: right;">1.001261</td>
+<td style="text-align: right;">1660.067</td>
+<td style="text-align: right;">1900.028</td>
 </tr>
 </tbody>
 </table>
@@ -2786,8 +2786,8 @@ y^{(2)}_{ij} &amp;= \gamma_0 + \gamma_1 U_{j} + v_{ij}
 <span id="cb69-35"><a href="#cb69-35" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Preparando el código de <code>STAN</code></p>
-<div class="cell" data-hash="2Modelos-Lineal-y-Mixto_cache/html/unnamed-chunk-66_0adf811f9f29c4923cfe809e3dd6f338">
-<div class="sourceCode cell-code" id="cb70"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb70-1"><a href="#cb70-1" aria-hidden="true" tabindex="-1"></a>fitMultinivel2 <span class="ot">&lt;-</span> <span class="fu">cmdstan_model</span>(<span class="at">stan_file =</span> <span class="st">"Data/modelosStan/Multinivel_Intercepto2.stan"</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell" data-hash="2Modelos-Lineal-y-Mixto_cache/html/unnamed-chunk-66_5b369d3a380099caa8e6e1d1d4f29f08">
+<div class="sourceCode cell-code" id="cb70"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb70-1"><a href="#cb70-1" aria-hidden="true" tabindex="-1"></a>fitMultinivel2 <span class="ot">&lt;-</span> <span class="fu">cmdstan_model</span>(<span class="at">stan_file =</span> <span class="st">"../Data/modelosStan/Multinivel_Intercepto2.stan"</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Organizando datos para <code>STAN</code>.</p>
 <p>Los efectos fijos los incluimos con <span class="math inline">\(X\)</span>:</p>
@@ -3120,14 +3120,14 @@ y^{(2)}_{ij} &amp;= \gamma_0 + \gamma_1 U_{j} + v_{ij}
 <div class="cell-output cell-output-stdout">
 <pre><code>Running MCMC with 4 parallel chains...
 
-Chain 1 finished in 100.9 seconds.
-Chain 2 finished in 101.1 seconds.
-Chain 3 finished in 103.0 seconds.
-Chain 4 finished in 103.5 seconds.
+Chain 1 finished in 40.7 seconds.
+Chain 2 finished in 41.9 seconds.
+Chain 3 finished in 44.2 seconds.
+Chain 4 finished in 54.2 seconds.
 
 All 4 chains finished successfully.
-Mean chain execution time: 102.1 seconds.
-Total execution time: 104.0 seconds.</code></pre>
+Mean chain execution time: 45.3 seconds.
+Total execution time: 54.5 seconds.</code></pre>
 </div>
 </div>
 <p>La estimación de los parámetros:</p>
@@ -3149,73 +3149,73 @@ Total execution time: 104.0 seconds.</code></pre>
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">beta[1]</td>
-<td style="text-align: right;">4758.028</td>
-<td style="text-align: right;">873.829</td>
-<td style="text-align: right;">3276.174</td>
-<td style="text-align: right;">6190.498</td>
+<td style="text-align: right;">4757.951</td>
+<td style="text-align: right;">865.223</td>
+<td style="text-align: right;">3327.268</td>
+<td style="text-align: right;">6188.065</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">beta[2]</td>
-<td style="text-align: right;">-1003.746</td>
-<td style="text-align: right;">598.791</td>
-<td style="text-align: right;">-1969.149</td>
-<td style="text-align: right;">16.147</td>
+<td style="text-align: right;">-1011.359</td>
+<td style="text-align: right;">598.936</td>
+<td style="text-align: right;">-1998.459</td>
+<td style="text-align: right;">-4.317</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">beta[3]</td>
-<td style="text-align: right;">-3350.668</td>
-<td style="text-align: right;">679.774</td>
-<td style="text-align: right;">-4473.933</td>
-<td style="text-align: right;">-2243.524</td>
+<td style="text-align: right;">-3356.605</td>
+<td style="text-align: right;">675.900</td>
+<td style="text-align: right;">-4461.036</td>
+<td style="text-align: right;">-2260.877</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">beta[4]</td>
-<td style="text-align: right;">488.688</td>
-<td style="text-align: right;">668.963</td>
-<td style="text-align: right;">-627.346</td>
-<td style="text-align: right;">1572.793</td>
+<td style="text-align: right;">482.623</td>
+<td style="text-align: right;">670.953</td>
+<td style="text-align: right;">-618.252</td>
+<td style="text-align: right;">1586.448</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">beta[5]</td>
-<td style="text-align: right;">11036.198</td>
-<td style="text-align: right;">713.035</td>
-<td style="text-align: right;">9841.500</td>
-<td style="text-align: right;">12198.615</td>
+<td style="text-align: right;">11045.480</td>
+<td style="text-align: right;">721.350</td>
+<td style="text-align: right;">9836.093</td>
+<td style="text-align: right;">12210.880</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">beta[6]</td>
-<td style="text-align: right;">-84.207</td>
-<td style="text-align: right;">669.291</td>
-<td style="text-align: right;">-1153.143</td>
-<td style="text-align: right;">1042.364</td>
+<td style="text-align: right;">-93.056</td>
+<td style="text-align: right;">661.053</td>
+<td style="text-align: right;">-1174.324</td>
+<td style="text-align: right;">1004.724</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">beta[7]</td>
-<td style="text-align: right;">4075.152</td>
-<td style="text-align: right;">685.426</td>
-<td style="text-align: right;">2945.078</td>
-<td style="text-align: right;">5176.853</td>
+<td style="text-align: right;">4070.813</td>
+<td style="text-align: right;">688.845</td>
+<td style="text-align: right;">2924.688</td>
+<td style="text-align: right;">5190.852</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">beta[8]</td>
-<td style="text-align: right;">6633.553</td>
-<td style="text-align: right;">685.601</td>
-<td style="text-align: right;">5516.436</td>
-<td style="text-align: right;">7764.469</td>
+<td style="text-align: right;">6625.561</td>
+<td style="text-align: right;">693.948</td>
+<td style="text-align: right;">5487.316</td>
+<td style="text-align: right;">7798.959</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">beta[9]</td>
-<td style="text-align: right;">254.635</td>
-<td style="text-align: right;">1030.399</td>
-<td style="text-align: right;">-1409.097</td>
-<td style="text-align: right;">1914.782</td>
+<td style="text-align: right;">253.699</td>
+<td style="text-align: right;">1027.944</td>
+<td style="text-align: right;">-1417.064</td>
+<td style="text-align: right;">1949.962</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">beta[10]</td>
-<td style="text-align: right;">-0.283</td>
-<td style="text-align: right;">0.067</td>
-<td style="text-align: right;">-0.393</td>
-<td style="text-align: right;">-0.174</td>
+<td style="text-align: right;">-0.282</td>
+<td style="text-align: right;">0.068</td>
+<td style="text-align: right;">-0.394</td>
+<td style="text-align: right;">-0.171</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">beta[11]</td>
@@ -3228,7 +3228,7 @@ Total execution time: 104.0 seconds.</code></pre>
 <td style="text-align: left;">beta[12]</td>
 <td style="text-align: right;">1.123</td>
 <td style="text-align: right;">0.139</td>
-<td style="text-align: right;">0.896</td>
+<td style="text-align: right;">0.893</td>
 <td style="text-align: right;">1.353</td>
 </tr>
 </tbody>
@@ -3253,136 +3253,136 @@ Total execution time: 104.0 seconds.</code></pre>
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">u[1]</td>
-<td style="text-align: right;">4738.907</td>
-<td style="text-align: right;">863.162</td>
-<td style="text-align: right;">3318.067</td>
-<td style="text-align: right;">6198.304</td>
+<td style="text-align: right;">4743.765</td>
+<td style="text-align: right;">849.638</td>
+<td style="text-align: right;">3336.326</td>
+<td style="text-align: right;">6154.479</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">u[2]</td>
-<td style="text-align: right;">1821.961</td>
-<td style="text-align: right;">855.752</td>
-<td style="text-align: right;">422.408</td>
-<td style="text-align: right;">3229.277</td>
+<td style="text-align: right;">1822.128</td>
+<td style="text-align: right;">845.947</td>
+<td style="text-align: right;">428.831</td>
+<td style="text-align: right;">3201.622</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">u[3]</td>
-<td style="text-align: right;">-875.507</td>
-<td style="text-align: right;">964.226</td>
-<td style="text-align: right;">-2476.581</td>
-<td style="text-align: right;">669.558</td>
+<td style="text-align: right;">-865.351</td>
+<td style="text-align: right;">923.984</td>
+<td style="text-align: right;">-2379.506</td>
+<td style="text-align: right;">634.710</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">u[4]</td>
-<td style="text-align: right;">-921.559</td>
-<td style="text-align: right;">839.953</td>
-<td style="text-align: right;">-2347.954</td>
-<td style="text-align: right;">443.622</td>
+<td style="text-align: right;">-914.454</td>
+<td style="text-align: right;">844.314</td>
+<td style="text-align: right;">-2313.934</td>
+<td style="text-align: right;">449.580</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">u[5]</td>
-<td style="text-align: right;">-1435.895</td>
-<td style="text-align: right;">864.709</td>
-<td style="text-align: right;">-2840.367</td>
-<td style="text-align: right;">-12.519</td>
+<td style="text-align: right;">-1436.884</td>
+<td style="text-align: right;">854.882</td>
+<td style="text-align: right;">-2818.094</td>
+<td style="text-align: right;">-29.131</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">u[6]</td>
-<td style="text-align: right;">760.138</td>
-<td style="text-align: right;">842.310</td>
-<td style="text-align: right;">-612.445</td>
-<td style="text-align: right;">2150.359</td>
+<td style="text-align: right;">759.079</td>
+<td style="text-align: right;">865.947</td>
+<td style="text-align: right;">-676.909</td>
+<td style="text-align: right;">2184.146</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">u[7]</td>
-<td style="text-align: right;">2153.119</td>
-<td style="text-align: right;">879.601</td>
-<td style="text-align: right;">686.985</td>
-<td style="text-align: right;">3607.964</td>
+<td style="text-align: right;">2142.317</td>
+<td style="text-align: right;">877.676</td>
+<td style="text-align: right;">687.511</td>
+<td style="text-align: right;">3591.937</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">u[8]</td>
-<td style="text-align: right;">299.075</td>
-<td style="text-align: right;">874.163</td>
-<td style="text-align: right;">-1116.332</td>
-<td style="text-align: right;">1724.726</td>
+<td style="text-align: right;">297.623</td>
+<td style="text-align: right;">884.539</td>
+<td style="text-align: right;">-1166.535</td>
+<td style="text-align: right;">1732.676</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">u[9]</td>
-<td style="text-align: right;">478.460</td>
-<td style="text-align: right;">861.558</td>
-<td style="text-align: right;">-941.145</td>
-<td style="text-align: right;">1896.251</td>
+<td style="text-align: right;">474.017</td>
+<td style="text-align: right;">850.432</td>
+<td style="text-align: right;">-926.086</td>
+<td style="text-align: right;">1882.774</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">u[10]</td>
-<td style="text-align: right;">1548.704</td>
-<td style="text-align: right;">874.382</td>
-<td style="text-align: right;">113.097</td>
-<td style="text-align: right;">2976.348</td>
+<td style="text-align: right;">1534.663</td>
+<td style="text-align: right;">860.914</td>
+<td style="text-align: right;">121.770</td>
+<td style="text-align: right;">2952.251</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">u[11]</td>
-<td style="text-align: right;">-140.082</td>
-<td style="text-align: right;">859.942</td>
-<td style="text-align: right;">-1552.567</td>
-<td style="text-align: right;">1282.528</td>
+<td style="text-align: right;">-152.469</td>
+<td style="text-align: right;">849.658</td>
+<td style="text-align: right;">-1529.797</td>
+<td style="text-align: right;">1271.042</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">u[12]</td>
-<td style="text-align: right;">120.653</td>
-<td style="text-align: right;">861.057</td>
-<td style="text-align: right;">-1264.118</td>
-<td style="text-align: right;">1539.732</td>
+<td style="text-align: right;">107.164</td>
+<td style="text-align: right;">876.742</td>
+<td style="text-align: right;">-1311.208</td>
+<td style="text-align: right;">1526.507</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">u[13]</td>
-<td style="text-align: right;">822.611</td>
-<td style="text-align: right;">859.318</td>
-<td style="text-align: right;">-582.877</td>
-<td style="text-align: right;">2251.313</td>
+<td style="text-align: right;">827.542</td>
+<td style="text-align: right;">860.676</td>
+<td style="text-align: right;">-579.375</td>
+<td style="text-align: right;">2278.199</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">u[14]</td>
-<td style="text-align: right;">419.928</td>
-<td style="text-align: right;">849.019</td>
-<td style="text-align: right;">-1027.587</td>
-<td style="text-align: right;">1858.588</td>
+<td style="text-align: right;">411.379</td>
+<td style="text-align: right;">841.227</td>
+<td style="text-align: right;">-987.234</td>
+<td style="text-align: right;">1800.289</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">u[15]</td>
-<td style="text-align: right;">0.716</td>
-<td style="text-align: right;">852.494</td>
-<td style="text-align: right;">-1395.842</td>
-<td style="text-align: right;">1385.656</td>
+<td style="text-align: right;">-1.719</td>
+<td style="text-align: right;">850.938</td>
+<td style="text-align: right;">-1399.342</td>
+<td style="text-align: right;">1440.556</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">u[16]</td>
-<td style="text-align: right;">1229.950</td>
-<td style="text-align: right;">851.598</td>
-<td style="text-align: right;">-194.750</td>
-<td style="text-align: right;">2634.531</td>
+<td style="text-align: right;">1224.930</td>
+<td style="text-align: right;">858.635</td>
+<td style="text-align: right;">-177.225</td>
+<td style="text-align: right;">2633.619</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">u[17]</td>
-<td style="text-align: right;">-1106.849</td>
-<td style="text-align: right;">904.281</td>
-<td style="text-align: right;">-2588.752</td>
-<td style="text-align: right;">357.021</td>
+<td style="text-align: right;">-1093.970</td>
+<td style="text-align: right;">902.407</td>
+<td style="text-align: right;">-2562.016</td>
+<td style="text-align: right;">378.843</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">u[18]</td>
-<td style="text-align: right;">-265.909</td>
-<td style="text-align: right;">889.474</td>
-<td style="text-align: right;">-1730.928</td>
-<td style="text-align: right;">1174.889</td>
+<td style="text-align: right;">-262.454</td>
+<td style="text-align: right;">884.589</td>
+<td style="text-align: right;">-1724.603</td>
+<td style="text-align: right;">1181.566</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">u[19]</td>
-<td style="text-align: right;">-108.045</td>
-<td style="text-align: right;">848.436</td>
-<td style="text-align: right;">-1516.292</td>
-<td style="text-align: right;">1286.924</td>
+<td style="text-align: right;">-112.882</td>
+<td style="text-align: right;">873.485</td>
+<td style="text-align: right;">-1558.558</td>
+<td style="text-align: right;">1323.723</td>
 </tr>
 </tbody>
 </table>
@@ -3406,10 +3406,10 @@ Total execution time: 104.0 seconds.</code></pre>
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">sigma</td>
-<td style="text-align: right;">11931.41</td>
-<td style="text-align: right;">292.949</td>
-<td style="text-align: right;">11464.25</td>
-<td style="text-align: right;">12412.6</td>
+<td style="text-align: right;">11936.98</td>
+<td style="text-align: right;">297.429</td>
+<td style="text-align: right;">11462</td>
+<td style="text-align: right;">12415.41</td>
 </tr>
 </tbody>
 </table>
