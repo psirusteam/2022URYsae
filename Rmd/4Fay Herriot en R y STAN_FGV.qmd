@@ -92,6 +92,24 @@ donde $$
 \end{eqnarray*}
 $$ para un estimador REML y $\mathit{I}$ es la información Fisher
 
+## Transformaciones FGV 
+
+Uno de los insumos más importantes en el modelo de áreas es la 
+varianza del estimador directo, a nivel de dominio, la cual no puede calcularse de ningún modo. En correspondencia, este valor debe estimarse desde los datos recolectados en cada dominio. Sin embargo, 
+en dominios en las que se cuenta con un tamaño de muestra muy pequeño, estas estimaciones no tendrán un buen comportamiento. Por ende, es muy útil utilizar un modelo de **suavizamiento** de las varianzas para 
+eliminar el ruido y la volatilidad de estas estimaciones y extraer la verdadera señal del proceso
+
+Hidiroglou (2019) afirma que $E_{mp}\left(\hat{\theta}^{dir}_d\right)=\boldsymbol{x}_{d}\boldsymbol{\beta}$ y $V_{mp}\left(\hat{\theta}^{dir}_d\right)=\sigma_{u}^2+\tilde{\psi}^2_{d}$, en donde el subíndice  $mp$ hace referencia a la inferencia doble que se debe tener en cuenta en este tipo de ajustes y define la medida de probabilidad conjunta entre el modelo y el diseño de muestreo.  
+
+-   $m$ hace referencia a la medida de probabilidad inducida por el modelamiento y la inclusión de las covariables auxiliares ($\boldsymbol{x}_{d}$).
+
+-   $p$ hacer referencia a la medida de probabilidad inducida por el diseño de muestreo complejo que 
+induce las estimaciones directas. 
+
+Además, $\tilde{\psi}^2_{d} = E_m\left(\tilde{\psi}^2_{d}\right)$ es la varianza suavizada del estimador directo $\hat{\theta}^{dir}_d$.  
+
+
+
 # Estimación de Fay Herriot normal.
 
 -   El estimador directo no es el único insumo del modelo de áreas de Fay-Herriot; también lo es su varianza. El estimador puntual da un indicio de la localización del parámetro, y su varianza presenta el nivel de certeza o confianza sobre esta localización.
@@ -103,8 +121,8 @@ $$ para un estimador REML y $\mathit{I}$ es la información Fisher
 ```{r}
 library(tidyverse)
 library(magrittr)
-tasa_desocupacion <- readRDS("Data/tasa_desocupacion_seccion.rds")
-encuesta <- readRDS("Data/encuestaURY20N_Montevideo.rds") %>% 
+source("0Funciones/0Source_FH.R")
+encuesta <- readRDS("../Data/encuestaURY20N_Montevideo.rds") %>% 
   transmute(
  depto = "MONTEVIDEO",
   mpio = str_pad(
@@ -117,13 +135,13 @@ encuesta <- readRDS("Data/encuestaURY20N_Montevideo.rds") %>%
     pad = "0",
     width = 4
   ),
-  
-  segm = paste0(mpio,segm),
+  upm = paste0(mpio,segm),
+  mpio = str_sub(upm,1,5),
   lp,li,
   pobreza = ifelse(ingcorte<lp,1,0),
   area = case_when(areageo2 == 1 ~ "1", TRUE ~ "0"),
     estrato = paste0(mpio, areageo2),
-    fep = `_fep`
+    wkx = `_fep`
     ) 
 ```
 
@@ -152,8 +170,8 @@ options(survey.lonely.psu = "adjust")
 
 diseno <-
   as_survey_design(
-    ids = 1,
-    weights = fep,
+    ids = upm,
+    weights = wkx,
     strata = estrato,
     nest = TRUE,
     .data = encuesta
@@ -161,7 +179,21 @@ diseno <-
 
 ```
 
-Para la estimación directa de la proporción se emplea la función `survey_mean`, dando como resultado.
+Para la estimación directa de la proporción se emplea la función `direct.supr`, dando como resultado.
+
+```{r}
+directoSegm <- direct.supr(design.base = diseno,
+                             variable = pobreza, 
+                             group = mpio,
+                             upm = upm,
+                             estrato = estrato)
+
+directoSegm %>%
+  group_by(Flag) %>%
+  summarise(n = n()) %>% 
+  arrange(n)
+```
+
 
 ```{r,echo=FALSE}
 Estimacion_dir <- diseno %>% group_by(segm) %>%

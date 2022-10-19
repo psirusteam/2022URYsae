@@ -30,7 +30,7 @@ library(kableExtra)
 
 -  A continuación se describen las dimensiones que conforma el IPM.  
 
-    ![](../Data/images/Dimension IPM.bmp){width="15cm" height="10cm"}
+    ![](imagenes/Dimension IPM.bmp){width="15cm" height="10cm"}
 
 -   El índice requiere la información para cada individuo $j = 1,\cdots,N_d$ en $d = 1, \cdots, D$ dominios, donde $N_d$ denota el tamaño de la población del dominio $d$. El índice para el dominio $d$ se calcula como:
 
