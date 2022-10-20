@@ -20,7 +20,7 @@
 ###                                fpc de UPMS                               ###
 ###--------------------------------------------------------------------------###
 
-direct.supr = function(design.base, variable, group, upm, estrato) {
+direct.supr = function(design.base,variable, group, upm, estrato) {
   
   library(rlang)
   library(tidyverse)
@@ -71,19 +71,14 @@ direct.supr = function(design.base, variable, group, upm, estrato) {
                n, n.eff = n/deff, grados, y, CVl, UPMs) %>%   #, upms_MM) %>%
     mutate(#fpc_upms = UPMs/upms_MM, 
            #fpc_upms = ifelse(is.na(fpc_upms), 0, fpc_upms), 
-           Inclusion_GL = ifelse(grados >= 14, 1, 0), 
+           Inclusion_GL = ifelse(grados >= 3, 1, 0), 
            
            # Inclusion_fpc = ifelse(grados >= 3 & fpc_upms >= 0.3 & fpc_upms != Inf, 1, 0),  
            
-           Exclusion_n = ifelse(n < 50, 1, 0), 
+           Exclusion_n = ifelse(n < 5, 1, 0), 
            Exclusion_DEFF = ifelse(deff < 1, 1, 0), 
-           
-           # Exclusion_CVs = ifelse((CVl > 50 | CV > 90), 1, 0),
-           
-           Exclusion_y = ifelse(y < 15, 1, 0), 
            Exclusion_GL = ifelse(grados <= 2, 1, 0), 
            Exclusion = ifelse((Exclusion_n == 1 | Exclusion_DEFF == 1 | 
-                               Exclusion_y == 1 | #Exclusion_CVs == 1 |
                                Exclusion_GL == 1), 1, 0), # & Inclusion == 0, 1, 0), 
            
            # Inclusion = ifelse((Inclusion_GL == 1 | Inclusion_fpc == 1) & 

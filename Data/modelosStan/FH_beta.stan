@@ -46,13 +46,11 @@ model {
 }
 
 generated quantities {
-  // phi es desconocido 
-  // vector[N2] y_pred;
-  // vector[N2] thetapred;
-  // 
-  // for (i in 1:N2) {
-  //   y_pred[i] = normal_rng(Xs[i] * beta, sigma_v);
-  //   thetapred[i] = inv_logit(y_pred[i]);
-  // }
+  vector[N2] y_pred;
+  vector[N2] thetapred;
+  for (i in 1:N2) {
+    y_pred[i] = normal_rng(Xs[i] * beta, sigma_v);
+    thetapred[i] = inv_logit(y_pred[i]);
+  }
 }
   

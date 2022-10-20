@@ -1,0 +1,164 @@
+---
+title: "Fay Herriot en R y STAN"
+subtitle: "CEPAL - División de Estadísticas Sociales"
+author: "Andrés Gutiérrez - Stalyn Guerrero"
+format: html
+project:
+  type: website
+  output-dir: docs
+---
+
+```{r setup, include=FALSE, message=FALSE, error=FALSE, warning=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, cache = TRUE)
+library(printr)
+library(kableExtra)
+```
+
+```{r}
+library(tidyverse)
+library(magrittr)
+
+
+
+base_FH <- readRDS("../Data/base_FH_2019.rds") %>% 
+  select(segm,pobreza, n_eff_FGV) %>% 
+  mutate(segm = str_pad(segm, width = 7, pad = "0") )
+
+statelevel_predictors_df <- readRDS("../Data/statelevel_predictors_df.rds") 
+
+base_FH <- full_join(base_FH,statelevel_predictors_df, by = "segm" )
+
+
+
+```
+
+
+
+```{r, echo=FALSE}
+kable(base_FH %>% head(10),
+      format = "html", digits =  4,
+      caption = "Encuesta") %>% 
+    kable_classic()
+```
+
+
+
+```{r}
+
+names_cov <-
+   statelevel_predictors_df %>% 
+  data.frame() %>% select_if(is.numeric) %>% names()
+
+## Estimaciones directas
+data_dir <- base_FH %>%
+  filter(!is.na(pobreza),segm != "0111097")
+## No observados
+data_syn <-
+  base_FH %>% anti_join(data_dir %>% select(segm)) 
+
+
+summary(data_syn)
+dim(data_syn)
+#### Efectos fijos 
+## Dominios observados
+Xdat <- data_dir[,names_cov]
+  
+dim(Xdat)
+dim(data_dir)
+## Dominios no observados
+Xs <- data_syn[,names_cov]
+
+summary(Xs)
+dim(Xs)
+dim(data_syn)
+
+n_effec = round(data_dir$n_eff_FGV)
+length(n_effec)
+
+sample_data <- list(
+  N1 = nrow(Xdat),   # Observados.
+  N2 = nrow(Xs),   # NO Observados.
+  p  = ncol(Xdat),       # Número de regresores.
+  X  = as.matrix(Xdat),  # Covariables Observados.
+  Xs = as.matrix(Xs),    # Covariables NO Observados
+  phi = n_effec -1 ,
+  y  = data_dir$pobreza          # Estimación directa. 
+)
+
+library(cmdstanr)
+fit_FH_beta <- cmdstan_model("../Data/modelosStan/FH_beta.stan")
+
+model_FH_beta <-
+  fit_FH_beta$sample(
+    data = sample_data,
+    chains = 4,
+    parallel_chains = 4,
+    iter_warmup = 10,
+    iter_sampling = 10,
+    seed = 1234,
+    refresh = 200
+  )
+
+# Predicción de la estimación (Observados) 
+
+y_pred_B <- model_FH_beta$draws(variables = "theta", format = "matrix")
+rowsrandom <- sample(nrow(y_pred_B), 100)
+y_pred2 <- y_pred_B[rowsrandom, ]
+
+# Comparando predicción con las cadenas
+library(bayesplot)
+library(patchwork)
+ppc_dens_overlay(y = as.numeric(data_dir$pobreza), y_pred2) 
+
+(mcmc_dens_chains(model_FH_beta$draws("sigma_v")) +
+    mcmc_areas(model_FH_beta$draws("sigma_v")))/ 
+  mcmc_trace(model_FH_beta$draws("sigma_v"))
+
+theta_FH <- model_FH_beta$summary(variables =  "theta")
+data_dir %<>% mutate(pred_beta = theta_FH$mean)
+
+theta_FH_pred <- model_FH_beta$summary(variables =  "thetapred")
+
+data_syn <- data_syn %>% 
+  mutate(pred_beta = theta_FH_pred$mean)
+
+
+```
+
+
+
+```{r}
+library(sp)
+library(sf)
+library(tmap)
+
+data_map <- rbind(data_dir, data_syn) %>% 
+  select(segm, pred_beta) 
+
+
+## Leer Shape del pais
+ShapeSAE <- read_sf("../Shape/ine_seg_11.shp")%>% 
+  filter(nombdepto == "MONTEVIDEO") %>% 
+  mutate(mpio = str_pad(codsec,width = 4,pad = "0"),
+         segm = str_pad(codseg,width = 7,pad = "0"))
+
+
+mapa <- tm_shape(ShapeSAE %>%
+                           left_join(data_map,  by = "segm"))
+
+brks_lp <- c(0,0.025,0.05, 0.1, 0.15, 0.2,0.4, 1)
+tmap_options(check.and.fix = TRUE)
+Mapa_lp <-
+  mapa + tm_polygons(
+    c("pred_beta"),
+    breaks = brks_lp,
+    title = "Mapa de pobreza",
+    palette = "YlOrRd",
+    colorNA = "white"
+  ) + tm_layout(asp = 0)
+
+Mapa_lp
+
+```
+
+

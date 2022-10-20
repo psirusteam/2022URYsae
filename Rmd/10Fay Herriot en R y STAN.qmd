@@ -103,32 +103,13 @@ $$ para un estimador REML y $\mathit{I}$ es la información Fisher
 ```{r}
 library(tidyverse)
 library(magrittr)
-tasa_desocupacion <- readRDS("../Data/tasa_desocupacion_Montevideo.rds")
-encuesta <- readRDS("../Data/encuestaURY20N_Montevideo.rds") %>% 
-  transmute(
- depto = "MONTEVIDEO",
-  mpio = str_pad(
-    string = secc,
-    pad = "1",
-    width = 3
-  ),
-  mpio = str_pad(
-    string = mpio,
-    pad = "0",
-    width = 4
-  ),
-  
-  segm = paste0(mpio,segm),
-  lp,li,
-  pobreza = ifelse(ingcorte<lp,1,0),
-  estrato = paste0(mpio, areageo2),
-    fep = `_fep`
-    )
+encuesta <- readRDS("../Data/encuestaURY19N_Montevideo.rds")
+
 ```
 
 -   *depto*: Corresponde al código asignado a la segunda división administrativa del país.
 
--   *mpio*: Corresponde al código asignado a la tercera división administrativa del país.
+-   *segm*: Corresponde al código asignado a la cuarta división administrativa del país.
 
 -   *lp* y *li* lineas de pobreza y pobreza extrema definidas por CEPAL. 
 
