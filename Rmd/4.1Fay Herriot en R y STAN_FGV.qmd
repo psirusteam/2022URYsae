@@ -14,84 +14,6 @@ library(printr)
 library(kableExtra)
 ```
 
-# Modelo Fay-Herriot
-
--   El modelo FH enlaza indicadores de las áreas $\delta_d$, $d = 1, \cdots , D$, asumiendo que varían respeto a un vector de $p$ covariables, $\boldsymbol{x}_d$ , de forma constante.
-
--   Viene dado por
-
-$$
-\delta_d = \boldsymbol{x^T}_d\boldsymbol{\beta} + u_d ,\ \ \ \ \  d = 1, \cdots , D
-$$ - ud es el término de error, o el efecto aleatorio, diferente para cada área dado por
-
-$$
-\begin{eqnarray*}
-u_{d} & \stackrel{iid}{\sim} & \left(0,\sigma_{u}^{2}\right)
-\end{eqnarray*}
-$$
-
--   Sin embargo, los verdaderos valores de los indicadores $\delta_d$ no son observables. - Entonces, usamos el estimador directo $\hat{\delta}^{DIR}_d$ para $\delta_d$ , lo que conlleva un error debido al muestro.
-
--   $\hat{\delta}^{DIR}_d$ todavía se considera insesgado bajo el diseño muestral.
-
--   Podemos definir, entonces, $$
-    \hat{\delta}^{DIR}_d = \delta_d + e_d, \ \ \ \ \ \ d = 1, \cdots , D 
-    $$ donde $e_d$ es el error debido al muestreo, $d_{d} \stackrel{ind}{\sim} \left(0,\psi\right)$
-
--   Dichas varianzas $\psi_d = var_{\pi}\left(\hat{\delta}^{DIR}_d\mid\delta_d\right)$, $d = 1,\cdots,D$ se estiman con los microdatos de la encuesta.
-
--   Por tanto, el modelo se hace, $$
-    \hat{\delta}^{DIR}_d = \boldsymbol{x^T}_d\boldsymbol{\beta} + u_d + e_d, \ \ \ \ \ \ d = 1, \cdots , D
-    $$
-
--   El BLUP (best linear unbiased predictor) bajo el modelo FH de $\delta_d$ viene dado por
-
-$$
-    \begin{eqnarray*}
-    \tilde{\delta}_{d}^{FH} & = & \boldsymbol{x_d}^{T}\tilde{\boldsymbol{\beta}}+\tilde{u}_{d}
-    \end{eqnarray*}
-$$
-
--   Si sustituimos $\tilde{u}_d = \gamma_d\left(\hat{\delta}^{DIR}_d - \boldsymbol{x_d}^{T}\tilde{\boldsymbol{\beta}} \right)$ en el BLUP bajo el modelo FH, obtenemos $$
-    \begin{eqnarray*}
-    \tilde{\delta}_{d}^{FH} & = & \gamma_d\hat{\delta}^{DIR}_{d}+(1-\gamma_d)\boldsymbol{x_d}^{T}\tilde{\boldsymbol{\beta}}
-    \end{eqnarray*}
-    $$ siendo $\gamma_d=\frac{\sigma^2_u}{\sigma^2_u + \psi_d}$.
-
--   Habitualmente, no sabemos el verdadero valor de $\sigma^2_u$ efectos aleatorios $u_d$.
-
--   Sea $\hat{\sigma}^2_u$ un estimador consistente para $\sigma^2_u$. Entonces, obtenemos el BLUP empírico (empirical BLUP, EBLUP) de $\delta_d$ ,
-
-$$
-    \begin{eqnarray*}
-    \tilde{\delta}_{d}^{FH} & = & \hat{\gamma_d}\hat{\delta}^{DIR}_{d}+(1-\hat{\gamma_d})\boldsymbol{x_d}^{T}\hat{\boldsymbol{\beta}}
-    \end{eqnarray*}
-$$
-
-donde $\hat{\gamma_d}=\frac{\hat{\sigma}^2_u}{\hat{\sigma}^2_u + \psi_d}$.
-
--   Un estimador insesgado de segundo orden del ECM (llamado el estimador Prasad-Rao) viene dado por
-
-$$
-    \begin{eqnarray*}
-    mse_{PR}\left(\tilde{\delta}_{d}^{FH}\right) & = & g_{1d}\left(\hat{\sigma}_{u}^{2}\right)+g_{2d}\left(\hat{\sigma}_{u}^{2}\right)+2g_{3d}\left(\hat{\sigma}_{u}^{2}\right)
-    \end{eqnarray*}
-     con 
-$$ con
-
-$$
-\begin{eqnarray*} g_{1d}\left(\hat{\sigma}_{u}^{2}\right) & = & \gamma_{d}\psi_{d}\\
-g_{2d}\left(\hat{\sigma}_{u}^{2}\right) & = & \left(1-\gamma_{d}\right)^{2}\boldsymbol{x}^{T}\left(\sum_{d=1}^{D}\left(\sigma_{u}^{2}+\psi_{d}\right)\boldsymbol{x}_{d}\boldsymbol{x}_{d}^{T}\right)^{-1}\boldsymbol{x}_{d},\\
-g_{3d}\left(\hat{\sigma}_{u}^{2}\right) & = & \left(1-\gamma_{d}\right)^{2}\left(\sigma_{u}^{2}+\psi_{d}\right)^{-1}\overline{var}\left(\hat{\sigma}_{u}^{2}\right),
-\end{eqnarray*} 
-$$
-
-donde $$
-\begin{eqnarray*}
-\overline{var}\left(\hat{\sigma}_{u}^{2}\right) & = & \mathit{I}^{-1 }\left(\sigma_{u}^{2}\right)=2\left\{ \sum_{d=1}^{D}\left(\sigma_{u}^{2}+\psi_{d}\right)^{-2}\right\} ^{-1}
-\end{eqnarray*}
-$$ para un estimador REML y $\mathit{I}$ es la información Fisher
-
 ## Transformaciones FGV 
 
 Uno de los insumos más importantes en el modelo de áreas es la 
@@ -108,13 +30,6 @@ induce las estimaciones directas.
 
 Además, $\tilde{\psi}^2_{d} = E_m\left(\tilde{\psi}^2_{d}\right)$ es la varianza suavizada del estimador directo $\hat{\theta}^{dir}_d$.  
 
-
-
-# Estimación de Fay Herriot normal.
-
--   El estimador directo no es el único insumo del modelo de áreas de Fay-Herriot; también lo es su varianza. El estimador puntual da un indicio de la localización del parámetro, y su varianza presenta el nivel de certeza o confianza sobre esta localización.
-
--   Al tratar con cifras provenientes de procesamientos con encuestas de hogares, es indispensable siempre tener en cuenta que el sustento inferencial recae en la estrategia de muestreo, definida como la dupla compuesta por el diseño de muestreo y el estimador escogido.
 
 ## Datos de la encuesta
 
@@ -178,13 +93,9 @@ directoSegm %>%
   arrange(n)
 ```
 
-
+# Transformación Arcoseno, calculo del DEFF y varianza zd 
 
 ```{r}
-##############################################################
-# Transformación Arcoseno, calculo del DEFF y varianza zd    #
-##############################################################
-
 base_sae <- directoSegm %>% filter(Flag != "Excluir") %>%
   transmute(
     segm = segm,
@@ -203,26 +114,16 @@ base_sae1 <- base_sae [base_sae$vardir>0,]
 
 
 
-
-
-
-
-
-
 ```{r}
-
-################################################################################
-#-------- FGV para las varianzas directas de las comunas seleccionadas --------#
-################################################################################
-
-# Vitacura con varianza 0 #
-
 baseFGV <-  base_sae1 %>% 
   select(segm, pobreza, nd, vardir) %>%
   mutate(ln_sigma2 = log(vardir))
 
-###---------------------------- Análisis gráfico ----------------------------###
+```
 
+# Análisis gráfico
+
+```{r}
 theme_set(theme_bw())
 
 # pobreza vs Ln_sigma2 #
@@ -255,45 +156,58 @@ p4 <- ggplot(baseFGV,
   geom_smooth(method = "loess") + 
   xlab("Raiz cuadrada de pobreza")
 
-###-------------------------- Gráfico con patchwork -------------------------###
 library(patchwork)
 (p1 | p2) / (p3 | p4)
+```
 
-###------------------------- Modelo para la varianza ------------------------###
+# Modelo para la varianza
 
+```{r}
 FGV1 <- lm(ln_sigma2 ~ 1 + pobreza + 
              nd + I(nd ^ 2) + I(pobreza * nd) +
              I(sqrt(pobreza)) + I(sqrt(nd)) + 
              I(sqrt(pobreza * nd)),
      data = baseFGV)
 summary(FGV1)
+```
 
-###--- Ponderador FGV ---###
+# Ponderador FGV
 
+```{r}
 delta.hat = sum(baseFGV$vardir) / 
   sum(exp(fitted.values(FGV1)))
 delta.hat
-###--- Varianza suavizada ---###
+```
 
+# Varianza suavizada 
+
+
+```{r}
 hat.sigma <- data.frame(segm = baseFGV$segm,
                         hat_var = delta.hat * exp(fitted.values(FGV1)))
 
 baseFGV$ln_sigma2_pred <- hat.sigma$hat_var
+```
 
-###-------------------- Validación del modelo para la FGV -------------------###
+# Validación del modelo para la FGV
 
+```{r}
 par(mfrow = c(2, 2))
 plot(FGV1)
+```
 
-###----- Comparación entre varianza estimada con pronosticada por la FGV ----###
+# Comparación entre varianza estimada con pronosticada por la FGV
 
+```{r}
 ggplot(baseFGV, 
        aes(x = ln_sigma2, y = ln_sigma2_pred)) + 
   geom_point() +
   geom_smooth(method = "loess")
+```
 
-###---------------------------- Varianza suavizada --------------------------###
+# Varianza suavizada
 
+```{r}
 prediccion_ln_0 = predict(FGV1, newdata = base_sae %>%
                             filter(!is.na(pobreza))) 
 base_sae <- base_sae %>% 
@@ -301,12 +215,10 @@ base_sae <- base_sae %>%
 
 base_sae$hat_var[base_sae$vardir == 0 & !is.na(base_sae$vardir)] <-
   delta.hat * exp(prediccion_ln_0)
+```
 
-###--------------------------------------------------------------------------###
-###--- Consolidación de la base para modelo SAE con varianzas suavizadas, ---###
-###-------------- Efecto de diseño y tamaño de muestra efectivo -------------###
-###--------------------------------------------------------------------------###
 
+```{r}
 base_FH <- base_sae %>%
   mutate(
     deff_segm = ifelse(is.nan(deff_segm), 1,
@@ -322,12 +234,11 @@ base_FH <- base_sae %>%
   )
 
 saveRDS(object = base_FH, "../Data/base_FH_2019.rds")
+```
 
-###---------------------------- Análisis gráfico ----------------------------###
+# Análisis gráfico
 
-theme_set(theme_bw())
-#---  Comparación de la varianza directa respecto a la obtenida por la FGV  ---#
-
+```{r}
 ggplot(base_FH %>% filter(!is.na(hat_var)) %>% 
          arrange(nd), aes(x = hat_var, y = vardir)) + 
   geom_point() + 
