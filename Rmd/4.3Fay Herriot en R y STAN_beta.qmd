@@ -1,5 +1,5 @@
 ---
-title: "Fay Herriot en R y STAN"
+title: "Fay Herriot en R y STAN (Estimación de Fay Herriot beta)"
 subtitle: "CEPAL - División de Estadísticas Sociales"
 author: "Andrés Gutiérrez - Stalyn Guerrero"
 format: html
@@ -14,11 +14,41 @@ library(printr)
 library(kableExtra)
 ```
 
+
+Una forma natural de modelar la variable es mediante la distribución beta, dado que su dominio se encuentra en el intervalo
+
+### Modelo bayesiano
+
+El modelo Fay Herriot beta estaría dado por las siguientes expresiones $$
+\begin{eqnarray*}
+Y \mid a,b & \sim & beta(a, b)\\
+a &=& \theta \times \phi\\
+b &=& (1 - \theta) \times \phi\\
+\end{eqnarray*}
+$$ donde
+
+$$
+\begin{eqnarray*}
+\theta &= &\frac{\exp{\left(\mu\right)}}{ 1+ \exp{\left(\mu\right)}}\\ \\   
+\mu &=& \boldsymbol{X\beta} + V 
+\end{eqnarray*}
+$$ con $V \sim N(0 , \sigma_v)$ y $\phi = \frac{n_d}{\widehat{DEFF}_d} -1 = n_{d,efecctivo} -1$
+
+Las distribuciones previas para $\boldsymbol{\beta}$ y $\sigma^2_v$
+
+$$
+\begin{eqnarray*}
+\beta_k &\sim& N(\mu_0, \tau^2_0)\\
+\sigma^2_v &\sim& Inversa-Gamma(\alpha_1,\alpha_2)
+\end{eqnarray*}
+$$
+
+Creando código de `STAN`
+
+
 ```{r}
 library(tidyverse)
 library(magrittr)
-
-
 
 base_FH <- readRDS("../Data/base_FH_2019.rds") %>% 
   select(segm,pobreza, n_eff_FGV) %>% 
@@ -44,7 +74,6 @@ kable(base_FH %>% head(10),
 
 
 ```{r}
-
 names_cov <-
    statelevel_predictors_df %>% 
   data.frame() %>% select_if(is.numeric) %>% names()
@@ -54,27 +83,26 @@ data_dir <- base_FH %>%
   filter(!is.na(pobreza),segm != "0111097")
 ## No observados
 data_syn <-
-  base_FH %>% anti_join(data_dir %>% select(segm)) 
+  base_FH %>% anti_join(data_dir %>% select(segm))
+```
 
+# Efectos fijos 
 
-summary(data_syn)
-dim(data_syn)
-#### Efectos fijos 
+```{r}
 ## Dominios observados
 Xdat <- data_dir[,names_cov]
-  
-dim(Xdat)
-dim(data_dir)
 ## Dominios no observados
 Xs <- data_syn[,names_cov]
+```
 
-summary(Xs)
-dim(Xs)
-dim(data_syn)
 
+```{r}
 n_effec = round(data_dir$n_eff_FGV)
 length(n_effec)
+```
 
+
+```{r}
 sample_data <- list(
   N1 = nrow(Xdat),   # Observados.
   N2 = nrow(Xs),   # NO Observados.
@@ -84,7 +112,10 @@ sample_data <- list(
   phi = n_effec -1 ,
   y  = data_dir$pobreza          # Estimación directa. 
 )
+```
 
+
+```{r}
 library(cmdstanr)
 fit_FH_beta <- cmdstan_model("../Data/modelosStan/FH_beta.stan")
 
@@ -93,27 +124,37 @@ model_FH_beta <-
     data = sample_data,
     chains = 4,
     parallel_chains = 4,
-    iter_warmup = 10,
-    iter_sampling = 10,
+    iter_warmup = 100,
+    iter_sampling = 100,
     seed = 1234,
     refresh = 200
   )
+```
 
 # Predicción de la estimación (Observados) 
 
+```{r}
 y_pred_B <- model_FH_beta$draws(variables = "theta", format = "matrix")
-rowsrandom <- sample(nrow(y_pred_B), 100)
+rowsrandom <- sample(nrow(y_pred_B), 100,replace = TRUE)
 y_pred2 <- y_pred_B[rowsrandom, ]
+```
 
-# Comparando predicción con las cadenas
+
+```{r}
 library(bayesplot)
 library(patchwork)
-ppc_dens_overlay(y = as.numeric(data_dir$pobreza), y_pred2) 
+ppc_dens_overlay(y = as.numeric(data_dir$pobreza), y_pred2)
+```
 
+
+```{r}
 (mcmc_dens_chains(model_FH_beta$draws("sigma_v")) +
     mcmc_areas(model_FH_beta$draws("sigma_v")))/ 
   mcmc_trace(model_FH_beta$draws("sigma_v"))
+```
 
+
+```{r}
 theta_FH <- model_FH_beta$summary(variables =  "theta")
 data_dir %<>% mutate(pred_beta = theta_FH$mean)
 
@@ -125,6 +166,7 @@ data_syn <- data_syn %>%
 
 ```
 
+# Mapa de Montevideo
 
 
 ```{r}
