@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.1.165">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Andrés Gutiérrez - Stalyn Guerrero">
+
+<title>Fay Herriot en R y STAN (Binomial-beta)</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<script src="4.2Fay Herriot en R y STAN_binomial_files/libs/clipboard/clipboard.min.js"></script>
+<script src="4.2Fay Herriot en R y STAN_binomial_files/libs/quarto-html/quarto.js"></script>
+<script src="4.2Fay Herriot en R y STAN_binomial_files/libs/quarto-html/popper.min.js"></script>
+<script src="4.2Fay Herriot en R y STAN_binomial_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="4.2Fay Herriot en R y STAN_binomial_files/libs/quarto-html/anchor.min.js"></script>
+<link href="4.2Fay Herriot en R y STAN_binomial_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="4.2Fay Herriot en R y STAN_binomial_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="4.2Fay Herriot en R y STAN_binomial_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="4.2Fay Herriot en R y STAN_binomial_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="4.2Fay Herriot en R y STAN_binomial_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+<script src="4.2Fay Herriot en R y STAN_binomial_files/libs/kePrint-0.0.1/kePrint.js"></script>
+<link href="4.2Fay Herriot en R y STAN_binomial_files/libs/lightable-0.0.1/lightable.css" rel="stylesheet">
+
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+</head>
+
+<body class="fullcontent">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Fay Herriot en R y STAN (Binomial-beta)</h1>
+<p class="subtitle lead">CEPAL - División de Estadísticas Sociales</p>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Andrés Gutiérrez - Stalyn Guerrero </p>
+          </div>
+  </div>
+    
+    
+  </div>
+  
+
+</header>
+
+<section id="verosimilitud" class="level1">
+<h1>Verosimilitud</h1>
+<p><span class="math display">\[
+\begin{eqnarray*}
+y_{d}\mid p_{d}n_{d} &amp; \sim &amp; Bin\left(n_{d},p_{i}\right)
+\end{eqnarray*}
+\]</span> para <span class="math inline">\(d=1,\dots,D\)</span> y</p>
+<p><span class="math display">\[
+\begin{eqnarray*}
+logit\left(p_{d}\right)=\log\left(\frac{p_{d}}{1-p_{d}}\right) &amp; = &amp; \boldsymbol{x}_{d}^{T}\boldsymbol{\beta}+u_{d}
+\end{eqnarray*}
+\]</span> donde <span class="math inline">\(u_{d}\sim N\left(0,\sigma_{u}^{2}\right)\)</span> y <span class="math inline">\(n_{d}\)</span> es el tamaño de la muestra para el área <span class="math inline">\(d\)</span>.</p>
+<p>Es posible suponer que <span class="math display">\[
+\begin{eqnarray*}
+n_{d} &amp; \sim &amp; \frac{\check{p}_{d}\left(1-\check{p}_{d}\right)}{\widehat{Var}\left(\hat{p}_{d}\right)}
+\end{eqnarray*}
+\]</span> donde <span class="math inline">\(\check{p}_{d}\)</span> es una preliminar perdicción basada en el modelo para la proporción poblacional. Note que <span class="math inline">\(\tilde{y}_{d}=\tilde{n}_{d}\times\hat{p}_{d}\)</span>.</p>
+<p>Suponga de las distribuciones previas para <span class="math inline">\(\boldsymbol{\beta}\)</span> y <span class="math inline">\(\sigma_{u}^{2}\)</span> son dadas por <span class="math display">\[
+\begin{eqnarray*}
+\boldsymbol{\beta}  \sim    N\left(\mu_{0},\tau_{0}\right)\\
+\sigma_{u}^{2}  \sim    IG\left(\alpha_{1},\alpha_{2}\right)
+\end{eqnarray*}
+\]</span></p>
+<section id="procesamiento-en-r" class="level2">
+<h2 class="anchored" data-anchor-id="procesamiento-en-r">Procesamiento en R</h2>
+<div class="cell" data-hash="4.2Fay-Herriot-en-R-y-STAN_binomial_cache/html/unnamed-chunk-1_94aec97d77f49d90a098b8f2de7c745f">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(magrittr)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>base_FH <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"../Data/base_FH_2019.rds"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(segm,pobreza, n_eff_FGV) <span class="sc">%&gt;%</span> </span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">segm =</span> <span class="fu">str_pad</span>(segm, <span class="at">width =</span> <span class="dv">7</span>, <span class="at">pad =</span> <span class="st">"0"</span>) )</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>statelevel_predictors_df <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"../Data/statelevel_predictors_df.rds"</span>) </span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>base_FH <span class="ot">&lt;-</span> <span class="fu">full_join</span>(base_FH,statelevel_predictors_df, <span class="at">by =</span> <span class="st">"segm"</span> )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-hash="4.2Fay-Herriot-en-R-y-STAN_binomial_cache/html/unnamed-chunk-2_76d17b7478e1b080e5deef52eb9bc967">
+<div class="cell-output-display">
+
+<table class=" lightable-classic" style="font-family: &quot;Arial Narrow&quot;, &quot;Source Sans Pro&quot;, sans-serif; margin-left: auto; margin-right: auto;">
+<caption>Encuesta</caption>
+ <thead>
+  <tr>
+   <th style="text-align:left;"> segm </th>
+   <th style="text-align:right;"> pobreza </th>
+   <th style="text-align:right;"> n_eff_FGV </th>
+   <th style="text-align:right;"> edad_15_29 </th>
+   <th style="text-align:right;"> edad_30_44 </th>
+   <th style="text-align:right;"> edad_45_64 </th>
+   <th style="text-align:right;"> edad_65_más </th>
+   <th style="text-align:right;"> años7_12 </th>
+   <th style="text-align:right;"> Más_de_12 </th>
+   <th style="text-align:right;"> Sin_educacion </th>
+   <th style="text-align:right;"> Indigena </th>
+   <th style="text-align:right;"> Otro </th>
+   <th style="text-align:right;"> Hombre </th>
+   <th style="text-align:right;"> Mujer </th>
+   <th style="text-align:right;"> alfabeta </th>
+   <th style="text-align:right;"> escolaridad </th>
+   <th style="text-align:right;"> NBIAGUA </th>
+   <th style="text-align:right;"> NBICALE </th>
+   <th style="text-align:right;"> NBICALEF </th>
+   <th style="text-align:right;"> NBICOC </th>
+   <th style="text-align:right;"> NBICONF </th>
+   <th style="text-align:right;"> NBIEDU </th>
+   <th style="text-align:right;"> NBIELC </th>
+   <th style="text-align:right;"> NBIHAC </th>
+   <th style="text-align:right;"> NBIMAT </th>
+   <th style="text-align:right;"> NBIREF </th>
+   <th style="text-align:right;"> NBISAN </th>
+   <th style="text-align:right;"> NBIVIV </th>
+   <th style="text-align:right;"> F182013_stable_lights </th>
+   <th style="text-align:right;"> X2016_crops.coverfraction </th>
+   <th style="text-align:right;"> X2016_urban.coverfraction </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;"> 0101105 </td>
+   <td style="text-align:right;"> 0.0000 </td>
+   <td style="text-align:right;"> 27 </td>
+   <td style="text-align:right;"> 0.3276 </td>
+   <td style="text-align:right;"> 0.2054 </td>
+   <td style="text-align:right;"> 0.1907 </td>
+   <td style="text-align:right;"> 0.1760 </td>
+   <td style="text-align:right;"> 0.4120 </td>
+   <td style="text-align:right;"> 0.4487 </td>
+   <td style="text-align:right;"> 0.0196 </td>
+   <td style="text-align:right;"> 0.0222 </td>
+   <td style="text-align:right;"> 1.0000 </td>
+   <td style="text-align:right;"> 0.4205 </td>
+   <td style="text-align:right;"> 0.5795 </td>
+   <td style="text-align:right;"> 0.0000 </td>
+   <td style="text-align:right;"> 0.5250 </td>
+   <td style="text-align:right;"> 0.0000 </td>
+   <td style="text-align:right;"> 0.0025 </td>
+   <td style="text-align:right;"> 0.1337 </td>
+   <td style="text-align:right;"> 0.0050 </td>
+   <td style="text-align:right;"> 0.1584 </td>
+   <td style="text-align:right;"> 0.0074 </td>
+   <td style="text-align:right;"> 0.0000 </td>
+   <td style="text-align:right;"> 0.0124 </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> 0.0371 </td>
+   <td style="text-align:right;"> 0.0347 </td>
+   <td style="text-align:right;"> 0.0173 </td>
+   <td style="text-align:right;"> 2.9255 </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> 4.7216 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 0101204 </td>
+   <td style="text-align:right;"> 0.0000 </td>
+   <td style="text-align:right;"> 31 </td>
+   <td style="text-align:right;"> 0.3886 </td>
+   <td style="text-align:right;"> 0.1777 </td>
+   <td style="text-align:right;"> 0.1963 </td>
+   <td style="text-align:right;"> 0.1260 </td>
+   <td style="text-align:right;"> 0.3820 </td>
+   <td style="text-align:right;"> 0.3833 </td>
+   <td style="text-align:right;"> 0.0252 </td>
+   <td style="text-align:right;"> 0.0247 </td>
+   <td style="text-align:right;"> 0.9999 </td>
+   <td style="text-align:right;"> 0.4456 </td>
+   <td style="text-align:right;"> 0.5544 </td>
+   <td style="text-align:right;"> 0.0032 </td>
+   <td style="text-align:right;"> 0.5000 </td>
+   <td style="text-align:right;"> 0.0000 </td>
+   <td style="text-align:right;"> 0.0110 </td>
+   <td style="text-align:right;"> 0.2287 </td>
+   <td style="text-align:right;"> 0.0083 </td>
+   <td style="text-align:right;"> 0.2369 </td>
+   <td style="text-align:right;"> 0.0028 </td>
+   <td style="text-align:right;"> 0.0000 </td>
+   <td style="text-align:right;"> 0.0083 </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> 0.0303 </td>
+   <td style="text-align:right;"> 0.2121 </td>
+   <td style="text-align:right;"> 0.0165 </td>
+   <td style="text-align:right;"> 4.9412 </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> 7.6392 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 0101205 </td>
+   <td style="text-align:right;"> 0.0000 </td>
+   <td style="text-align:right;"> 40 </td>
+   <td style="text-align:right;"> 0.2036 </td>
+   <td style="text-align:right;"> 0.1915 </td>
+   <td style="text-align:right;"> 0.2681 </td>
+   <td style="text-align:right;"> 0.2692 </td>
+   <td style="text-align:right;"> 0.3518 </td>
+   <td style="text-align:right;"> 0.4748 </td>
+   <td style="text-align:right;"> 0.0181 </td>
+   <td style="text-align:right;"> 0.0155 </td>
+   <td style="text-align:right;"> 1.0000 </td>
+   <td style="text-align:right;"> 0.4425 </td>
+   <td style="text-align:right;"> 0.5575 </td>
+   <td style="text-align:right;"> 0.0022 </td>
+   <td style="text-align:right;"> 0.5362 </td>
+   <td style="text-align:right;"> 0.0019 </td>
+   <td style="text-align:right;"> 0.0363 </td>
+   <td style="text-align:right;"> 0.1683 </td>
+   <td style="text-align:right;"> 0.0535 </td>
+   <td style="text-align:right;"> 0.1740 </td>
+   <td style="text-align:right;"> 0.0019 </td>
+   <td style="text-align:right;"> 0.0000 </td>
+   <td style="text-align:right;"> 0.0000 </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> 0.0688 </td>
+   <td style="text-align:right;"> 0.1128 </td>
+   <td style="text-align:right;"> 0.0535 </td>
+   <td style="text-align:right;"> 2.9647 </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> 9.7725 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 0102001 </td>
+   <td style="text-align:right;"> 0.0000 </td>
+   <td style="text-align:right;"> 24 </td>
+   <td style="text-align:right;"> 0.2208 </td>
+   <td style="text-align:right;"> 0.2604 </td>
+   <td style="text-align:right;"> 0.1760 </td>
+   <td style="text-align:right;"> 0.1109 </td>
+   <td style="text-align:right;"> 0.4527 </td>
+   <td style="text-align:right;"> 0.1231 </td>
+   <td style="text-align:right;"> 0.0732 </td>
+   <td style="text-align:right;"> 0.0251 </td>
+   <td style="text-align:right;"> 0.9999 </td>
+   <td style="text-align:right;"> 0.4588 </td>
+   <td style="text-align:right;"> 0.5412 </td>
+   <td style="text-align:right;"> 0.0174 </td>
+   <td style="text-align:right;"> 0.2012 </td>
+   <td style="text-align:right;"> 0.0246 </td>
+   <td style="text-align:right;"> 0.1230 </td>
+   <td style="text-align:right;"> 0.3579 </td>
+   <td style="text-align:right;"> 0.0874 </td>
+   <td style="text-align:right;"> 0.3962 </td>
+   <td style="text-align:right;"> 0.0519 </td>
+   <td style="text-align:right;"> 0.0027 </td>
+   <td style="text-align:right;"> 0.0765 </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> 0.0765 </td>
+   <td style="text-align:right;"> 0.1749 </td>
+   <td style="text-align:right;"> 0.1421 </td>
+   <td style="text-align:right;"> 13.8275 </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> 4.0000 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 0103101 </td>
+   <td style="text-align:right;"> 0.0265 </td>
+   <td style="text-align:right;"> 43 </td>
+   <td style="text-align:right;"> 0.2226 </td>
+   <td style="text-align:right;"> 0.2008 </td>
+   <td style="text-align:right;"> 0.2246 </td>
+   <td style="text-align:right;"> 0.1418 </td>
+   <td style="text-align:right;"> 0.4255 </td>
+   <td style="text-align:right;"> 0.1925 </td>
+   <td style="text-align:right;"> 0.0559 </td>
+   <td style="text-align:right;"> 0.0111 </td>
+   <td style="text-align:right;"> 0.9999 </td>
+   <td style="text-align:right;"> 0.4689 </td>
+   <td style="text-align:right;"> 0.5311 </td>
+   <td style="text-align:right;"> 0.0057 </td>
+   <td style="text-align:right;"> 0.2901 </td>
+   <td style="text-align:right;"> 0.0025 </td>
+   <td style="text-align:right;"> 0.0729 </td>
+   <td style="text-align:right;"> 0.2136 </td>
+   <td style="text-align:right;"> 0.0427 </td>
+   <td style="text-align:right;"> 0.2487 </td>
+   <td style="text-align:right;"> 0.0327 </td>
+   <td style="text-align:right;"> 0.0025 </td>
+   <td style="text-align:right;"> 0.0729 </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> 0.0553 </td>
+   <td style="text-align:right;"> 0.1432 </td>
+   <td style="text-align:right;"> 0.1055 </td>
+   <td style="text-align:right;"> 8.4706 </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> 2.9569 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 0103201 </td>
+   <td style="text-align:right;"> 0.0000 </td>
+   <td style="text-align:right;"> 34 </td>
+   <td style="text-align:right;"> 0.2253 </td>
+   <td style="text-align:right;"> 0.2467 </td>
+   <td style="text-align:right;"> 0.2352 </td>
+   <td style="text-align:right;"> 0.1694 </td>
+   <td style="text-align:right;"> 0.4309 </td>
+   <td style="text-align:right;"> 0.2961 </td>
+   <td style="text-align:right;"> 0.0378 </td>
+   <td style="text-align:right;"> 0.0171 </td>
+   <td style="text-align:right;"> 0.9999 </td>
+   <td style="text-align:right;"> 0.4836 </td>
+   <td style="text-align:right;"> 0.5164 </td>
+   <td style="text-align:right;"> 0.0020 </td>
+   <td style="text-align:right;"> 0.3916 </td>
+   <td style="text-align:right;"> 0.0033 </td>
+   <td style="text-align:right;"> 0.0261 </td>
+   <td style="text-align:right;"> 0.1889 </td>
+   <td style="text-align:right;"> 0.0098 </td>
+   <td style="text-align:right;"> 0.2085 </td>
+   <td style="text-align:right;"> 0.0163 </td>
+   <td style="text-align:right;"> 0.0033 </td>
+   <td style="text-align:right;"> 0.0098 </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> 0.0456 </td>
+   <td style="text-align:right;"> 0.0912 </td>
+   <td style="text-align:right;"> 0.0195 </td>
+   <td style="text-align:right;"> 3.2941 </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> 1.2941 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 0103204 </td>
+   <td style="text-align:right;"> 0.0000 </td>
+   <td style="text-align:right;"> 27 </td>
+   <td style="text-align:right;"> 0.2078 </td>
+   <td style="text-align:right;"> 0.2667 </td>
+   <td style="text-align:right;"> 0.2217 </td>
+   <td style="text-align:right;"> 0.1984 </td>
+   <td style="text-align:right;"> 0.3705 </td>
+   <td style="text-align:right;"> 0.3411 </td>
+   <td style="text-align:right;"> 0.0279 </td>
+   <td style="text-align:right;"> 0.0340 </td>
+   <td style="text-align:right;"> 0.9999 </td>
+   <td style="text-align:right;"> 0.4605 </td>
+   <td style="text-align:right;"> 0.5395 </td>
+   <td style="text-align:right;"> 0.0036 </td>
+   <td style="text-align:right;"> 0.4871 </td>
+   <td style="text-align:right;"> 0.0000 </td>
+   <td style="text-align:right;"> 0.0144 </td>
+   <td style="text-align:right;"> 0.1960 </td>
+   <td style="text-align:right;"> 0.0519 </td>
+   <td style="text-align:right;"> 0.2133 </td>
+   <td style="text-align:right;"> 0.0115 </td>
+   <td style="text-align:right;"> 0.0000 </td>
+   <td style="text-align:right;"> 0.0346 </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> 0.0461 </td>
+   <td style="text-align:right;"> 0.0605 </td>
+   <td style="text-align:right;"> 0.0807 </td>
+   <td style="text-align:right;"> 3.8275 </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> 1.6863 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 0104001 </td>
+   <td style="text-align:right;"> 0.0000 </td>
+   <td style="text-align:right;"> 21 </td>
+   <td style="text-align:right;"> 0.2792 </td>
+   <td style="text-align:right;"> 0.2360 </td>
+   <td style="text-align:right;"> 0.2313 </td>
+   <td style="text-align:right;"> 0.1846 </td>
+   <td style="text-align:right;"> 0.3995 </td>
+   <td style="text-align:right;"> 0.4614 </td>
+   <td style="text-align:right;"> 0.0222 </td>
+   <td style="text-align:right;"> 0.0143 </td>
+   <td style="text-align:right;"> 1.0000 </td>
+   <td style="text-align:right;"> 0.4673 </td>
+   <td style="text-align:right;"> 0.5327 </td>
+   <td style="text-align:right;"> 0.0065 </td>
+   <td style="text-align:right;"> 0.5265 </td>
+   <td style="text-align:right;"> 0.0000 </td>
+   <td style="text-align:right;"> 0.0329 </td>
+   <td style="text-align:right;"> 0.1373 </td>
+   <td style="text-align:right;"> 0.0077 </td>
+   <td style="text-align:right;"> 0.1683 </td>
+   <td style="text-align:right;"> 0.0000 </td>
+   <td style="text-align:right;"> 0.0000 </td>
+   <td style="text-align:right;"> 0.0309 </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> 0.0155 </td>
+   <td style="text-align:right;"> 0.0213 </td>
+   <td style="text-align:right;"> 0.0387 </td>
+   <td style="text-align:right;"> 5.5098 </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> 5.3333 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 0104103 </td>
+   <td style="text-align:right;"> 0.0000 </td>
+   <td style="text-align:right;"> 63 </td>
+   <td style="text-align:right;"> 0.2847 </td>
+   <td style="text-align:right;"> 0.2206 </td>
+   <td style="text-align:right;"> 0.2134 </td>
+   <td style="text-align:right;"> 0.1694 </td>
+   <td style="text-align:right;"> 0.3911 </td>
+   <td style="text-align:right;"> 0.4217 </td>
+   <td style="text-align:right;"> 0.0279 </td>
+   <td style="text-align:right;"> 0.0310 </td>
+   <td style="text-align:right;"> 1.0000 </td>
+   <td style="text-align:right;"> 0.4440 </td>
+   <td style="text-align:right;"> 0.5560 </td>
+   <td style="text-align:right;"> 0.0007 </td>
+   <td style="text-align:right;"> 0.5061 </td>
+   <td style="text-align:right;"> 0.0000 </td>
+   <td style="text-align:right;"> 0.0126 </td>
+   <td style="text-align:right;"> 0.1792 </td>
+   <td style="text-align:right;"> 0.0084 </td>
+   <td style="text-align:right;"> 0.1971 </td>
+   <td style="text-align:right;"> 0.0063 </td>
+   <td style="text-align:right;"> 0.0000 </td>
+   <td style="text-align:right;"> 0.0168 </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> 0.0314 </td>
+   <td style="text-align:right;"> 0.1006 </td>
+   <td style="text-align:right;"> 0.0241 </td>
+   <td style="text-align:right;"> 5.4353 </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> 1.9765 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 0104104 </td>
+   <td style="text-align:right;"> 0.0000 </td>
+   <td style="text-align:right;"> 44 </td>
+   <td style="text-align:right;"> 0.2077 </td>
+   <td style="text-align:right;"> 0.2400 </td>
+   <td style="text-align:right;"> 0.2503 </td>
+   <td style="text-align:right;"> 0.1809 </td>
+   <td style="text-align:right;"> 0.3755 </td>
+   <td style="text-align:right;"> 0.3783 </td>
+   <td style="text-align:right;"> 0.0406 </td>
+   <td style="text-align:right;"> 0.0176 </td>
+   <td style="text-align:right;"> 1.0000 </td>
+   <td style="text-align:right;"> 0.4546 </td>
+   <td style="text-align:right;"> 0.5454 </td>
+   <td style="text-align:right;"> 0.0049 </td>
+   <td style="text-align:right;"> 0.4563 </td>
+   <td style="text-align:right;"> 0.0000 </td>
+   <td style="text-align:right;"> 0.0082 </td>
+   <td style="text-align:right;"> 0.1733 </td>
+   <td style="text-align:right;"> 0.0027 </td>
+   <td style="text-align:right;"> 0.1992 </td>
+   <td style="text-align:right;"> 0.0055 </td>
+   <td style="text-align:right;"> 0.0014 </td>
+   <td style="text-align:right;"> 0.0150 </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> 0.0505 </td>
+   <td style="text-align:right;"> 0.1023 </td>
+   <td style="text-align:right;"> 0.0177 </td>
+   <td style="text-align:right;"> 3.9529 </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> 1.6471 </td>
+  </tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div class="cell" data-hash="4.2Fay-Herriot-en-R-y-STAN_binomial_cache/html/unnamed-chunk-3_06e17b665b6613a7cdb9690a2f648106">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>names_cov <span class="ot">&lt;-</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>   statelevel_predictors_df <span class="sc">%&gt;%</span> </span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">data.frame</span>() <span class="sc">%&gt;%</span> <span class="fu">select_if</span>(is.numeric) <span class="sc">%&gt;%</span> <span class="fu">names</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+</section>
+<section id="estimaciones-directas" class="level1">
+<h1>Estimaciones directas</h1>
+<div class="cell" data-hash="4.2Fay-Herriot-en-R-y-STAN_binomial_cache/html/unnamed-chunk-4_11d3bf445c33bff0394cb3117c9be375">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>data_dir <span class="ot">&lt;-</span> base_FH <span class="sc">%&gt;%</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(pobreza),segm <span class="sc">!=</span> <span class="st">"0111097"</span>)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="do">## No observados</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>data_syn <span class="ot">&lt;-</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  base_FH <span class="sc">%&gt;%</span> <span class="fu">anti_join</span>(data_dir <span class="sc">%&gt;%</span> <span class="fu">select</span>(segm))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="efectos-fijos" class="level1">
+<h1>Efectos fijos</h1>
+<div class="cell" data-hash="4.2Fay-Herriot-en-R-y-STAN_binomial_cache/html/unnamed-chunk-5_d18cfbe677c2f3c5e58ba1319613360a">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Dominios observados</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>Xdat <span class="ot">&lt;-</span> data_dir[,names_cov]</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="do">## Dominios no observados</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>Xs <span class="ot">&lt;-</span> data_syn[,names_cov]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-hash="4.2Fay-Herriot-en-R-y-STAN_binomial_cache/html/unnamed-chunk-6_50f4fd20e50a1255e536f7753aa67d19">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>n_effec <span class="ot">=</span> <span class="fu">round</span>(data_dir<span class="sc">$</span>n_eff_FGV)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">length</span>(n_effec)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 463</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>y_effect  <span class="ot">=</span> <span class="fu">round</span>((data_dir<span class="sc">$</span>pobreza)<span class="sc">*</span>n_effec)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">length</span>(y_effect)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 463</code></pre>
+</div>
+</div>
+<div class="cell" data-hash="4.2Fay-Herriot-en-R-y-STAN_binomial_cache/html/unnamed-chunk-7_789fe2deeab7f7f0a422c6993e300e35">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>sample_data <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">N1 =</span> <span class="fu">nrow</span>(Xdat),   <span class="co"># Observados.</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">N2 =</span> <span class="fu">nrow</span>(Xs),   <span class="co"># NO Observados.</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">p  =</span> <span class="fu">ncol</span>(Xdat),       <span class="co"># Número de regresores.</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">X  =</span> <span class="fu">as.matrix</span>(Xdat),  <span class="co"># Covariables Observados.</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">Xs =</span> <span class="fu">as.matrix</span>(Xs),    <span class="co"># Covariables NO Observados</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">n_effec =</span> n_effec,</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">y_effect  =</span> y_effect          <span class="co"># Estimación directa. </span></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-hash="4.2Fay-Herriot-en-R-y-STAN_binomial_cache/html/unnamed-chunk-8_b93e4fea86f0e8e820f4bc7fd3bc0b90">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(cmdstanr)</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>fit_FH_binomial <span class="ot">&lt;-</span> <span class="fu">cmdstan_model</span>(<span class="st">"../Data/modelosStan/FH_binomial.stan"</span>)</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>model_FH_Binomial <span class="ot">&lt;-</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>  fit_FH_binomial<span class="sc">$</span><span class="fu">sample</span>(</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> sample_data,</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">chains =</span> <span class="dv">4</span>,</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">parallel_chains =</span> <span class="dv">4</span>,</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">iter_warmup =</span> <span class="dv">100</span>,</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">iter_sampling =</span> <span class="dv">100</span>,</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">seed =</span> <span class="dv">1234</span>,</span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">refresh =</span> <span class="dv">200</span></span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Running MCMC with 4 parallel chains...
+
+Chain 1 Iteration:   1 / 200 [  0%]  (Warmup) 
+Chain 2 Iteration:   1 / 200 [  0%]  (Warmup) 
+Chain 3 WARNING: There aren't enough warmup iterations to fit the 
+Chain 3          three stages of adaptation as currently configured. 
+Chain 3          Reducing each adaptation stage to 15%/75%/10% of 
+Chain 3          the given number of warmup iterations: 
+Chain 3            init_buffer = 15 
+Chain 3            adapt_window = 75 
+Chain 3            term_buffer = 10 
+Chain 3 Iteration:   1 / 200 [  0%]  (Warmup) 
+Chain 4 Iteration:   1 / 200 [  0%]  (Warmup) 
+Chain 2 Iteration: 101 / 200 [ 50%]  (Sampling) 
+Chain 1 Iteration: 101 / 200 [ 50%]  (Sampling) 
+Chain 3 Iteration: 101 / 200 [ 50%]  (Sampling) 
+Chain 4 Iteration: 101 / 200 [ 50%]  (Sampling) 
+Chain 2 Iteration: 200 / 200 [100%]  (Sampling) 
+Chain 2 finished in 19.0 seconds.
+Chain 1 Iteration: 200 / 200 [100%]  (Sampling) 
+Chain 1 finished in 19.3 seconds.
+Chain 3 Iteration: 200 / 200 [100%]  (Sampling) 
+Chain 4 Iteration: 200 / 200 [100%]  (Sampling) 
+Chain 3 finished in 19.6 seconds.
+Chain 4 finished in 19.6 seconds.
+
+All 4 chains finished successfully.
+Mean chain execution time: 19.4 seconds.
+Total execution time: 19.8 seconds.</code></pre>
+</div>
+</div>
+</section>
+<section id="estimación-observados" class="level1">
+<h1>Estimación (Observados)</h1>
+<div class="cell" data-hash="4.2Fay-Herriot-en-R-y-STAN_binomial_cache/html/unnamed-chunk-9_8fe30ab1ab5d7b87133c68658ec30965">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>y_pred_B <span class="ot">&lt;-</span> model_FH_Binomial<span class="sc">$</span><span class="fu">draws</span>(<span class="at">variables =</span> <span class="st">"theta"</span>, <span class="at">format =</span> <span class="st">"matrix"</span>)</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>rowsrandom <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="fu">nrow</span>(y_pred_B), <span class="dv">100</span>)</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>y_pred2 <span class="ot">&lt;-</span> y_pred_B[rowsrandom, ]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="comparando-predicción-con-las-cadenas" class="level1">
+<h1>Comparando predicción con las cadenas</h1>
+<div class="cell" data-hash="4.2Fay-Herriot-en-R-y-STAN_binomial_cache/html/unnamed-chunk-10_2ce38a0452c3f42373d30de289e85d8a">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(bayesplot)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(patchwork)</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ppc_dens_overlay</span>(<span class="at">y =</span> <span class="fu">as.numeric</span>(data_dir<span class="sc">$</span>pobreza), y_pred2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="4.2Fay-Herriot-en-R-y-STAN_binomial_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell" data-hash="4.2Fay-Herriot-en-R-y-STAN_binomial_cache/html/unnamed-chunk-11_8c31be29d8adb2d082ae7543b39c6fc9">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>(<span class="fu">mcmc_dens_chains</span>(model_FH_Binomial<span class="sc">$</span><span class="fu">draws</span>(<span class="st">"sigma_v"</span>)) <span class="sc">+</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mcmc_areas</span>(model_FH_Binomial<span class="sc">$</span><span class="fu">draws</span>(<span class="st">"sigma_v"</span>)))<span class="sc">/</span> </span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mcmc_trace</span>(model_FH_Binomial<span class="sc">$</span><span class="fu">draws</span>(<span class="st">"sigma_v"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="4.2Fay-Herriot-en-R-y-STAN_binomial_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell" data-hash="4.2Fay-Herriot-en-R-y-STAN_binomial_cache/html/unnamed-chunk-12_4f9a6eab75ad8c699b6a6b1cbe749242">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>theta_FH <span class="ot">&lt;-</span> model_FH_Binomial<span class="sc">$</span><span class="fu">summary</span>(<span class="at">variables =</span>  <span class="st">"theta"</span>)</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>data_dir <span class="sc">%&lt;&gt;%</span> <span class="fu">mutate</span>(<span class="at">pred_binomial =</span> theta_FH<span class="sc">$</span>mean)</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>theta_FH_pred <span class="ot">&lt;-</span> model_FH_Binomial<span class="sc">$</span><span class="fu">summary</span>(<span class="at">variables =</span>  <span class="st">"thetaLP"</span>)</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>data_syn <span class="ot">&lt;-</span> data_syn <span class="sc">%&gt;%</span> </span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">pred_binomial =</span> theta_FH_pred<span class="sc">$</span>mean)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="mapa-de-montevideo" class="level1">
+<h1>Mapa de Montevideo</h1>
+<div class="cell" data-hash="4.2Fay-Herriot-en-R-y-STAN_binomial_cache/html/unnamed-chunk-13_ae7a1280713cfbc03e0953ab6da19cc4">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(sp)</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(sf)</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tmap)</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>data_map <span class="ot">&lt;-</span> <span class="fu">rbind</span>(data_dir, data_syn) <span class="sc">%&gt;%</span> </span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(segm, pred_binomial) </span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a><span class="do">## Leer Shape del pais</span></span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>ShapeSAE <span class="ot">&lt;-</span> <span class="fu">read_sf</span>(<span class="st">"../Shape/ine_seg_11.shp"</span>)<span class="sc">%&gt;%</span> </span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(nombdepto <span class="sc">==</span> <span class="st">"MONTEVIDEO"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">mpio =</span> <span class="fu">str_pad</span>(codsec,<span class="at">width =</span> <span class="dv">4</span>,<span class="at">pad =</span> <span class="st">"0"</span>),</span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a>         <span class="at">segm =</span> <span class="fu">str_pad</span>(codseg,<span class="at">width =</span> <span class="dv">7</span>,<span class="at">pad =</span> <span class="st">"0"</span>))</span>
+<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a>mapa <span class="ot">&lt;-</span> <span class="fu">tm_shape</span>(ShapeSAE <span class="sc">%&gt;%</span></span>
+<span id="cb16-17"><a href="#cb16-17" aria-hidden="true" tabindex="-1"></a>                           <span class="fu">left_join</span>(data_map,  <span class="at">by =</span> <span class="st">"segm"</span>))</span>
+<span id="cb16-18"><a href="#cb16-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-19"><a href="#cb16-19" aria-hidden="true" tabindex="-1"></a>brks_lp <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="fl">0.025</span>,<span class="fl">0.05</span>, <span class="fl">0.1</span>, <span class="fl">0.15</span>, <span class="fl">0.2</span>,<span class="fl">0.4</span>, <span class="dv">1</span>)</span>
+<span id="cb16-20"><a href="#cb16-20" aria-hidden="true" tabindex="-1"></a><span class="fu">tmap_options</span>(<span class="at">check.and.fix =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb16-21"><a href="#cb16-21" aria-hidden="true" tabindex="-1"></a>Mapa_lp <span class="ot">&lt;-</span></span>
+<span id="cb16-22"><a href="#cb16-22" aria-hidden="true" tabindex="-1"></a>  mapa <span class="sc">+</span> <span class="fu">tm_polygons</span>(</span>
+<span id="cb16-23"><a href="#cb16-23" aria-hidden="true" tabindex="-1"></a>    <span class="fu">c</span>(<span class="st">"pred_binomial"</span>),</span>
+<span id="cb16-24"><a href="#cb16-24" aria-hidden="true" tabindex="-1"></a>    <span class="at">breaks =</span> brks_lp,</span>
+<span id="cb16-25"><a href="#cb16-25" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Mapa de pobreza"</span>,</span>
+<span id="cb16-26"><a href="#cb16-26" aria-hidden="true" tabindex="-1"></a>    <span class="at">palette =</span> <span class="st">"YlOrRd"</span>,</span>
+<span id="cb16-27"><a href="#cb16-27" aria-hidden="true" tabindex="-1"></a>    <span class="at">colorNA =</span> <span class="st">"white"</span></span>
+<span id="cb16-28"><a href="#cb16-28" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span> <span class="fu">tm_layout</span>(<span class="at">asp =</span> <span class="dv">0</span>)</span>
+<span id="cb16-29"><a href="#cb16-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-30"><a href="#cb16-30" aria-hidden="true" tabindex="-1"></a>Mapa_lp</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="4.2Fay-Herriot-en-R-y-STAN_binomial_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    setTimeout(function() {
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const cites = ref.parentNode.getAttribute('data-cites').split(' ');
+    tippyHover(ref, function() {
+      var popup = window.document.createElement('div');
+      cites.forEach(function(cite) {
+        var citeDiv = window.document.createElement('div');
+        citeDiv.classList.add('hanging-indent');
+        citeDiv.classList.add('csl-entry');
+        var biblioDiv = window.document.getElementById('ref-' + cite);
+        if (biblioDiv) {
+          citeDiv.innerHTML = biblioDiv.innerHTML;
+        }
+        popup.appendChild(citeDiv);
+      });
+      return popup.innerHTML;
+    });
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

@@ -1,5 +1,5 @@
 ---
-title: "Fay Herriot en R y STAN"
+title: "Fay Herriot en R y STAN (Binomial-beta)"
 subtitle: "CEPAL - División de Estadísticas Sociales"
 author: "Andrés Gutiérrez - Stalyn Guerrero"
 format: html
@@ -14,11 +14,46 @@ library(printr)
 library(kableExtra)
 ```
 
+# Verosimilitud
+
+$$
+\begin{eqnarray*}
+y_{d}\mid p_{d}n_{d} & \sim & Bin\left(n_{d},p_{i}\right)
+\end{eqnarray*}
+$$
+para $d=1,\dots,D$ y 
+
+$$
+\begin{eqnarray*}
+logit\left(p_{d}\right)=\log\left(\frac{p_{d}}{1-p_{d}}\right) & = & \boldsymbol{x}_{d}^{T}\boldsymbol{\beta}+u_{d}
+\end{eqnarray*}
+$$
+donde $u_{d}\sim N\left(0,\sigma_{u}^{2}\right)$ y $n_{d}$ es el
+tamaño de la muestra para el área $d$.
+
+Es posible suponer que 
+$$
+\begin{eqnarray*}
+n_{d} & \sim & \frac{\check{p}_{d}\left(1-\check{p}_{d}\right)}{\widehat{Var}\left(\hat{p}_{d}\right)}
+\end{eqnarray*}
+$$
+donde $\check{p}_{d}$ es una preliminar perdicción basada en el modelo
+para la proporción poblacional. Note que $\tilde{y}_{d}=\tilde{n}_{d}\times\hat{p}_{d}$. 
+
+Suponga de las distribuciones previas para 
+$\boldsymbol{\beta}$ y $\sigma_{u}^{2}$ son dadas por 
+$$
+\begin{eqnarray*}
+\boldsymbol{\beta}	\sim	N\left(\mu_{0},\tau_{0}\right)\\
+\sigma_{u}^{2}	\sim	IG\left(\alpha_{1},\alpha_{2}\right)
+\end{eqnarray*}
+$$
+
+## Procesamiento en R
+
 ```{r}
 library(tidyverse)
 library(magrittr)
-
-
 
 base_FH <- readRDS("../Data/base_FH_2019.rds") %>% 
   select(segm,pobreza, n_eff_FGV) %>% 
@@ -27,8 +62,6 @@ base_FH <- readRDS("../Data/base_FH_2019.rds") %>%
 statelevel_predictors_df <- readRDS("../Data/statelevel_predictors_df.rds") 
 
 base_FH <- full_join(base_FH,statelevel_predictors_df, by = "segm" )
-
-
 
 ```
 
@@ -44,38 +77,41 @@ kable(base_FH %>% head(10),
 
 
 ```{r}
-
 names_cov <-
    statelevel_predictors_df %>% 
   data.frame() %>% select_if(is.numeric) %>% names()
+```
 
-## Estimaciones directas
+# Estimaciones directas
+
+```{r}
 data_dir <- base_FH %>%
   filter(!is.na(pobreza),segm != "0111097")
 ## No observados
 data_syn <-
-  base_FH %>% anti_join(data_dir %>% select(segm)) 
+  base_FH %>% anti_join(data_dir %>% select(segm))
+```
 
+# Efectos fijos 
 
-summary(data_syn)
-dim(data_syn)
-#### Efectos fijos 
+```{r}
 ## Dominios observados
 Xdat <- data_dir[,names_cov]
-  
-dim(Xdat)
-dim(data_dir)
+
 ## Dominios no observados
 Xs <- data_syn[,names_cov]
+```
 
-summary(Xs)
-dim(Xs)
-dim(data_syn)
 
+```{r}
 n_effec = round(data_dir$n_eff_FGV)
 length(n_effec)
 y_effect  = round((data_dir$pobreza)*n_effec)
 length(y_effect)
+```
+
+
+```{r}
 sample_data <- list(
   N1 = nrow(Xdat),   # Observados.
   N2 = nrow(Xs),   # NO Observados.
@@ -85,7 +121,10 @@ sample_data <- list(
   n_effec = n_effec,
   y_effect  = y_effect          # Estimación directa. 
 )
+```
 
+
+```{r}
 library(cmdstanr)
 fit_FH_binomial <- cmdstan_model("../Data/modelosStan/FH_binomial.stan")
 
@@ -94,26 +133,39 @@ model_FH_Binomial <-
     data = sample_data,
     chains = 4,
     parallel_chains = 4,
-    iter_warmup = 1000,
-    iter_sampling = 1000,
+    iter_warmup = 100,
+    iter_sampling = 100,
     seed = 1234,
     refresh = 200
   )
 
-# Predicción de la estimación (Observados) 
+```
 
+# Estimación (Observados)
+
+```{r}
 y_pred_B <- model_FH_Binomial$draws(variables = "theta", format = "matrix")
 rowsrandom <- sample(nrow(y_pred_B), 100)
 y_pred2 <- y_pred_B[rowsrandom, ]
+```
 
 # Comparando predicción con las cadenas
-library(bayesplot)
-ppc_dens_overlay(y = as.numeric(data_dir$pobreza), y_pred2) 
 
+```{r}
+library(bayesplot)
+library(patchwork)
+ppc_dens_overlay(y = as.numeric(data_dir$pobreza), y_pred2)
+```
+
+
+```{r}
 (mcmc_dens_chains(model_FH_Binomial$draws("sigma_v")) +
     mcmc_areas(model_FH_Binomial$draws("sigma_v")))/ 
   mcmc_trace(model_FH_Binomial$draws("sigma_v"))
+```
 
+
+```{r}
 theta_FH <- model_FH_Binomial$summary(variables =  "theta")
 data_dir %<>% mutate(pred_binomial = theta_FH$mean)
 
@@ -125,7 +177,7 @@ data_syn <- data_syn %>%
 
 ```
 
-
+# Mapa de Montevideo
 
 ```{r}
 library(sp)

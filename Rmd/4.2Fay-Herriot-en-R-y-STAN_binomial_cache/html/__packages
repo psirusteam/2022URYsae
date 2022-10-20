@@ -10,3 +10,9 @@ dplyr
 stringr
 forcats
 magrittr
+cmdstanr
+bayesplot
+patchwork
+sp
+sf
+tmap
