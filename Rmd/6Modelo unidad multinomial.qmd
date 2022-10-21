@@ -58,7 +58,7 @@ para $u_{1d}\sim N\left(0,\sigma_{u}\right)$ y $u_{2d}\sim N\left(0,\sigma_{u}\r
 
 $$
 \begin{eqnarray*}
-\beta_k & \sim   & N(\mu_0, \tau^2_0)\\
+\boldsymbol{\beta}_k & \sim   & N(\mu_0, \tau^2_0)\\
 \Sigma_{u} &\sim& Wishart\left( \Gamma_0, m_0 \right) 
 \end{eqnarray*}
 $$
@@ -199,8 +199,7 @@ kable(censo_mrp %>% arrange(desc(n)) %>%
 La información auxiliar disponible fue extraída del censo (tasa de desocupación) e imágenes satelitales (luces nocturnas, uso del suelo urbano y uso del suelo cultivos)
 
 ```{r}
-tasa_desocupados <- readRDS("../Data/tasa_desocupacion_seccion.rds")
-statelevel_predictors_df <- tasa_desocupados
+statelevel_predictors_df <- readRDS("../Data/statelevel_predictors_segm.rds")
 ```
 
 ```{r, echo=FALSE}

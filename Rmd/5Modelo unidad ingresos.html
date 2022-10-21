@@ -397,8 +397,7 @@ Y_{di} &amp;\sim &amp; N\left(\mu_{di},\sigma_y^{2}\right)\\
 </div>
 <p>La información auxiliar disponible ha sido extraída del censo (tasa de desocupación) e imágenes satelitales (luces nocturnas, uso del suelo urbano y uso del suelo cultivos)</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>tasa_desocupados <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"../Data/tasa_desocupacion_seccion.rds"</span>)</span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>statelevel_predictors_df <span class="ot">&lt;-</span> tasa_desocupados</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>statelevel_predictors_df <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"../Data/statelevel_predictors_segm.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
 <div class="cell-output-display">
@@ -520,7 +519,8 @@ Y_{di} &amp;\sim &amp; N\left(\mu_{di},\sigma_y^{2}\right)\\
 <h3 class="anchored" data-anchor-id="niveles-de-agregación-para-colapsar-encuesta">Niveles de agregación para colapsar encuesta</h3>
 <p>Después de realizar una investigación en la literatura especializada y realizar estudios de simulación fue posible evidenciar que las predicciones obtenidas con la muestra sin agregar y la muestra agregada convergen a la media del dominio. Sin embargo, el realizar estas estimaciones con la muestra agregada reduce el tiempo computacional necesario para la convergencia de las cadenas MCMC. Con esto en mente se se realiza la identificación de las variables por las cuales se agregará la encuesta.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>byAgrega <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"depto"</span>, <span class="st">"mpio"</span>,  <span class="st">"segm"</span>, <span class="st">"area"</span>,   <span class="st">"sexo"</span>,   <span class="st">"anoest"</span>, <span class="st">"edad"</span>,   <span class="st">"etnia"</span> )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>byAgrega <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"depto"</span>, <span class="st">"mpio"</span>,  <span class="st">"segm"</span>, <span class="st">"area"</span>, </span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>              <span class="st">"sexo"</span>,   <span class="st">"anoest"</span>, <span class="st">"edad"</span>,   <span class="st">"etnia"</span> )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="creando-base-con-la-encuesta-agregada" class="level3">
@@ -822,7 +822,7 @@ Y_{di} &amp;\sim &amp; N\left(\mu_{di},\sigma_y^{2}\right)\\
 <p>Obtener el modelo es solo un paso más, ahora se debe realizar la predicción en el censo, el cual a sido previamente estandarizado y homologado con la encuesta.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>poststrat_df <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"../Data/censo_Montevideo.rds"</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>     <span class="fu">left_join</span>(tasa_desocupados)  </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>     <span class="fu">left_join</span>(statelevel_predictors_df)  </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
 <div class="cell-output-display">

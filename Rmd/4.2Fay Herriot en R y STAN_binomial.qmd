@@ -18,7 +18,7 @@ library(kableExtra)
 
 $$
 \begin{eqnarray*}
-y_{d}\mid p_{d}n_{d} & \sim & Bin\left(n_{d},p_{i}\right)
+y_{d}\mid p_{d},n_{d} & \sim & Bin\left(n_{d},p_{d}\right)
 \end{eqnarray*}
 $$
 para $d=1,\dots,D$ y 
@@ -167,12 +167,16 @@ ppc_dens_overlay(y = as.numeric(data_dir$pobreza), y_pred2)
 
 ```{r}
 theta_FH <- model_FH_Binomial$summary(variables =  "theta")
-data_dir %<>% mutate(pred_binomial = theta_FH$mean)
+data_dir %<>% mutate(pred_binomial = theta_FH$mean, 
+                     pred_binomial_EE = theta_FH$sd,
+                              Cv_pred = pred_binomial_EE/pred_binomial)
 
 theta_FH_pred <- model_FH_Binomial$summary(variables =  "thetaLP")
 
 data_syn <- data_syn %>% 
-  mutate(pred_binomial = theta_FH_pred$mean)
+  mutate(pred_binomial = theta_FH_pred$mean,
+         pred_binomial_EE = theta_FH_pred$sd,
+         Cv_pred = pred_binomial_EE/pred_binomial)
 
 
 ```
@@ -185,7 +189,7 @@ library(sf)
 library(tmap)
 
 data_map <- rbind(data_dir, data_syn) %>% 
-  select(segm, pred_binomial) 
+  select(segm, pred_binomial, pred_binomial_EE,Cv_pred ) 
 
 
 ## Leer Shape del pais
@@ -196,15 +200,15 @@ ShapeSAE <- read_sf("../Shape/ine_seg_11.shp")%>%
 
 
 mapa <- tm_shape(ShapeSAE %>%
-                           left_join(data_map,  by = "segm"))
+                   left_join(data_map,  by = "segm"))
 
 brks_lp <- c(0,0.025,0.05, 0.1, 0.15, 0.2,0.4, 1)
 tmap_options(check.and.fix = TRUE)
 Mapa_lp <-
   mapa + tm_polygons(
-    c("pred_binomial"),
-    breaks = brks_lp,
-    title = "Mapa de pobreza",
+    c("Cv_pred"),
+#    breaks = brks_lp,
+    title = "Mapa de pobreza(cv)",
     palette = "YlOrRd",
     colorNA = "white"
   ) + tm_layout(asp = 0)

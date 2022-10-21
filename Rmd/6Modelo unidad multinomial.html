@@ -167,7 +167,7 @@ Y_{d} \sim  Multinon\left( \boldsymbol{\theta}_d \right)
 <p>para <span class="math inline">\(u_{1d}\sim N\left(0,\sigma_{u}\right)\)</span> y <span class="math inline">\(u_{2d}\sim N\left(0,\sigma_{u}\right)\)</span>, siendo este el caso más simple. Para nuestro escenario se asume que <span class="math inline">\(Cor\left(u_{1d},u_{2d} \right) \neq 0\)</span> por tanto, <span class="math inline">\(\boldsymbol{u}_d = \left(u_{1d},u_{2d} \right) \sim N_2\left(0,\Sigma_{u}\right)\)</span> bajo esta condiciones la distribuciones previas estarían dadas por:</p>
 <p><span class="math display">\[
 \begin{eqnarray*}
-\beta_k &amp; \sim   &amp; N(\mu_0, \tau^2_0)\\
+\boldsymbol{\beta}_k &amp; \sim   &amp; N(\mu_0, \tau^2_0)\\
 \Sigma_{u} &amp;\sim&amp; Wishart\left( \Gamma_0, m_0 \right)
 \end{eqnarray*}
 \]</span></p>
@@ -547,8 +547,7 @@ TD = \frac{Población\  de\  desocupados}{Población\  económicamente \ activa}
 </div>
 <p>La información auxiliar disponible fue extraída del censo (tasa de desocupación) e imágenes satelitales (luces nocturnas, uso del suelo urbano y uso del suelo cultivos)</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>tasa_desocupados <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"../Data/tasa_desocupacion_seccion.rds"</span>)</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>statelevel_predictors_df <span class="ot">&lt;-</span> tasa_desocupados</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>statelevel_predictors_df <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"../Data/statelevel_predictors_segm.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
 <div class="cell-output-display">

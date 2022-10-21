@@ -143,8 +143,7 @@ ggplot(data = encuesta_mrp, aes(x = ingreso)) +
 La información auxiliar disponible ha sido extraída del censo (tasa de desocupación) e imágenes satelitales (luces nocturnas, uso del suelo urbano y uso del suelo cultivos)
 
 ```{r}
-tasa_desocupados <- readRDS("../Data/tasa_desocupacion_seccion.rds")
-statelevel_predictors_df <- tasa_desocupados
+statelevel_predictors_df <- readRDS("../Data/statelevel_predictors_segm.rds")
 ```
 
 ```{r, echo=FALSE}
@@ -165,7 +164,8 @@ kable(temp,format = "html", digits =  4) %>%
 Después de realizar una investigación en la literatura especializada y realizar estudios de simulación fue posible evidenciar que las predicciones obtenidas con la muestra sin agregar y la muestra agregada convergen a la media del dominio. Sin embargo, el realizar estas estimaciones con la muestra agregada reduce el tiempo computacional necesario para la convergencia de las cadenas MCMC.  Con esto en mente se se realiza la identificación de las variables por las cuales se agregará la encuesta.
 
 ```{r}
-byAgrega <- c("depto", "mpio",  "segm", "area",   "sexo",   "anoest", "edad",   "etnia" )
+byAgrega <- c("depto", "mpio",  "segm", "area", 
+              "sexo",   "anoest", "edad",   "etnia" )
  
 ```
 
@@ -240,7 +240,7 @@ Obtener el modelo es solo un paso más, ahora se debe realizar la predicción en
 
 ```{r}
 poststrat_df <- readRDS("../Data/censo_Montevideo.rds") %>% 
-     left_join(tasa_desocupados)  
+     left_join(statelevel_predictors_df)  
 ```
 
 ```{r, echo=FALSE}

@@ -1,0 +1,265 @@
+[23:50:33] [red_engine] [info] intitializing libxml
+[23:50:33] [red_engine] [info] intitializing error-table
+[23:50:33] [red_engine] [info] intitializing msg-table
+[23:50:33] [red_engine] [info] registering arrow dataset
+[23:50:33] [red_engine] [info] registering cspro datasource
+[23:50:33] [red_engine] [info] intitializing sdc RR4 processor
+[23:50:33] [red_engine] [info] intitializing plugins
+[23:50:33] [red_engine] [debug] Loading plugins from directory [plugins]
+[23:50:33] [red_engine] [info] intitializing pwd-provide
+[23:50:33] [red_engine] [info] intitializing openssl
+[23:57:37] [red_engine] [debug] STATP initializing
+[23:57:37] [red_engine] [debug] STATP run
+[23:58:42] [red_engine] [debug] STATP postProcess
+[23:58:42] [red_engine] [debug] [$table1] post process
+[23:58:42] [red_engine] [debug] [$table1] create dataset
+[23:58:43] [red_engine] [debug] [$table1] add field [REDCODEN]
+[23:58:43] [red_engine] [debug] [$table1] add field label [REDCODEN]
+[23:58:43] [red_engine] [debug] [$table1] add field mask [REDCODEN]
+[23:58:43] [red_engine] [debug] [$table1] add field [URBRUR]
+[23:58:43] [red_engine] [debug] [$table1] add field label [URBRUR]
+[23:58:43] [red_engine] [debug] [$table1] add field mask [URBRUR]
+[23:58:43] [red_engine] [debug] [$table1] add field [PH02]
+[23:58:43] [red_engine] [debug] [$table1] add field label [PH02]
+[23:58:43] [red_engine] [debug] [$table1] add field mask [PH02]
+[23:58:43] [red_engine] [debug] [$table1] add field [NA01]
+[23:58:43] [red_engine] [debug] [$table1] add field label [NA01]
+[23:58:43] [red_engine] [debug] [$table1] add field mask [NA01]
+[23:58:43] [red_engine] [debug] [$table1] add field [ER02]
+[23:58:43] [red_engine] [debug] [$table1] add field label [ER02]
+[23:58:43] [red_engine] [debug] [$table1] add field mask [ER02]
+[23:58:43] [red_engine] [debug] [$table1] add field [AESTUDIO]
+[23:58:43] [red_engine] [debug] [$table1] add field label [AESTUDIO]
+[23:58:43] [red_engine] [debug] [$table1] add field mask [AESTUDIO]
+[23:58:43] [red_engine] [debug] [$table1] add field value
+[00:01:23] [red_engine] [debug] STATP end run
+[00:05:47] [red_engine] [debug] STATP initializing
+[00:05:47] [red_engine] [debug] STATP run
+[00:05:52] [red_engine] [debug] STATP postProcess
+[00:05:52] [red_engine] [debug] [$table1] post process
+[00:05:52] [red_engine] [debug] [$table1] create dataset
+[00:05:52] [red_engine] [debug] [$table1] add field [REDCODEN]
+[00:05:52] [red_engine] [debug] [$table1] add field label [REDCODEN]
+[00:05:52] [red_engine] [debug] [$table1] add field mask [REDCODEN]
+[00:05:52] [red_engine] [debug] [$table1] add field [NA01]
+[00:05:52] [red_engine] [debug] [$table1] add field label [NA01]
+[00:05:52] [red_engine] [debug] [$table1] add field mask [NA01]
+[00:05:52] [red_engine] [debug] [$table1] add field [AESTUDIO]
+[00:05:52] [red_engine] [debug] [$table1] add field label [AESTUDIO]
+[00:05:52] [red_engine] [debug] [$table1] add field mask [AESTUDIO]
+[00:05:52] [red_engine] [debug] [$table1] add field value
+[00:05:56] [red_engine] [debug] STATP end run
+[00:06:04] [red_engine] [debug] STATP initializing
+[00:06:04] [red_engine] [debug] STATP run
+[00:06:06] [red_engine] [debug] STATP postProcess
+[00:06:06] [red_engine] [debug] [$table1] post process
+[00:06:06] [red_engine] [debug] [$table1] create dataset
+[00:06:06] [red_engine] [debug] [$table1] add field [REDCODEN]
+[00:06:06] [red_engine] [debug] [$table1] add field label [REDCODEN]
+[00:06:06] [red_engine] [debug] [$table1] add field mask [REDCODEN]
+[00:06:06] [red_engine] [debug] [$table1] add field [NA01]
+[00:06:06] [red_engine] [debug] [$table1] add field label [NA01]
+[00:06:06] [red_engine] [debug] [$table1] add field mask [NA01]
+[00:06:06] [red_engine] [debug] [$table1] add field [ED08]
+[00:06:06] [red_engine] [debug] [$table1] add field label [ED08]
+[00:06:06] [red_engine] [debug] [$table1] add field mask [ED08]
+[00:06:06] [red_engine] [debug] [$table1] add field value
+[00:06:09] [red_engine] [debug] STATP end run
+[00:06:18] [red_engine] [debug] STATP initializing
+[00:06:18] [red_engine] [debug] STATP run
+[00:06:19] [red_engine] [debug] STATP postProcess
+[00:06:19] [red_engine] [debug] [$table1] post process
+[00:06:19] [red_engine] [debug] [$table1] create dataset
+[00:06:19] [red_engine] [debug] [$table1] add field [REDCODEN]
+[00:06:19] [red_engine] [debug] [$table1] add field label [REDCODEN]
+[00:06:19] [red_engine] [debug] [$table1] add field mask [REDCODEN]
+[00:06:19] [red_engine] [debug] [$table1] add field [CE11]
+[00:06:19] [red_engine] [debug] [$table1] add field label [CE11]
+[00:06:19] [red_engine] [debug] [$table1] add field mask [CE11]
+[00:06:19] [red_engine] [debug] [$table1] add field value
+[00:06:19] [red_engine] [debug] STATP end run
+[00:06:28] [red_engine] [debug] STATP initializing
+[00:06:28] [red_engine] [debug] STATP run
+[00:06:29] [red_engine] [debug] STATP postProcess
+[00:06:29] [red_engine] [debug] [$table1] post process
+[00:06:29] [red_engine] [debug] [$table1] create dataset
+[00:06:29] [red_engine] [debug] [$table1] add field [REDCODEN]
+[00:06:29] [red_engine] [debug] [$table1] add field label [REDCODEN]
+[00:06:29] [red_engine] [debug] [$table1] add field mask [REDCODEN]
+[00:06:29] [red_engine] [debug] [$table1] add field [NBIAGUA]
+[00:06:29] [red_engine] [debug] [$table1] add field label [NBIAGUA]
+[00:06:29] [red_engine] [debug] [$table1] add field mask [NBIAGUA]
+[00:06:29] [red_engine] [debug] [$table1] add field value
+[00:06:29] [red_engine] [debug] STATP end run
+[00:06:34] [red_engine] [debug] STATP initializing
+[00:06:34] [red_engine] [debug] STATP run
+[00:06:34] [red_engine] [debug] STATP postProcess
+[00:06:34] [red_engine] [debug] [$table1] post process
+[00:06:34] [red_engine] [debug] [$table1] create dataset
+[00:06:34] [red_engine] [debug] [$table1] add field [REDCODEN]
+[00:06:34] [red_engine] [debug] [$table1] add field label [REDCODEN]
+[00:06:34] [red_engine] [debug] [$table1] add field mask [REDCODEN]
+[00:06:34] [red_engine] [debug] [$table1] add field [NBICALE]
+[00:06:34] [red_engine] [debug] [$table1] add field label [NBICALE]
+[00:06:34] [red_engine] [debug] [$table1] add field mask [NBICALE]
+[00:06:34] [red_engine] [debug] [$table1] add field value
+[00:06:34] [red_engine] [debug] STATP end run
+[00:06:38] [red_engine] [debug] STATP initializing
+[00:06:38] [red_engine] [debug] STATP run
+[00:06:39] [red_engine] [debug] STATP postProcess
+[00:06:39] [red_engine] [debug] [$table1] post process
+[00:06:39] [red_engine] [debug] [$table1] create dataset
+[00:06:39] [red_engine] [debug] [$table1] add field [REDCODEN]
+[00:06:39] [red_engine] [debug] [$table1] add field label [REDCODEN]
+[00:06:39] [red_engine] [debug] [$table1] add field mask [REDCODEN]
+[00:06:39] [red_engine] [debug] [$table1] add field [NBICALF]
+[00:06:39] [red_engine] [debug] [$table1] add field label [NBICALF]
+[00:06:39] [red_engine] [debug] [$table1] add field mask [NBICALF]
+[00:06:39] [red_engine] [debug] [$table1] add field value
+[00:06:39] [red_engine] [debug] STATP end run
+[00:06:43] [red_engine] [debug] STATP initializing
+[00:06:43] [red_engine] [debug] STATP run
+[00:06:43] [red_engine] [debug] STATP postProcess
+[00:06:43] [red_engine] [debug] [$table1] post process
+[00:06:43] [red_engine] [debug] [$table1] create dataset
+[00:06:43] [red_engine] [debug] [$table1] add field [REDCODEN]
+[00:06:43] [red_engine] [debug] [$table1] add field label [REDCODEN]
+[00:06:43] [red_engine] [debug] [$table1] add field mask [REDCODEN]
+[00:06:43] [red_engine] [debug] [$table1] add field [NBICONF]
+[00:06:43] [red_engine] [debug] [$table1] add field label [NBICONF]
+[00:06:43] [red_engine] [debug] [$table1] add field mask [NBICONF]
+[00:06:43] [red_engine] [debug] [$table1] add field value
+[00:06:43] [red_engine] [debug] STATP end run
+[00:06:48] [red_engine] [debug] STATP initializing
+[00:06:48] [red_engine] [debug] STATP run
+[00:06:48] [red_engine] [debug] STATP postProcess
+[00:06:48] [red_engine] [debug] [$table1] post process
+[00:06:48] [red_engine] [debug] [$table1] create dataset
+[00:06:48] [red_engine] [debug] [$table1] add field [REDCODEN]
+[00:06:48] [red_engine] [debug] [$table1] add field label [REDCODEN]
+[00:06:48] [red_engine] [debug] [$table1] add field mask [REDCODEN]
+[00:06:48] [red_engine] [debug] [$table1] add field [NBIEDU]
+[00:06:48] [red_engine] [debug] [$table1] add field label [NBIEDU]
+[00:06:48] [red_engine] [debug] [$table1] add field mask [NBIEDU]
+[00:06:48] [red_engine] [debug] [$table1] add field value
+[00:06:48] [red_engine] [debug] STATP end run
+[00:06:52] [red_engine] [debug] STATP initializing
+[00:06:52] [red_engine] [debug] STATP run
+[00:06:52] [red_engine] [debug] STATP postProcess
+[00:06:52] [red_engine] [debug] [$table1] post process
+[00:06:52] [red_engine] [debug] [$table1] create dataset
+[00:06:52] [red_engine] [debug] [$table1] add field [REDCODEN]
+[00:06:52] [red_engine] [debug] [$table1] add field label [REDCODEN]
+[00:06:52] [red_engine] [debug] [$table1] add field mask [REDCODEN]
+[00:06:52] [red_engine] [debug] [$table1] add field [NBIELC]
+[00:06:52] [red_engine] [debug] [$table1] add field label [NBIELC]
+[00:06:52] [red_engine] [debug] [$table1] add field mask [NBIELC]
+[00:06:52] [red_engine] [debug] [$table1] add field value
+[00:06:52] [red_engine] [debug] STATP end run
+[00:06:56] [red_engine] [debug] STATP initializing
+[00:06:56] [red_engine] [debug] STATP run
+[00:06:56] [red_engine] [debug] STATP postProcess
+[00:06:56] [red_engine] [debug] [$table1] post process
+[00:06:56] [red_engine] [debug] [$table1] create dataset
+[00:06:56] [red_engine] [debug] [$table1] add field [REDCODEN]
+[00:06:56] [red_engine] [debug] [$table1] add field label [REDCODEN]
+[00:06:56] [red_engine] [debug] [$table1] add field mask [REDCODEN]
+[00:06:56] [red_engine] [debug] [$table1] add field [NBICOC]
+[00:06:56] [red_engine] [debug] [$table1] add field label [NBICOC]
+[00:06:56] [red_engine] [debug] [$table1] add field mask [NBICOC]
+[00:06:56] [red_engine] [debug] [$table1] add field value
+[00:06:56] [red_engine] [debug] STATP end run
+[00:07:00] [red_engine] [debug] STATP initializing
+[00:07:00] [red_engine] [debug] STATP run
+[00:07:01] [red_engine] [debug] STATP postProcess
+[00:07:01] [red_engine] [debug] [$table1] post process
+[00:07:01] [red_engine] [debug] [$table1] create dataset
+[00:07:01] [red_engine] [debug] [$table1] add field [REDCODEN]
+[00:07:01] [red_engine] [debug] [$table1] add field label [REDCODEN]
+[00:07:01] [red_engine] [debug] [$table1] add field mask [REDCODEN]
+[00:07:01] [red_engine] [debug] [$table1] add field [NBIHAC]
+[00:07:01] [red_engine] [debug] [$table1] add field label [NBIHAC]
+[00:07:01] [red_engine] [debug] [$table1] add field mask [NBIHAC]
+[00:07:01] [red_engine] [debug] [$table1] add field value
+[00:07:01] [red_engine] [debug] STATP end run
+[00:07:07] [red_engine] [debug] STATP initializing
+[00:07:07] [red_engine] [debug] STATP run
+[00:07:07] [red_engine] [debug] STATP postProcess
+[00:07:07] [red_engine] [debug] [$table1] post process
+[00:07:07] [red_engine] [debug] [$table1] create dataset
+[00:07:07] [red_engine] [debug] [$table1] add field [REDCODEN]
+[00:07:07] [red_engine] [debug] [$table1] add field label [REDCODEN]
+[00:07:07] [red_engine] [debug] [$table1] add field mask [REDCODEN]
+[00:07:07] [red_engine] [debug] [$table1] add field [NBIMAT]
+[00:07:07] [red_engine] [debug] [$table1] add field label [NBIMAT]
+[00:07:07] [red_engine] [debug] [$table1] add field mask [NBIMAT]
+[00:07:07] [red_engine] [debug] [$table1] add field value
+[00:07:07] [red_engine] [debug] STATP end run
+[00:07:12] [red_engine] [debug] STATP initializing
+[00:07:12] [red_engine] [debug] STATP run
+[00:07:12] [red_engine] [debug] STATP postProcess
+[00:07:12] [red_engine] [debug] [$table1] post process
+[00:07:12] [red_engine] [debug] [$table1] create dataset
+[00:07:12] [red_engine] [debug] [$table1] add field [REDCODEN]
+[00:07:12] [red_engine] [debug] [$table1] add field label [REDCODEN]
+[00:07:12] [red_engine] [debug] [$table1] add field mask [REDCODEN]
+[00:07:12] [red_engine] [debug] [$table1] add field [NBIREF]
+[00:07:12] [red_engine] [debug] [$table1] add field label [NBIREF]
+[00:07:12] [red_engine] [debug] [$table1] add field mask [NBIREF]
+[00:07:12] [red_engine] [debug] [$table1] add field value
+[00:07:12] [red_engine] [debug] STATP end run
+[00:07:16] [red_engine] [debug] STATP initializing
+[00:07:16] [red_engine] [debug] STATP run
+[00:07:16] [red_engine] [debug] STATP postProcess
+[00:07:16] [red_engine] [debug] [$table1] post process
+[00:07:16] [red_engine] [debug] [$table1] create dataset
+[00:07:16] [red_engine] [debug] [$table1] add field [REDCODEN]
+[00:07:16] [red_engine] [debug] [$table1] add field label [REDCODEN]
+[00:07:16] [red_engine] [debug] [$table1] add field mask [REDCODEN]
+[00:07:16] [red_engine] [debug] [$table1] add field [NBISAN]
+[00:07:16] [red_engine] [debug] [$table1] add field label [NBISAN]
+[00:07:16] [red_engine] [debug] [$table1] add field mask [NBISAN]
+[00:07:16] [red_engine] [debug] [$table1] add field value
+[00:07:16] [red_engine] [debug] STATP end run
+[00:07:21] [red_engine] [debug] STATP initializing
+[00:07:21] [red_engine] [debug] STATP run
+[00:07:21] [red_engine] [debug] STATP postProcess
+[00:07:21] [red_engine] [debug] [$table1] post process
+[00:07:21] [red_engine] [debug] [$table1] create dataset
+[00:07:21] [red_engine] [debug] [$table1] add field [REDCODEN]
+[00:07:21] [red_engine] [debug] [$table1] add field label [REDCODEN]
+[00:07:21] [red_engine] [debug] [$table1] add field mask [REDCODEN]
+[00:07:21] [red_engine] [debug] [$table1] add field [NBIVIV]
+[00:07:21] [red_engine] [debug] [$table1] add field label [NBIVIV]
+[00:07:21] [red_engine] [debug] [$table1] add field mask [NBIVIV]
+[00:07:21] [red_engine] [debug] [$table1] add field value
+[00:07:21] [red_engine] [debug] STATP end run
+[00:07:25] [red_engine] [debug] STATP initializing
+[00:07:25] [red_engine] [debug] STATP run
+[00:07:26] [red_engine] [debug] STATP postProcess
+[00:07:26] [red_engine] [debug] [$table1] post process
+[00:07:26] [red_engine] [debug] [$table1] create dataset
+[00:07:26] [red_engine] [debug] [$table1] add field [REDCODEN]
+[00:07:26] [red_engine] [debug] [$table1] add field label [REDCODEN]
+[00:07:26] [red_engine] [debug] [$table1] add field mask [REDCODEN]
+[00:07:26] [red_engine] [debug] [$table1] add field [POBCOAC]
+[00:07:26] [red_engine] [debug] [$table1] add field label [POBCOAC]
+[00:07:26] [red_engine] [debug] [$table1] add field mask [POBCOAC]
+[00:07:26] [red_engine] [debug] [$table1] add field value
+[00:07:26] [red_engine] [debug] STATP end run
+[10:16:19] [red_engine] [debug] STATP initializing
+[10:16:19] [red_engine] [debug] STATP run
+[10:16:24] [red_engine] [debug] STATP postProcess
+[10:16:24] [red_engine] [debug] [$table1] post process
+[10:16:24] [red_engine] [debug] [$table1] create dataset
+[10:16:24] [red_engine] [debug] [$table1] add field [REDCODEN]
+[10:16:24] [red_engine] [debug] [$table1] add field label [REDCODEN]
+[10:16:24] [red_engine] [debug] [$table1] add field mask [REDCODEN]
+[10:16:24] [red_engine] [debug] [$table1] add field [NA01]
+[10:16:24] [red_engine] [debug] [$table1] add field label [NA01]
+[10:16:24] [red_engine] [debug] [$table1] add field mask [NA01]
+[10:16:24] [red_engine] [debug] [$table1] add field [AESTUDIO]
+[10:16:24] [red_engine] [debug] [$table1] add field label [AESTUDIO]
+[10:16:24] [red_engine] [debug] [$table1] add field mask [AESTUDIO]
+[10:16:24] [red_engine] [debug] [$table1] add field value
+[10:16:28] [red_engine] [debug] STATP end run

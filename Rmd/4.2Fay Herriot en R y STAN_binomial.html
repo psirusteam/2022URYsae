@@ -138,7 +138,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <h1>Verosimilitud</h1>
 <p><span class="math display">\[
 \begin{eqnarray*}
-y_{d}\mid p_{d}n_{d} &amp; \sim &amp; Bin\left(n_{d},p_{i}\right)
+y_{d}\mid p_{d},n_{d} &amp; \sim &amp; Bin\left(n_{d},p_{d}\right)
 \end{eqnarray*}
 \]</span> para <span class="math inline">\(d=1,\dots,D\)</span> y</p>
 <p><span class="math display">\[
@@ -629,17 +629,17 @@ Chain 1 Iteration: 101 / 200 [ 50%]  (Sampling)
 Chain 3 Iteration: 101 / 200 [ 50%]  (Sampling) 
 Chain 4 Iteration: 101 / 200 [ 50%]  (Sampling) 
 Chain 2 Iteration: 200 / 200 [100%]  (Sampling) 
-Chain 2 finished in 19.0 seconds.
-Chain 1 Iteration: 200 / 200 [100%]  (Sampling) 
-Chain 1 finished in 19.3 seconds.
+Chain 2 finished in 23.5 seconds.
 Chain 3 Iteration: 200 / 200 [100%]  (Sampling) 
+Chain 1 Iteration: 200 / 200 [100%]  (Sampling) 
+Chain 3 finished in 23.7 seconds.
+Chain 1 finished in 23.9 seconds.
 Chain 4 Iteration: 200 / 200 [100%]  (Sampling) 
-Chain 3 finished in 19.6 seconds.
-Chain 4 finished in 19.6 seconds.
+Chain 4 finished in 24.2 seconds.
 
 All 4 chains finished successfully.
-Mean chain execution time: 19.4 seconds.
-Total execution time: 19.8 seconds.</code></pre>
+Mean chain execution time: 23.8 seconds.
+Total execution time: 24.5 seconds.</code></pre>
 </div>
 </div>
 </section>
@@ -669,25 +669,29 @@ Total execution time: 19.8 seconds.</code></pre>
 <p><img src="4.2Fay-Herriot-en-R-y-STAN_binomial_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
-<div class="cell" data-hash="4.2Fay-Herriot-en-R-y-STAN_binomial_cache/html/unnamed-chunk-12_4f9a6eab75ad8c699b6a6b1cbe749242">
+<div class="cell" data-hash="4.2Fay-Herriot-en-R-y-STAN_binomial_cache/html/unnamed-chunk-12_c389656712035ef287c3d90e6b5909cb">
 <div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>theta_FH <span class="ot">&lt;-</span> model_FH_Binomial<span class="sc">$</span><span class="fu">summary</span>(<span class="at">variables =</span>  <span class="st">"theta"</span>)</span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>data_dir <span class="sc">%&lt;&gt;%</span> <span class="fu">mutate</span>(<span class="at">pred_binomial =</span> theta_FH<span class="sc">$</span>mean)</span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>theta_FH_pred <span class="ot">&lt;-</span> model_FH_Binomial<span class="sc">$</span><span class="fu">summary</span>(<span class="at">variables =</span>  <span class="st">"thetaLP"</span>)</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>data_dir <span class="sc">%&lt;&gt;%</span> <span class="fu">mutate</span>(<span class="at">pred_binomial =</span> theta_FH<span class="sc">$</span>mean, </span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>                     <span class="at">pred_binomial_EE =</span> theta_FH<span class="sc">$</span>sd,</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>                              <span class="at">Cv_pred =</span> pred_binomial_EE<span class="sc">/</span>pred_binomial)</span>
 <span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>data_syn <span class="ot">&lt;-</span> data_syn <span class="sc">%&gt;%</span> </span>
-<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">pred_binomial =</span> theta_FH_pred<span class="sc">$</span>mean)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>theta_FH_pred <span class="ot">&lt;-</span> model_FH_Binomial<span class="sc">$</span><span class="fu">summary</span>(<span class="at">variables =</span>  <span class="st">"thetaLP"</span>)</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>data_syn <span class="ot">&lt;-</span> data_syn <span class="sc">%&gt;%</span> </span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">pred_binomial =</span> theta_FH_pred<span class="sc">$</span>mean,</span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>         <span class="at">pred_binomial_EE =</span> theta_FH_pred<span class="sc">$</span>sd,</span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>         <span class="at">Cv_pred =</span> pred_binomial_EE<span class="sc">/</span>pred_binomial)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="mapa-de-montevideo" class="level1">
 <h1>Mapa de Montevideo</h1>
-<div class="cell" data-hash="4.2Fay-Herriot-en-R-y-STAN_binomial_cache/html/unnamed-chunk-13_ae7a1280713cfbc03e0953ab6da19cc4">
+<div class="cell" data-hash="4.2Fay-Herriot-en-R-y-STAN_binomial_cache/html/unnamed-chunk-13_b773688b55c225624a27c05a2741df9f">
 <div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(sp)</span>
 <span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(sf)</span>
 <span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tmap)</span>
 <span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>data_map <span class="ot">&lt;-</span> <span class="fu">rbind</span>(data_dir, data_syn) <span class="sc">%&gt;%</span> </span>
-<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(segm, pred_binomial) </span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(segm, pred_binomial, pred_binomial_EE,Cv_pred ) </span>
 <span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a><span class="do">## Leer Shape del pais</span></span>
@@ -698,15 +702,15 @@ Total execution time: 19.8 seconds.</code></pre>
 <span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a>mapa <span class="ot">&lt;-</span> <span class="fu">tm_shape</span>(ShapeSAE <span class="sc">%&gt;%</span></span>
-<span id="cb16-17"><a href="#cb16-17" aria-hidden="true" tabindex="-1"></a>                           <span class="fu">left_join</span>(data_map,  <span class="at">by =</span> <span class="st">"segm"</span>))</span>
+<span id="cb16-17"><a href="#cb16-17" aria-hidden="true" tabindex="-1"></a>                   <span class="fu">left_join</span>(data_map,  <span class="at">by =</span> <span class="st">"segm"</span>))</span>
 <span id="cb16-18"><a href="#cb16-18" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb16-19"><a href="#cb16-19" aria-hidden="true" tabindex="-1"></a>brks_lp <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="fl">0.025</span>,<span class="fl">0.05</span>, <span class="fl">0.1</span>, <span class="fl">0.15</span>, <span class="fl">0.2</span>,<span class="fl">0.4</span>, <span class="dv">1</span>)</span>
 <span id="cb16-20"><a href="#cb16-20" aria-hidden="true" tabindex="-1"></a><span class="fu">tmap_options</span>(<span class="at">check.and.fix =</span> <span class="cn">TRUE</span>)</span>
 <span id="cb16-21"><a href="#cb16-21" aria-hidden="true" tabindex="-1"></a>Mapa_lp <span class="ot">&lt;-</span></span>
 <span id="cb16-22"><a href="#cb16-22" aria-hidden="true" tabindex="-1"></a>  mapa <span class="sc">+</span> <span class="fu">tm_polygons</span>(</span>
-<span id="cb16-23"><a href="#cb16-23" aria-hidden="true" tabindex="-1"></a>    <span class="fu">c</span>(<span class="st">"pred_binomial"</span>),</span>
-<span id="cb16-24"><a href="#cb16-24" aria-hidden="true" tabindex="-1"></a>    <span class="at">breaks =</span> brks_lp,</span>
-<span id="cb16-25"><a href="#cb16-25" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Mapa de pobreza"</span>,</span>
+<span id="cb16-23"><a href="#cb16-23" aria-hidden="true" tabindex="-1"></a>    <span class="fu">c</span>(<span class="st">"Cv_pred"</span>),</span>
+<span id="cb16-24"><a href="#cb16-24" aria-hidden="true" tabindex="-1"></a><span class="co">#    breaks = brks_lp,</span></span>
+<span id="cb16-25"><a href="#cb16-25" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Mapa de pobreza(cv)"</span>,</span>
 <span id="cb16-26"><a href="#cb16-26" aria-hidden="true" tabindex="-1"></a>    <span class="at">palette =</span> <span class="st">"YlOrRd"</span>,</span>
 <span id="cb16-27"><a href="#cb16-27" aria-hidden="true" tabindex="-1"></a>    <span class="at">colorNA =</span> <span class="st">"white"</span></span>
 <span id="cb16-28"><a href="#cb16-28" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span> <span class="fu">tm_layout</span>(<span class="at">asp =</span> <span class="dv">0</span>)</span>
